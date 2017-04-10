@@ -31,9 +31,10 @@ public class OptionPanelController {
 	@FXML
 	private TextField txtTemplate = new TextField();
 	@FXML
-	private Button btnUseTemplate = new Button();
-	@FXML
 	private Button btnClear = new Button();	
+	@FXML
+	private Button btnUseTemplate = new Button();
+
 	
 	private MainApp mainApp;
 
@@ -42,11 +43,11 @@ public class OptionPanelController {
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
 		btnAdd.setGraphic(new ImageView(imgRes));
 
-		imgRes = new Image(getClass().getResourceAsStream("/images/useTemplate.png"));
-		btnUseTemplate.setGraphic(new ImageView(imgRes));
-
 		imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
 		btnClear.setGraphic(new ImageView(imgRes));
+		
+		imgRes = new Image(getClass().getResourceAsStream("/images/useTemplate.png"));
+		btnUseTemplate.setGraphic(new ImageView(imgRes));
 		
 		fileExtensionList.setCellFactory(lv -> {
 
@@ -117,7 +118,7 @@ public class OptionPanelController {
 	
 	@FXML
 	private void handleClear() {
-		mainApp.clearFileList();
+		mainApp.clearNewFileName();
 	}
 
 	public void setMainApp(MainApp mainApp) {

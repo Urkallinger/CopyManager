@@ -37,40 +37,47 @@
 				</Button>
 			</children>
 		</HBox>
-		<ListView fx:id="fileExtensionList" layoutX="20.0"
-			AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="0.0"
-			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
-		<Label layoutX="10.0" layoutY="10.0" prefHeight="30.0" text="pattern"
-			AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="0.0"
-			AnchorPane.rightAnchor="0.0">
+		<ListView fx:id="fileExtensionList" AnchorPane.bottomAnchor="200.0"
+			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+			AnchorPane.topAnchor="50.0" />
+		<Label prefHeight="30.0" text="pattern" AnchorPane.bottomAnchor="150.0"
+			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 			<font>
 				<Font size="15.0" />
 			</font>
 		</Label>
-		<TextField fx:id="txtPattern" layoutX="10.0" layoutY="10.0"
-			text=".*(S\d+E\d+).*" AnchorPane.bottomAnchor="120.0"
-			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+		<TextField fx:id="txtPattern" text="(.*)"
+			AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0">
 			<font>
 				<Font name="Consolas" size="15.0" />
 			</font>
 		</TextField>
-		<Label layoutX="10.0" layoutY="10.0" prefHeight="30.0" text="template"
+		<Label prefHeight="30.0" text="template"
 			AnchorPane.bottomAnchor="80.0">
 			<font>
 				<Font size="15.0" />
 			</font>
 		</Label>
-		<TextField fx:id="txtTemplate" layoutX="10.0" layoutY="10.0"
-			AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0"
-			AnchorPane.rightAnchor="0.0">
+		<TextField fx:id="txtTemplate" AnchorPane.bottomAnchor="50.0"
+			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" text="#1">
 			<font>
 				<Font name="Consolas" size="15.0" />
 			</font>
 		</TextField>
-		<Button fx:id="btnUseTemplate" onAction="#handleUseTemplate"
-			layoutX="10.0" layoutY="10.0" mnemonicParsing="false"
-			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-			AnchorPane.rightAnchor="0.0">
+		<Button fx:id="btnClear" mnemonicParsing="false" onAction="#handleClear"
+			prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+			<tooltip>
+				<Tooltip text="clear new filename">
+					<font>
+						<Font size="15.0" />
+					</font>
+				</Tooltip>
+			</tooltip>
+		</Button>
+		<Button fx:id="btnUseTemplate" mnemonicParsing="false"
+			onAction="#handleUseTemplate" prefWidth="70.0"
+			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="80.0">
 			<tooltip>
 				<Tooltip text="use pattern and template to generate new filename">
 					<font>

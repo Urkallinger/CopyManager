@@ -75,14 +75,12 @@
 		</ButtonBar>
 	</top>
 	<center>
-		<SplitPane dividerPositions="0.7" orientation="VERTICAL"
-			prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+		<SplitPane dividerPositions="0.7" orientation="VERTICAL" BorderPane.alignment="CENTER">
 			<items>
-				<SplitPane dividerPositions="0.2"
-					prefHeight="160.0" prefWidth="200.0">
+				<SplitPane dividerPositions="0.2">
 					<items>
-						<AnchorPane fx:id="leftArea" minWidth="170" />
-						<AnchorPane fx:id="rightArea" />
+						<AnchorPane fx:id="leftArea" minWidth="180" />
+						<AnchorPane fx:id="rightArea" minWidth="400" />
 					</items>
 				</SplitPane>
 				<AnchorPane fx:id="bottomArea" />

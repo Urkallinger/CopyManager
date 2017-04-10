@@ -6,4 +6,5 @@ public interface ConsoleCallback {
 	void error(String error);
 	int action(String action, boolean indicator);
 	void setDone(int idx);
+	void setFailed(int idx);
 }

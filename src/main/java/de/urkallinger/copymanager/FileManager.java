@@ -77,7 +77,12 @@ public class FileManager {
 					
 					try {
 						copyFileThread.join();
-						console.setDone(cpyInfo.get());
+						if(copyFile.get()) {
+							console.setDone(cpyInfo.get());
+						} else {
+							console.setFailed(cpyInfo.get());
+						}
+						
 					} catch (InterruptedException e) {
 						// TODO: console.setFailed implementieren
 						e.printStackTrace();

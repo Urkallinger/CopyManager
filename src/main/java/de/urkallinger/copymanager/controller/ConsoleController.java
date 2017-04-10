@@ -137,4 +137,11 @@ public class ConsoleController implements ConsoleCallback {
 		console.getItems().get(idx).setGraphic(new ImageView(imgRes));
 		console.refresh();
 	}
+
+	@Override
+	public void setFailed(int idx) {
+		Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
+		console.getItems().get(idx).setGraphic(new ImageView(imgRes));
+		console.refresh();
+	}
 }

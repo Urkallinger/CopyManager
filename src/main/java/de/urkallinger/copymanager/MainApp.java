@@ -75,7 +75,6 @@ public class MainApp extends Application {
      */
     public void showFileOverview() {
         try {
-            // Load person overview.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/view/FileOverview.fxml"));
             AnchorPane fileOverview = (AnchorPane) loader.load();
