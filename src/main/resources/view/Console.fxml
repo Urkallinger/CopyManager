@@ -9,10 +9,8 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="200.0"
-	style="-fx-border-color: #AAAAAA; -fx-border-width: 1px 0px 0px 0px;"
-	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="de.urkallinger.copymanager.view.ConsoleController">
+<AnchorPane prefHeight="200.0" xmlns="http://javafx.com/javafx/8.0.111"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.urkallinger.copymanager.controller.ConsoleController">
 	<padding>
 		<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
 	</padding>

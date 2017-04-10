@@ -32,7 +32,7 @@ public class ConsoleController implements ConsoleCallback {
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
 		btnClear.setGraphic(new ImageView(imgRes));
 		
-		locked = new ImageView(new Image(getClass().getResourceAsStream("/images/lock.png")));
+		locked = new ImageView(new Image(getClass().getResourceAsStream("/images/locked.png")));
 		unlocked = new ImageView(new Image(getClass().getResourceAsStream("/images/unlocked.png")));
 		
 		btnScrollLock.setGraphic(locked);
