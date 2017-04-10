@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.111"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.urkallinger.copymanager.view.FileOverviewController">
+	<children>
+		<TableView fx:id="table" AnchorPane.bottomAnchor="0.0"
+			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+			AnchorPane.topAnchor="0.0" editable="true">
+			<columns>
+				<TableColumn fx:id="chbCol" maxWidth="30.0" prefWidth="30.0"
+					resizable="false" sortable="false" editable="true" />
+				<TableColumn fx:id="nameCol" prefWidth="-1.0" text="filename" />
+				<TableColumn fx:id="newNameCol" prefWidth="-1.0" text="new filename" />
+				<TableColumn fx:id="extCol" prefWidth="-1.0" text="extension" />
+				<TableColumn fx:id="sizeCol" prefWidth="-1.0" text="size" />
+			</columns>
+		</TableView>
+	</children>
+	<padding>
+		<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+	</padding>
+</AnchorPane>
