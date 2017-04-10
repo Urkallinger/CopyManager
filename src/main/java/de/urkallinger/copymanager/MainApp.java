@@ -9,6 +9,9 @@ import de.urkallinger.copymanager.controller.ConsoleController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
+import de.urkallinger.copymanager.database.DataManager;
+import de.urkallinger.copymanager.database.DatabaseHelper;
+import de.urkallinger.copymanager.model.Extension;
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -202,7 +205,26 @@ public class MainApp extends Application {
     }
     
     public static void main(String[] args) {
-        launch(args);
+        Extension e1 = new Extension();
+        e1.setExtension("txt");
+        e1.setCategory("Document");
         
+        Extension e2 = new Extension();
+        e2.setExtension("mkv");
+        e2.setCategory("Movie");
+        
+        Extension e3 = new Extension();
+        e3.setExtension("avi");
+        e3.setCategory("Movie");
+        
+        DatabaseHelper db = DatabaseHelper.getInstance();
+        db.persist(e1);
+        db.persist(e2);
+        db.persist(e3);
+        
+        DataManager dm = new DataManager();
+        dm.getExtensions().forEach(e -> System.out.println(e));
+        
+        launch(args);
     }
 }
