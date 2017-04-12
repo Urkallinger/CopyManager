@@ -97,6 +97,7 @@ public class FileOverviewController {
 		
 		table.getItems().forEach(item -> {
 			String nn = template;
+			// TODO: try-catch und Fehlermeldung auf console ausgeben (oder "no match" oder so...)
 			Matcher m = pattern.matcher(item.getName());
 			if (m.matches()) {
 				Matcher mx = templPattern.matcher(nn);
