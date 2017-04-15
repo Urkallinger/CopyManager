@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import de.urkallinger.copymanager.MainApp;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -18,7 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-public class OptionPanelController {
+public class OptionPanelController extends UIController {
 
 	@FXML
 	private VBox vBox = new VBox();
@@ -34,9 +33,6 @@ public class OptionPanelController {
 	private Button btnClear = new Button();	
 	@FXML
 	private Button btnUseTemplate = new Button();
-
-	
-	private MainApp mainApp;
 
 	@FXML
 	private void initialize() {
@@ -105,12 +101,12 @@ public class OptionPanelController {
 	@FXML
 	private void handleUseTemplate() {
     	if(!getPattern().isPresent()) {
-    		mainApp.warning("no pattern defined.");
+    		logger.warning("no pattern defined.");
     		return;
     	}
     	
     	if(getTemplate().isEmpty()) {
-    		mainApp.warning("no template defined.");
+    		logger.warning("no template defined.");
     		return;
     	}
 		mainApp.updateNewFileName();
@@ -121,10 +117,6 @@ public class OptionPanelController {
 		mainApp.clearNewFileName();
 	}
 
-	public void setMainApp(MainApp mainApp) {
-		this.mainApp = mainApp;
-	}
-
 	public Optional<Pattern> getPattern() {
 		Optional<Pattern> opt = Optional.empty();
 		if (!txtPattern.getText().isEmpty()) {
@@ -133,14 +125,14 @@ public class OptionPanelController {
 				Pattern pattern = Pattern.compile(txtPattern.getText());
 				opt = Optional.of(pattern);
 			} catch (PatternSyntaxException e) {
-				mainApp.error("error compiling pattern");
-				mainApp.error(e.getMessage());
+				logger.error("error compiling pattern");
+				logger.error(e.getMessage());
 			}
 		}
 		return opt;
 	}
 
 	public String getTemplate() {
-		return txtTemplate.getText();
+		return txtTemplate.getText().trim();
 	}
 }

@@ -19,7 +19,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 
-public class FileOverviewController {
+public class FileOverviewController extends UIController {
 	@FXML
 	private TableView<FileListItem> table = new TableView<>();
 	@FXML

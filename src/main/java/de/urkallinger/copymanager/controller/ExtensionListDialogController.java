@@ -1,5 +1,10 @@
 package de.urkallinger.copymanager.controller;
 
+import java.io.File;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+
 import de.urkallinger.copymanager.model.ExtensionListItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,7 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
-public class ExtensionListDialogController {
+public class ExtensionListDialogController extends UIController {
 
 	@FXML
 	private Label lblDirPath = new Label();
@@ -37,5 +42,13 @@ public class ExtensionListDialogController {
 	private void handleCancel() {
 		Stage stage = (Stage) btnCancel.getScene().getWindow();
 		stage.close();
+	}
+
+	public void addListItems(List<File> fileList) {
+		fileList.forEach(f -> {
+			ExtensionListItem eli  = new ExtensionListItem();
+			eli.setExtension(FilenameUtils.getExtension(f.getName()));
+			table.getItems().add(eli);
+		});
 	}
 }

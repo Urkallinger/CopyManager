@@ -17,10 +17,10 @@ import javafx.application.Platform;
 public class FileManager {
 
 	private List<String> extensions;
-	private ConsoleCallback console;
+	private LoggerCallback logger;
 
-	public FileManager(final ConsoleCallback cc) {
-		this.console = cc;
+	public FileManager(final LoggerCallback logger) {
+		this.logger = logger;
 		this.extensions = new ArrayList<>();
 	}
 
@@ -28,21 +28,21 @@ public class FileManager {
 		return new FutureTask<>(new Callable<Integer>() {
 		    @Override
 		    public Integer call() throws Exception {
-		    	return console.action("-> from: " + from.getAbsolutePath() + "\n" +
+		    	return logger.action("-> from: " + from.getAbsolutePath() + "\n" +
 						         	  "-> to:   " + to.getAbsolutePath(),
 						         	  true);
 		    }
 		});
 	}
 	
-	private FutureTask<Boolean> getCpyFileRunnable(File from, File to, FutureTask<Integer> cpyInfoTask) {
+	private FutureTask<Boolean> getCpyFileTask(File from, File to, FutureTask<Integer> cpyInfoTask) {
 		return new FutureTask<>(new Callable<Boolean>() {
 			public Boolean call() {
 				Platform.runLater(cpyInfoTask);
 				try {
 					FileUtils.copyFile(from, to);
 				} catch (IOException e) {
-					// TODO: Logging mit Fehlermeldung einrichten oder irgendwie die Fehlermeldung auf der Console ausgeben
+					// TODO SLF4J Logging implementieren
 					return false;
 				}
 				return true;
@@ -70,7 +70,7 @@ public class FileManager {
 					File to = new File(targetDir, newName);
 					
 					FutureTask<Integer> cpyInfo = getCpyInfoTask(from, to);
-					FutureTask<Boolean> copyFile = getCpyFileRunnable(from, to, cpyInfo);
+					FutureTask<Boolean> copyFile = getCpyFileTask(from, to, cpyInfo);
 					
 					Thread copyFileThread = new Thread(copyFile);
 					copyFileThread.start();
@@ -78,15 +78,16 @@ public class FileManager {
 					try {
 						copyFileThread.join();
 						if(copyFile.get()) {
-							console.setDone(cpyInfo.get());
+							logger.setDone(cpyInfo.get());
 						} else {
-							console.setFailed(cpyInfo.get());
+							logger.setFailed(cpyInfo.get());
 						}
 						
 					} catch (InterruptedException e) {
-						// TODO: console.setFailed implementieren
+						// TODO SLF4J Logging implementieren
 						e.printStackTrace();
 					} catch (ExecutionException e) {
+						// TODO SLF4J Logging implementieren
 						e.printStackTrace();
 					}
 				});

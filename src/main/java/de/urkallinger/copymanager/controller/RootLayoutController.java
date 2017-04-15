@@ -1,23 +1,18 @@
 package de.urkallinger.copymanager.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
-import de.urkallinger.copymanager.MainApp;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-public class RootLayoutController {
+public class RootLayoutController extends UIController {
 
 	@FXML
 	private Button btnOpen = new Button();
@@ -36,8 +31,6 @@ public class RootLayoutController {
 	@FXML
 	private AnchorPane bottomArea = new AnchorPane();
 	
-	
-	private MainApp mainApp;
 	private Stage stage;
 	
 	public RootLayoutController() {
@@ -74,7 +67,6 @@ public class RootLayoutController {
 			mainApp.setCurrentDir(currDir);
 			mainApp.clearFileList();
 			mainApp.updateFileList();
-			showExtensionDialog();
 		});
 	}
 
@@ -87,8 +79,8 @@ public class RootLayoutController {
 	private void handleRefresh() {
 		mainApp.updateFileList();
 		Optional<File> currDir = mainApp.getCurrentDir();
-		if (currDir.isPresent()) mainApp.info("refresh files from: " + currDir.get());
-		else                     mainApp.warning("cannot refresh. no directory selected.");
+		if (currDir.isPresent()) logger.info("refresh files from: " + currDir.get());
+		else                     logger.warning("cannot refresh. no directory selected.");
 		
 	}
 	
@@ -100,26 +92,6 @@ public class RootLayoutController {
 	@FXML
 	private void handleUncheckAll() {
 		mainApp.setAllChecked(false);
-	}
-	
-	private void showExtensionDialog() {
-        try {
-        	Stage stage = new Stage();
-        	stage.setTitle("Extensions");
-            // Load root layout from fxml file.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/view/dialogs/ExtensionListDialog.fxml"));
-            BorderPane layout = (BorderPane) loader.load();
-
-            ExtensionListDialogController controller = loader.getController();
-            
-            // Show the scene containing the root layout.
-            Scene scene = new Scene(layout);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 	}
 	
 	private void setDefaultAnchors(Node node) {
@@ -142,10 +114,6 @@ public class RootLayoutController {
 	public void setBottomArea(Node node) {
 		bottomArea.getChildren().add(node);
 		setDefaultAnchors(node);
-	}
-	
-	public void setMainApp(MainApp mainApp) {
-		this.mainApp = mainApp;
 	}
 	
 	public void setStage(Stage stage) {

@@ -1,6 +1,6 @@
 package de.urkallinger.copymanager.controller;
 
-import de.urkallinger.copymanager.ConsoleCallback;
+import de.urkallinger.copymanager.LoggerCallback;
 import de.urkallinger.copymanager.model.ConsoleItem;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -15,7 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
-public class ConsoleController implements ConsoleCallback {
+public class ConsoleController extends UIController implements LoggerCallback {
 	@FXML
 	private ListView<ConsoleItem> console = new ListView<>();
 	@FXML

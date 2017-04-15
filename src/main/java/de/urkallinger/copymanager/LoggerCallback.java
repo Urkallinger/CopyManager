@@ -1,6 +1,6 @@
 package de.urkallinger.copymanager;
 
-public interface ConsoleCallback {
+public interface LoggerCallback {
 	void info(String info);
 	void warning(String warning);
 	void error(String error);

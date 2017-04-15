@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import de.urkallinger.copymanager.controller.ConsoleController;
+import de.urkallinger.copymanager.controller.ExtensionListDialogController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
@@ -115,31 +116,15 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
-    
-    public void error(String text) {
-        consoleController.error(text);
-    }
-    
-    public void warning(String text) {
-        consoleController.warning(text);
-    }
-    
-    public void info(String text) {
-        consoleController.info(text);
-    }
-    
-    public void action(String text, boolean indicator) {
-        consoleController.action(text, indicator);
-    }
-    
+
     public void addFileExtension(String extension) {
         fm.getFileExtensions().add(extension);
-        info("new file extension: " + extension);
+        consoleController.info("new file extension: " + extension);
     }
     
     public void removeFileExtension(String extension) {
         fm.getFileExtensions().remove(extension);
-        info("file extension deleted: " + extension);
+        consoleController.info("file extension deleted: " + extension);
     }
     
     public void updateNewFileName() {
@@ -157,10 +142,32 @@ public class MainApp extends Application {
             if(fileList.size() > 0) {
                 clearFileList();
                 fileOverviewController.addListItems(fileList);
+                showExtensionDialog(fileList);
                 updateNewFileName();
             }
         });
     }
+    
+    private void showExtensionDialog(List<File> fileList) {
+        try {
+        	Stage stage = new Stage();
+        	stage.setTitle("Extensions");
+            // Load root layout from fxml file.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/dialogs/ExtensionListDialog.fxml"));
+            BorderPane layout = (BorderPane) loader.load();
+
+            ExtensionListDialogController controller = loader.getController();
+            controller.addListItems(fileList);
+            
+            // Show the scene containing the root layout.
+            Scene scene = new Scene(layout);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
     
     public void setAllChecked(boolean checked) {
         fileOverviewController.setAllChecked(checked);
@@ -179,7 +186,7 @@ public class MainApp extends Application {
 				fm.copyFiles(files, dir);
 			});
     	} else {
-    		info("no files to copy.");
+    		consoleController.info("no files to copy.");
     	}
     	
     }
@@ -198,7 +205,7 @@ public class MainApp extends Application {
     
     public void setCurrentDir(File f) {
         currentDir = Optional.ofNullable(f);
-        currentDir.ifPresent(dir -> info("current directory: " + dir));
+        currentDir.ifPresent(dir -> consoleController.info("current directory: " + dir));
     }
     
     public static void main(String[] args) {
