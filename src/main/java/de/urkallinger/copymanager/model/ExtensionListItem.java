@@ -8,6 +8,11 @@ import javafx.beans.property.StringProperty;
 public class ExtensionListItem {
 	private final BooleanProperty chb = new SimpleBooleanProperty();
 	private final StringProperty extension = new SimpleStringProperty();
+
+	public ExtensionListItem(String extension, boolean checked) {
+		setExtension(extension);
+		setChecked(checked);
+	}
 	
 	public final BooleanProperty chbProperty() {
         return this.chb;

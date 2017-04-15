@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Platform;
@@ -54,7 +58,17 @@ public class FileManager {
 		return extensions;
 	}
 
-	public List<File> getFileList(File rootDir) {
+	public Set<String> getFileExtensions(File rootDir) {
+		Set<String> exts = new HashSet<>();
+		Iterator<File> iter = FileUtils.iterateFiles(rootDir, null, true);
+		while(iter.hasNext()) {
+			File f = iter.next();
+			exts.add(FilenameUtils.getExtension(f.getName()));
+		}
+		return exts;
+	}
+	
+	public List<File> getFiles(File rootDir) {
 		Collection<File> files = FileUtils.listFiles(rootDir, extensions.toArray(new String[extensions.size()]), true);
 		return new ArrayList<>(files);
 	}

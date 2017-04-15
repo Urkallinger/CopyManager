@@ -24,13 +24,16 @@ public class MainApp extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+
     private FileOverviewController fileOverviewController;
     private OptionPanelController optController;
     private ConsoleController consoleController;
+    private RootLayoutController rootController;
     
     private FileManager fm;
     private Optional<File> currentDir = Optional.empty();
-	private RootLayoutController rootController;
+    private LoggerCallback logger;
+	
 
     @Override
     public void start(Stage primaryStage) {
@@ -38,11 +41,17 @@ public class MainApp extends Application {
         this.primaryStage.setTitle("CopyManager");
 
         initRootLayout();
-
+        showConsole();
         showFileOverview();
         showOptionPanel();
-        showConsole();
-        fm = new FileManager(this.consoleController);
+        
+        logger = consoleController;
+        rootController.setLogger(logger);
+        consoleController.setLogger(logger);
+        fileOverviewController.setLogger(logger);
+        optController.setLogger(logger);
+        
+        fm = new FileManager(logger);
     }
 
     /**
@@ -71,9 +80,6 @@ public class MainApp extends Application {
         }
     }
 
-    /**
-     * Shows the person overview inside the root layout.
-     */
     public void showFileOverview() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -119,12 +125,13 @@ public class MainApp extends Application {
 
     public void addFileExtension(String extension) {
         fm.getFileExtensions().add(extension);
-        consoleController.info("new file extension: " + extension);
+        optController.addFileExtension(extension);
+        logger.info("new file extension: " + extension);
     }
     
     public void removeFileExtension(String extension) {
         fm.getFileExtensions().remove(extension);
-        consoleController.info("file extension deleted: " + extension);
+        logger.info("file extension deleted: " + extension);
     }
     
     public void updateNewFileName() {
@@ -138,17 +145,21 @@ public class MainApp extends Application {
     
     public void updateFileList() {
         currentDir.ifPresent(dir -> {
-            List<File> fileList = fm.getFileList(dir);
+        	List<File> fileList = fm.getFiles(dir);
             if(fileList.size() > 0) {
                 clearFileList();
                 fileOverviewController.addListItems(fileList);
-                showExtensionDialog(fileList);
                 updateNewFileName();
             }
         });
     }
     
-    private void showExtensionDialog(List<File> fileList) {
+    public void showExtensionDialog() {
+    	if(!currentDir.isPresent()) {
+    		logger.warning("could not show extension dialog. no directory is selected.");
+    		return;
+    	}
+    	
         try {
         	Stage stage = new Stage();
         	stage.setTitle("Extensions");
@@ -158,12 +169,13 @@ public class MainApp extends Application {
             BorderPane layout = (BorderPane) loader.load();
 
             ExtensionListDialogController controller = loader.getController();
-            controller.addListItems(fileList);
+            controller.setMainApp(this);
+            controller.addListItems(fm.getFileExtensions(currentDir.get()));
             
             // Show the scene containing the root layout.
             Scene scene = new Scene(layout);
             stage.setScene(scene);
-            stage.show();
+            stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -186,7 +198,7 @@ public class MainApp extends Application {
 				fm.copyFiles(files, dir);
 			});
     	} else {
-    		consoleController.info("no files to copy.");
+    		logger.info("no files to copy.");
     	}
     	
     }
@@ -205,7 +217,7 @@ public class MainApp extends Application {
     
     public void setCurrentDir(File f) {
         currentDir = Optional.ofNullable(f);
-        currentDir.ifPresent(dir -> consoleController.info("current directory: " + dir));
+        currentDir.ifPresent(dir -> logger.info("current directory: " + dir));
     }
     
     public static void main(String[] args) {

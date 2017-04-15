@@ -76,8 +76,6 @@ public class OptionPanelController extends UIController {
 				ext = ext.substring(1, ext.length());
 			}
 
-			fileExtensionList.getItems().add(ext);
-			fileExtensionList.refresh();
 			mainApp.addFileExtension(ext);
 			mainApp.updateFileList();
 		});
@@ -134,5 +132,10 @@ public class OptionPanelController extends UIController {
 
 	public String getTemplate() {
 		return txtTemplate.getText().trim();
+	}
+	
+	public void addFileExtension(String extension) {
+		fileExtensionList.getItems().add(extension);
+		fileExtensionList.refresh();
 	}
 }
