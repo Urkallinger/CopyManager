@@ -66,8 +66,6 @@ public class RootLayoutController extends UIController {
 		file.ifPresent(currDir -> {
 			mainApp.setCurrentDir(currDir);
 			mainApp.showExtensionDialog();
-			mainApp.clearFileList();
-			mainApp.updateFileList();
 		});
 	}
 
