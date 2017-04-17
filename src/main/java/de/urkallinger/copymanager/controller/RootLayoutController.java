@@ -3,6 +3,7 @@ package de.urkallinger.copymanager.controller;
 import java.io.File;
 import java.util.Optional;
 
+import de.urkallinger.copymanager.dialogs.ExtensionListDialog;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -65,7 +66,8 @@ public class RootLayoutController extends UIController {
 		file = Optional.ofNullable(directoryChooser.showDialog(stage));
 		file.ifPresent(currDir -> {
 			mainApp.setCurrentDir(currDir);
-			mainApp.showExtensionDialog();
+			ExtensionListDialog dialog = new ExtensionListDialog(mainApp, logger, currDir);
+			dialog.show();
 		});
 	}
 

@@ -173,66 +173,6 @@ public class MainApp extends Application {
 		});
 	}
 
-	public void showExtensionDialog() {
-		if (!currentDir.isPresent()) {
-			logger.warning("could not show extension dialog. no directory is selected.");
-			return;
-		}
-
-		try {
-			final MainApp ma = this;
-			Stage stage = new Stage();
-			stage.setTitle("Extensions");
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/view/dialogs/ExtensionListDialog.fxml"));
-			BorderPane layout = (BorderPane) loader.load();
-			
-			Runnable readExts = new Runnable() {
-				public void run() {
-					try {
-						Callable<Set<String>> c = new FileExtensionReader(logger, currentDir.get());
-						FutureTask<Set<String>> task = new FutureTask<Set<String>>(c);
-						Thread reader = new Thread(task);
-						
-						reader.start();
-						reader.join();
-
-						Set<String> exts = task.get();
-						
-						ExtensionListDialogController controller = loader.getController();
-						controller.setMainApp(ma);
-						controller.addListItems(exts);
-
-						// Show the scene containing the root layout.
-						Scene scene = new Scene(layout);
-						Platform.runLater(new  Runnable() {
-							
-							@Override
-							public void run() {
-								stage.setScene(scene);
-								stage.showAndWait();
-								ma.clearFileList();
-								ma.updateFileList();
-							}
-						});
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ExecutionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			};
-			Thread t = new Thread(readExts);
-			t.setDaemon(true);
-			t.start();
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	public void setAllChecked(boolean checked) {
 		fileOverviewController.setAllChecked(checked);
