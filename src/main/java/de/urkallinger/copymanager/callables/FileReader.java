@@ -19,9 +19,9 @@ public class FileReader implements Runnable {
 	private final File rootDir;
 	private final LoggerCallback logger;
 	private final String[] extensions;
-	private final Callback<List<File>, Object> callback;
+	private final Callback<List<File>, Void> callback;
 
-	public FileReader(LoggerCallback logger, File rootDir, List<String> extensions, Callback<List<File>, Object> callback) {
+	public FileReader(LoggerCallback logger, File rootDir, List<String> extensions, Callback<List<File>, Void> callback) {
 		this.logger = logger;
 		this.rootDir = rootDir;
 		this.extensions = extensions.toArray(new String[extensions.size()]);

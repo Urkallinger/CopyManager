@@ -4,15 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
-import de.urkallinger.copymanager.callables.FileExtensionReader;
 import de.urkallinger.copymanager.callables.FileReader;
 import de.urkallinger.copymanager.controller.ConsoleController;
-import de.urkallinger.copymanager.controller.ExtensionListDialogController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
@@ -150,29 +144,31 @@ public class MainApp extends Application {
 	}
 
 	public void updateFileList() {
-		currentDir.ifPresent(dir -> {
-			Callback<List<File>, Object> callback = new Callback<List<File>, Object>() {
-				@Override
-				public Object call(List<File> fileList) {
-					if (fileList.size() > 0) {
-						Platform.runLater(new Runnable() {
-							@Override
-							public void run() {
-								clearFileList();
-								fileOverviewController.addListItems(fileList);
-								updateNewFileName();
-							}
-						});
-					}
-					return null;
-				}
-			};
-			
-			Runnable reader = new FileReader(logger, currentDir.get(), fm.getFileExtensions(), callback);
-			new Thread(reader).start();
-		});
-	}
+		if (!currentDir.isPresent()) {
+			return;
+		}
 
+		Callback<List<File>, Void> callback = new Callback<List<File>, Void>() {
+			@Override
+			public Void call(List<File> fileList) {
+				if (fileList.size() > 0) {
+					Runnable runner = new Runnable() {
+						@Override
+						public void run() {
+							clearFileList();
+							fileOverviewController.addListItems(fileList);
+							updateNewFileName();
+						}
+					};
+					Platform.runLater(runner);
+				}
+				return null;
+			}
+		};
+
+		Runnable reader = new FileReader(logger, currentDir.get(), fm.getFileExtensions(), callback);
+		new Thread(reader).start();
+	}
 
 	public void setAllChecked(boolean checked) {
 		fileOverviewController.setAllChecked(checked);

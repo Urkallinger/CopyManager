@@ -72,17 +72,16 @@ public class ExtensionListDialog {
 					Set<String> exts = task.get();
 					Platform.runLater(showDialogRunner(exts));
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// TODO: Logger ausgabe
 					e.printStackTrace();
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
+					// TODO: Logger ausgabe
 					e.printStackTrace();
 				}
 			}
 		};
 				
 	}
-
 
 	private Runnable showDialogRunner(final Set<String> exts) {
 		return new Runnable() {

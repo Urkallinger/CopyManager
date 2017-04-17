@@ -78,10 +78,14 @@ public class RootLayoutController extends UIController {
 	
 	@FXML
 	private void handleRefresh() {
-		mainApp.updateFileList();
 		Optional<File> currDir = mainApp.getCurrentDir();
-		if (currDir.isPresent()) logger.info("refresh files from: " + currDir.get());
-		else                     logger.warning("cannot refresh. no directory selected.");
+		if (currDir.isPresent()) {
+			logger.info("refresh files from: " + currDir.get());
+			mainApp.updateFileList();
+		}
+		else {
+			logger.warning("cannot refresh. no directory selected.");
+		}
 		
 	}
 	

@@ -60,10 +60,11 @@ public class ExtensionListDialogController extends UIController {
 		table.getItems().forEach(eli -> {
 			if(eli.isChecked()) {
 				mainApp.addFileExtension(eli.getExtension());
-				mainApp.clearFileList();
-				mainApp.updateFileList();
 			}
 		});
+		mainApp.clearFileList();
+		mainApp.updateFileList();
+		
 		Stage stage = (Stage) btnOk.getScene().getWindow();
 		stage.close();
 	}
