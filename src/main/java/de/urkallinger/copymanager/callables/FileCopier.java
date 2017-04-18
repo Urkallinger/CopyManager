@@ -31,7 +31,7 @@ public class FileCopier implements Runnable {
 			final String name = fli.getNewName().isEmpty() ? fli.getName() : fli.getNewName();
 			final String newName = name + "." + fli.getExtension();
 
-			File from = fli.getFile();
+			File from = new File(fli.getAbsolutPath());
 			File to = new File(targetDir, newName);
 
 			FutureTask<Integer> cpyInfo = getCpyInfoTask(from, to);

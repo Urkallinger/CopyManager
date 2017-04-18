@@ -1,6 +1,5 @@
 package de.urkallinger.copymanager.controller;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -85,11 +84,8 @@ public class FileOverviewController extends UIController {
 
 	}
 
-	public void addListItems(List<File> files) {
-		files.forEach(f -> {
-			FileListItem fli = new FileListItem(f);
-			table.getItems().add(fli);
-		});
+	public void addListItems(List<FileListItem> items) {
+		table.getItems().addAll(items);
 	}
 
 	public void updateNewFileName(final Pattern pattern, final String template) {

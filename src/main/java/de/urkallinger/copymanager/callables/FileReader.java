@@ -11,35 +11,20 @@ import java.util.concurrent.FutureTask;
 import org.apache.commons.io.FileUtils;
 
 import de.urkallinger.copymanager.LoggerCallback;
+import de.urkallinger.copymanager.ParamCallback;
+import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Platform;
-import javafx.util.Callback;
 
 public class FileReader implements Runnable {
 
 	private final File rootDir;
 	private final LoggerCallback logger;
-	private final String[] extensions;
-	private final Callback<List<File>, Void> callback;
+	private final ParamCallback<List<FileListItem>> callback;
 
-	public FileReader(LoggerCallback logger, File rootDir, List<String> extensions, Callback<List<File>, Void> callback) {
+	public FileReader(LoggerCallback logger, File rootDir, ParamCallback<List<FileListItem>> callback) {
 		this.logger = logger;
 		this.rootDir = rootDir;
-		this.extensions = extensions.toArray(new String[extensions.size()]);
 		this.callback = callback;
-	}
-
-	@Override
-	public void run() {
-		FutureTask<Integer> extReadInfo = getFileExtInfoTask();
-		Platform.runLater(extReadInfo);
-		Collection<File> files = FileUtils.listFiles(rootDir, extensions, true);
-
-		try {
-			logger.setDone(extReadInfo.get());
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		callback.call(new ArrayList<>(files));
 	}
 
 	private FutureTask<Integer> getFileExtInfoTask() {
@@ -49,5 +34,20 @@ public class FileReader implements Runnable {
 				return logger.action("read files", true);
 			}
 		});
+	}
+
+	@Override
+	public void run() {
+		FutureTask<Integer> extReadInfo = getFileExtInfoTask();
+		Platform.runLater(extReadInfo);
+		Collection<File> files = FileUtils.listFiles(rootDir, null, true);
+		List<FileListItem> items = new ArrayList<>(files.size());
+		files.forEach(f -> items.add(new FileListItem(f)));
+		try {
+			logger.setDone(extReadInfo.get());
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		callback.call(items);
 	}
 }

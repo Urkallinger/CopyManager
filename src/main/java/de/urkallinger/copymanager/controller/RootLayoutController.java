@@ -1,9 +1,15 @@
 package de.urkallinger.copymanager.controller;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.dialogs.ExtensionListDialog;
+import de.urkallinger.copymanager.model.FileListItem;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -65,9 +71,24 @@ public class RootLayoutController extends UIController {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		file = Optional.ofNullable(directoryChooser.showDialog(stage));
 		file.ifPresent(currDir -> {
+			ParamCallback<List<FileListItem>> cb = new ParamCallback<List<FileListItem>>() {
+				@Override
+				public void call(List<FileListItem> files) {
+					Runnable runner = new Runnable() {
+						public void run() {
+							Set<String> extensions = new HashSet<>();
+							files.forEach(fli -> extensions.add(fli.getExtension()));
+							mainApp.addFileListItems(files);
+							ExtensionListDialog dialog = new ExtensionListDialog(mainApp, logger);
+							dialog.show(extensions);
+						}
+					};
+					Platform.runLater(runner);
+				}
+			};
+			
 			mainApp.setCurrentDir(currDir);
-			ExtensionListDialog dialog = new ExtensionListDialog(mainApp, logger, currDir);
-			dialog.show();
+			mainApp.readFiles(cb);
 		});
 	}
 

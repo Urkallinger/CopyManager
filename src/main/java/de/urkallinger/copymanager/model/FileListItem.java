@@ -15,15 +15,16 @@ public class FileListItem {
 
 	private final String[] UNITS = {"B", "KB", "MB", "GB", "TB"};
 	
-	private final File file;
 	private final BooleanProperty chb = new SimpleBooleanProperty();
 	private final StringProperty name = new SimpleStringProperty();
 	private final StringProperty newName = new SimpleStringProperty();
 	private final StringProperty extension = new SimpleStringProperty();
 	private final ObjectProperty<SizeObj> size = new SimpleObjectProperty<>();
     
+	private final String absolutPath;
+	
 	public FileListItem(File f) {
-    	this.file = f;
+		absolutPath = f.getAbsolutePath();
     	setName(FilenameUtils.getBaseName(f.getName()));
         setChecked(false);
         setExtension(FilenameUtils.getExtension(f.getName()));
@@ -99,11 +100,11 @@ public class FileListItem {
     public final void setSize(final long size, final String text) {
         this.sizeProperty().set(new SizeObj(size, text));
     }
-    
-    public File getFile() {
-		return file;
-	}
 
+    public String getAbsolutPath() {
+    	return absolutPath;
+    }
+    
 	@Override
     public String toString() {
         return getName();

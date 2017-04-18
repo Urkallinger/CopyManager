@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import de.urkallinger.copymanager.callables.FileReader;
 import de.urkallinger.copymanager.controller.ConsoleController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
@@ -20,7 +19,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class MainApp extends Application {
 
@@ -35,6 +33,26 @@ public class MainApp extends Application {
 	private FileManager fm;
 	private Optional<File> currentDir = Optional.empty();
 	private LoggerCallback logger;
+
+	private ParamCallback<List<FileListItem>> getUpdateFileCallback() {
+		return new ParamCallback<List<FileListItem>>() {
+			@Override
+			public void call(List<FileListItem> fileList) {
+				if (fileList.size() == 0) return;
+				
+				Runnable runner = new Runnable() {
+					@Override
+					public void run() {
+						clearFileList();
+						fileOverviewController.addListItems(fileList);
+						updateNewFileName();
+					}
+				};
+				
+				Platform.runLater(runner);
+			}
+		};
+	}
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -143,31 +161,23 @@ public class MainApp extends Application {
 		fileOverviewController.clearNewFileName();
 	}
 
+	public void readFiles(ParamCallback<List<FileListItem>> callback) {
+		currentDir.ifPresent(rootDir -> {
+			fm.readFiles(rootDir, callback);
+		});
+	}
+	
 	public void updateFileList() {
-		if (!currentDir.isPresent()) {
-			return;
-		}
-
-		Callback<List<File>, Void> callback = new Callback<List<File>, Void>() {
-			@Override
-			public Void call(List<File> fileList) {
-				if (fileList.size() > 0) {
-					Runnable runner = new Runnable() {
-						@Override
-						public void run() {
-							clearFileList();
-							fileOverviewController.addListItems(fileList);
-							updateNewFileName();
-						}
-					};
-					Platform.runLater(runner);
-				}
-				return null;
-			}
-		};
-
-		Runnable reader = new FileReader(logger, currentDir.get(), fm.getFileExtensions(), callback);
-		new Thread(reader).start();
+		ParamCallback<List<FileListItem>> callback = getUpdateFileCallback();
+		readFiles(callback);
+	}
+	
+	public void addFileListItems(List<FileListItem> items) {
+		// TODO: FileListItems in mainapp speichern und 
+		// beim aufruf von updateFileList nur noch diese 
+		// items abfragen und schaun ob die dateierweiterung passt
+		// TODO: Beim refresh diese Liste neu laden und dann wieder
+		// diese Methode aufrufen
 	}
 
 	public void setAllChecked(boolean checked) {
