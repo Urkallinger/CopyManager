@@ -10,6 +10,7 @@ import de.urkallinger.copymanager.model.FileListItem;
 
 public class FileManager {
 
+	private List<FileListItem> fileCache = new ArrayList<>();
 	private List<String> extensions;
 	private LoggerCallback logger;
 
@@ -34,5 +35,23 @@ public class FileManager {
 		Thread copyThread = new Thread(cpy);
 		copyThread.setDaemon(true);
 		copyThread.start();
+	}
+	
+	public List<FileListItem> getFileCache() {
+		return fileCache;
+	}
+	
+	public List<FileListItem> getFiteredFileCache() {
+		List<FileListItem> items = new ArrayList<>();
+		fileCache.forEach(f -> {
+			if(this.extensions.contains(f.getExtension())) {
+				items.add(f);
+			}
+		});
+		return items;
+	}
+	
+	public void setFileCache(List<FileListItem> files) {
+		this.fileCache = files;
 	}
 }

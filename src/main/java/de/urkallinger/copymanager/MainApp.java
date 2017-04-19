@@ -11,7 +11,6 @@ import de.urkallinger.copymanager.controller.OptionPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -34,22 +33,11 @@ public class MainApp extends Application {
 	private Optional<File> currentDir = Optional.empty();
 	private LoggerCallback logger;
 
-	private ParamCallback<List<FileListItem>> getUpdateFileCallback() {
+	private ParamCallback<List<FileListItem>> getUpdateFileCacheCallback() {
 		return new ParamCallback<List<FileListItem>>() {
 			@Override
 			public void call(List<FileListItem> fileList) {
-				if (fileList.size() == 0) return;
-				
-				Runnable runner = new Runnable() {
-					@Override
-					public void run() {
-						clearFileList();
-						fileOverviewController.addListItems(fileList);
-						updateNewFileName();
-					}
-				};
-				
-				Platform.runLater(runner);
+				fm.setFileCache(fileList);
 			}
 		};
 	}
@@ -161,6 +149,10 @@ public class MainApp extends Application {
 		fileOverviewController.clearNewFileName();
 	}
 
+	public void updateFileCache() {
+		readFiles(getUpdateFileCacheCallback());
+	}
+	
 	public void readFiles(ParamCallback<List<FileListItem>> callback) {
 		currentDir.ifPresent(rootDir -> {
 			fm.readFiles(rootDir, callback);
@@ -168,16 +160,11 @@ public class MainApp extends Application {
 	}
 	
 	public void updateFileList() {
-		ParamCallback<List<FileListItem>> callback = getUpdateFileCallback();
-		readFiles(callback);
+		fileOverviewController.addListItems(fm.getFiteredFileCache());
 	}
 	
-	public void addFileListItems(List<FileListItem> items) {
-		// TODO: FileListItems in mainapp speichern und 
-		// beim aufruf von updateFileList nur noch diese 
-		// items abfragen und schaun ob die dateierweiterung passt
-		// TODO: Beim refresh diese Liste neu laden und dann wieder
-		// diese Methode aufrufen
+	public void cacheFileListItems(List<FileListItem> items) {
+		fm.setFileCache(items);
 	}
 
 	public void setAllChecked(boolean checked) {

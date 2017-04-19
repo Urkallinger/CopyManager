@@ -78,7 +78,7 @@ public class RootLayoutController extends UIController {
 						public void run() {
 							Set<String> extensions = new HashSet<>();
 							files.forEach(fli -> extensions.add(fli.getExtension()));
-							mainApp.addFileListItems(files);
+							mainApp.cacheFileListItems(files);
 							ExtensionListDialog dialog = new ExtensionListDialog(mainApp, logger);
 							dialog.show(extensions);
 						}
@@ -101,7 +101,8 @@ public class RootLayoutController extends UIController {
 	private void handleRefresh() {
 		Optional<File> currDir = mainApp.getCurrentDir();
 		if (currDir.isPresent()) {
-			logger.info("refresh files from: " + currDir.get());
+			mainApp.updateFileCache();
+			mainApp.clearFileList();
 			mainApp.updateFileList();
 		}
 		else {

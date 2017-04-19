@@ -31,7 +31,7 @@ public class FileReader implements Runnable {
 		return new FutureTask<>(new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
-				return logger.action("read files", true);
+				return logger.action("read files from " + rootDir, true);
 			}
 		});
 	}
