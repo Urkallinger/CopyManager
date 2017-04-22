@@ -13,14 +13,14 @@
 
 <BorderPane
 	fx:controller="de.urkallinger.copymanager.controller.ExtensionListDialogController"
-	maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-	minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
+	minHeight="400" minWidth="600" prefHeight="400.0" prefWidth="600.0"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
 	<center>
-		<TableView fx:id="table" prefHeight="200.0" BorderPane.alignment="CENTER">
+		<TableView fx:id="table" prefHeight="200.0"
+			BorderPane.alignment="CENTER">
 			<columns>
-				<TableColumn fx:id="chbCol" maxWidth="30.0" minWidth="30.0" prefWidth="30.0"
-					resizable="false" sortable="false" />
+				<TableColumn fx:id="chbCol" maxWidth="30.0" minWidth="30.0"
+					prefWidth="30.0" resizable="false" sortable="false" />
 				<TableColumn fx:id="extCol" prefWidth="75.0" text="extension" />
 			</columns>
 			<columnResizePolicy>
@@ -35,8 +35,10 @@
 		<ButtonBar prefHeight="40.0" prefWidth="200.0"
 			BorderPane.alignment="CENTER">
 			<buttons>
-				<Button fx:id="btnOk" onAction="#handleOk" mnemonicParsing="false" text="OK" />
-				<Button fx:id="btnCancel" onAction="#handleCancel" mnemonicParsing="false" text="cancel" />
+				<Button fx:id="btnOk" onAction="#handleOk" mnemonicParsing="false"
+					text="OK" />
+				<Button fx:id="btnCancel" onAction="#handleCancel"
+					mnemonicParsing="false" text="cancel" />
 			</buttons>
 		</ButtonBar>
 	</bottom>
