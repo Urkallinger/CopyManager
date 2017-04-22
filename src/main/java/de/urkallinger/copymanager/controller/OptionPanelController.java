@@ -4,17 +4,18 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 public class OptionPanelController extends UIController {
@@ -36,6 +37,8 @@ public class OptionPanelController extends UIController {
 
 	@FXML
 	private void initialize() {
+		fileExtensionList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
 		btnAdd.setGraphic(new ImageView(imgRes));
 
@@ -45,20 +48,17 @@ public class OptionPanelController extends UIController {
 		imgRes = new Image(getClass().getResourceAsStream("/images/useTemplate.png"));
 		btnUseTemplate.setGraphic(new ImageView(imgRes));
 		
-		fileExtensionList.setCellFactory(lv -> {
-
-			ListCell<String> cell = new ListCell<>();
-			ContextMenu contextMenu = getContextMenu(cell);
-
-			cell.textProperty().bind(cell.itemProperty());
-			cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-				if (isNowEmpty) {
-					cell.setContextMenu(null);
-				} else {
-					cell.setContextMenu(contextMenu);
+		fileExtensionList.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.DELETE) {
+					ObservableList<String> items = fileExtensionList.getSelectionModel().getSelectedItems();
+					items.forEach(item -> mainApp.removeFileExtension(item));
+					fileExtensionList.getItems().removeAll(items);
+					mainApp.clearFileList();
+					mainApp.updateFileList();
 				}
-			});
-			return cell;
+			}
 		});
 	}
 
@@ -81,20 +81,7 @@ public class OptionPanelController extends UIController {
 		});
 	}
 
-	private ContextMenu getContextMenu(ListCell<String> cell) {
-		ContextMenu contextMenu = new ContextMenu();
-		MenuItem deleteItem = new MenuItem();
-		deleteItem.textProperty().bind(Bindings.format("Delete \"%s\"", cell.itemProperty()));
-		deleteItem.setOnAction(event -> {
-			mainApp.removeFileExtension(cell.getItem());
-			fileExtensionList.getItems().remove(cell.getItem());
-			mainApp.clearFileList();
-			mainApp.updateFileList();
-		});
-		contextMenu.getItems().add(deleteItem);
 
-		return contextMenu;
-	}
 
 	@FXML
 	private void handleUseTemplate() {

@@ -12,7 +12,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -31,14 +30,14 @@ public class ExtensionListDialogController extends UIController {
 	Button btnOk = new Button();
 	@FXML
 	Button btnCancel = new Button();
-	
+
 	@FXML
 	private void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		
+
 		chbCol.setCellValueFactory(cellData -> cellData.getValue().chbProperty().asObject());
 		extCol.setCellValueFactory(cellData -> cellData.getValue().extensionProperty());
-		
+
 		chbCol.setCellFactory(CheckBoxTableCell.forTableColumn(new Callback<Integer, ObservableValue<Boolean>>() {
 			@Override
 			public ObservableValue<Boolean> call(Integer idx) {
@@ -46,33 +45,46 @@ public class ExtensionListDialogController extends UIController {
 				return item.chbProperty();
 			}
 		}));
-		
+
 		table.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.SPACE) {
+				switch (event.getCode()) {
+				case SPACE:
 					table.getSelectionModel().getSelectedItems().forEach(item -> {
 						item.setChecked(!item.isChecked());
 					});
+					break;
+
+				case ENTER:
+					handleOk();
+					break;
+					
+				case ESCAPE:
+					handleCancel();
+					break;
+					
+				default:
+					break;
 				}
 			}
 		});
 	}
-	
+
 	@FXML
 	private void handleOk() {
 		table.getItems().forEach(eli -> {
-			if(eli.isChecked()) {
+			if (eli.isChecked()) {
 				mainApp.addFileExtension(eli.getExtension());
 			}
 		});
 		mainApp.clearFileList();
 		mainApp.updateFileList();
-		
+
 		Stage stage = (Stage) btnOk.getScene().getWindow();
 		stage.close();
 	}
-	
+
 	@FXML
 	private void handleCancel() {
 		Stage stage = (Stage) btnCancel.getScene().getWindow();
@@ -81,7 +93,7 @@ public class ExtensionListDialogController extends UIController {
 
 	public void addListItems(Set<String> extensions) {
 		extensions.forEach(ext -> {
-			ExtensionListItem eli  = new ExtensionListItem(ext, false);
+			ExtensionListItem eli = new ExtensionListItem(ext, false);
 			table.getItems().add(eli);
 		});
 	}
