@@ -56,7 +56,7 @@
 						<Insets right="20.0" />
 					</padding>
 				</Label>
-				<Label>
+				<Label fx:id="lblDirPath">
 					<font>
 						<Font size="15.0" />
 					</font>

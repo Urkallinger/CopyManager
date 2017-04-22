@@ -97,4 +97,8 @@ public class ExtensionListDialogController extends UIController {
 			table.getItems().add(eli);
 		});
 	}
+	
+	public void setDir(String dir) {
+		this.lblDirPath.setText(dir);
+	}
 }

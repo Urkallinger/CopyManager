@@ -81,7 +81,10 @@ public class RootLayoutController extends UIController {
 							files.forEach(fli -> extensions.add(fli.getExtension()));
 							mainApp.cacheFileListItems(files);
 							ExtensionListDialog dialog = new ExtensionListDialog(mainApp, logger);
-							dialog.show(stage, extensions);
+							dialog.setParentStage(stage);
+							dialog.setExtensions(extensions);
+							dialog.setDir(currDir.getAbsolutePath());
+							dialog.show();
 						}
 					};
 					Platform.runLater(runner);

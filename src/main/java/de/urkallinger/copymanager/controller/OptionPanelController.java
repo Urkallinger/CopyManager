@@ -77,6 +77,7 @@ public class OptionPanelController extends UIController {
 			}
 
 			mainApp.addFileExtension(ext);
+			mainApp.clearFileList();
 			mainApp.updateFileList();
 		});
 	}

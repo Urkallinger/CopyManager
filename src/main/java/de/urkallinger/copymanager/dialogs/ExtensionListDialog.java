@@ -18,8 +18,9 @@ public class ExtensionListDialog {
 	private final MainApp mainApp;
 	private final LoggerCallback logger;
 
-	private Stage stage;
-	private BorderPane layout;
+	private Stage parentStage;
+	private Set<String> extensions;
+	private String dir = "";
 	private ExtensionListDialogController dialogController;
 
 	public ExtensionListDialog(MainApp mainApp, LoggerCallback logger) {
@@ -27,9 +28,21 @@ public class ExtensionListDialog {
 		this.logger = logger;
 	}
 
-	public void show(Stage parentStage, Set<String> extensions) {
+	public void setParentStage(Stage parentStage) {
+		this.parentStage = parentStage;
+	}
+	
+	public void setExtensions(Set<String> extensions) {
+		this.extensions = extensions;
+	}
+	
+	public void setDir(String dir) {
+		this.dir = dir;
+	}
+	
+	public void show() {
 		try {
-			this.stage = new Stage();
+			Stage stage = new Stage();
 			stage.setTitle("Extensions");
 			stage.initOwner(parentStage);
 			stage.initModality(Modality.APPLICATION_MODAL);
@@ -39,10 +52,12 @@ public class ExtensionListDialog {
 
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("/view/dialogs/ExtensionListDialog.fxml"));
-			this.layout = (BorderPane) loader.load();
+			BorderPane layout = (BorderPane) loader.load();
+
 			dialogController = loader.getController();
 			dialogController.setMainApp(mainApp);
 			dialogController.addListItems(extensions);
+			dialogController.setDir(dir);
 
 			Scene scene = new Scene(layout);
 			stage.setMinWidth(layout.getMinWidth() + 50);
