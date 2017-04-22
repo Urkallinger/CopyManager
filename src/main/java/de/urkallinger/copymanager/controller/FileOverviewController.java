@@ -10,6 +10,7 @@ import de.urkallinger.copymanager.model.FileListItem.SizeObj;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -36,7 +37,8 @@ public class FileOverviewController extends UIController {
 
 	@FXML
 	private void initialize() {
-
+		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 		chbCol.setCellValueFactory(cellData -> cellData.getValue().chbProperty().asObject());
 		nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		newNameCol.setCellValueFactory(cellData -> cellData.getValue().newNameProperty());
@@ -76,8 +78,9 @@ public class FileOverviewController extends UIController {
 			@Override
 			public void handle(KeyEvent event) {
 				if (event.getCode() == KeyCode.SPACE) {
-					FileListItem item = table.getSelectionModel().getSelectedItem();
-					item.setChecked(!item.isChecked());
+					table.getSelectionModel().getSelectedItems().forEach(item -> {
+						item.setChecked(!item.isChecked());
+					});
 				}
 			}
 		});

@@ -199,7 +199,9 @@ public class MainApp extends Application {
 
 	public void setCurrentDir(File f) {
 		currentDir = Optional.ofNullable(f);
-		currentDir.ifPresent(dir -> logger.info("current directory: " + dir));
+		currentDir.ifPresent(dir -> {
+			logger.info("current directory: " + dir);
+		});
 	}
 
 	public static void main(String[] args) {

@@ -68,6 +68,7 @@ public class RootLayoutController extends UIController {
 	@FXML
 	private void handleOpen() {
 		Optional<File> file = Optional.empty();
+
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		file = Optional.ofNullable(directoryChooser.showDialog(stage));
 		file.ifPresent(currDir -> {

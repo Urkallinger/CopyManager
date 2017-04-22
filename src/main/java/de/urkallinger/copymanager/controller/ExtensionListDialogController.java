@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -33,6 +34,8 @@ public class ExtensionListDialogController extends UIController {
 	
 	@FXML
 	private void initialize() {
+		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 		chbCol.setCellValueFactory(cellData -> cellData.getValue().chbProperty().asObject());
 		extCol.setCellValueFactory(cellData -> cellData.getValue().extensionProperty());
 		
@@ -48,8 +51,9 @@ public class ExtensionListDialogController extends UIController {
 			@Override
 			public void handle(KeyEvent event) {
 				if (event.getCode() == KeyCode.SPACE) {
-					ExtensionListItem item = table.getSelectionModel().getSelectedItem();
-					item.setChecked(!item.isChecked());
+					table.getSelectionModel().getSelectedItems().forEach(item -> {
+						item.setChecked(!item.isChecked());
+					});
 				}
 			}
 		});
