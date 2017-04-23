@@ -11,9 +11,11 @@ import de.urkallinger.copymanager.controller.OptionPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
@@ -32,6 +34,7 @@ public class MainApp extends Application {
 	private FileManager fm;
 	private Optional<File> currentDir = Optional.empty();
 	private LoggerCallback logger;
+	private Scene scene;
 
 	private ParamCallback<List<FileListItem>> getUpdateFileCacheCallback() {
 		return new ParamCallback<List<FileListItem>>() {
@@ -40,6 +43,31 @@ public class MainApp extends Application {
 				fm.setFileCache(fileList);
 			}
 		};
+	}
+	
+	private void addGlobalKeyEvents() {
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				switch(event.getCode()) {
+				case O:
+					if(event.isControlDown()) {
+						rootController.handleOpen();
+					}
+					break;
+				case PLUS:
+					if(event.isControlDown()) {
+						optController.handleAdd();
+					}
+					break;
+				case F5:
+					rootController.handleRefresh();
+					break;
+				default:
+					break;
+				}
+			}
+		});
 	}
 
 	@Override
@@ -58,6 +86,8 @@ public class MainApp extends Application {
 		fileOverviewController.setLogger(logger);
 		optController.setLogger(logger);
 
+		addGlobalKeyEvents();
+		
 		fm = new FileManager(logger);
 	}
 
@@ -78,8 +108,7 @@ public class MainApp extends Application {
 			Image icon = new Image(getClass().getResourceAsStream("/images/app_icon.png"));
 			primaryStage.getIcons().add(icon);
 
-			// Show the scene containing the root layout.
-			Scene scene = new Scene(rootLayout);
+			scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (IOException e) {
@@ -131,13 +160,16 @@ public class MainApp extends Application {
 	}
 
 	public void addFileExtension(String extension) {
-		fm.getFileExtensions().add(extension);
-		optController.addFileExtension(extension);
-		logger.info("new file extension: " + extension);
+		if(!fm.getFileExtensions().contains(extension)) {
+			fm.getFileExtensions().add(extension);
+			optController.addFileExtension(extension);
+			logger.info("new file extension: " + extension);
+		}
 	}
 
 	public void removeFileExtension(String extension) {
 		fm.getFileExtensions().remove(extension);
+		optController.removeFileExtension(extension);
 		logger.info("file extension deleted: " + extension);
 	}
 

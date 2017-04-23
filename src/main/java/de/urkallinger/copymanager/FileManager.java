@@ -13,6 +13,8 @@ public class FileManager {
 	private List<FileListItem> fileCache = new ArrayList<>();
 	private List<String> extensions;
 	private LoggerCallback logger;
+	private Thread fileReader = new Thread();
+	private Thread copyThread = new Thread();
 
 	public FileManager(final LoggerCallback logger) {
 		this.logger = logger;
@@ -24,17 +26,29 @@ public class FileManager {
 	}
 
 	public void readFiles(File rootDir, ParamCallback<List<FileListItem>> callback) {
-		Runnable reader = new FileReader(logger, rootDir, callback);
-		Thread t = new Thread(reader);
-		t.setDaemon(true);
-		t.start();
+		if(!fileReader.isAlive()) {
+			Runnable reader = new FileReader(logger, rootDir, callback);
+			fileReader = new Thread(reader, "FileReader");
+			fileReader.setDaemon(true);
+			fileReader.start();
+		} else {
+			logger.error("there is already a thread reading files.");
+		}
+	}
+	
+	public boolean isReadingFiles() {
+		return fileReader.isAlive();
 	}
 
 	public void copyFiles(final List<FileListItem> files, final File targetDir) {
-		Runnable cpy = new FileCopier(files, targetDir, logger);
-		Thread copyThread = new Thread(cpy);
-		copyThread.setDaemon(true);
-		copyThread.start();
+		if(!copyThread.isAlive()) {
+			Runnable cpy = new FileCopier(files, targetDir, logger);
+			copyThread = new Thread(cpy, "FileCopier");
+			copyThread.setDaemon(true);
+			copyThread.start();
+		} else {
+			logger.error("there is already a thread copying files.");
+		}
 	}
 	
 	public List<FileListItem> getFileCache() {

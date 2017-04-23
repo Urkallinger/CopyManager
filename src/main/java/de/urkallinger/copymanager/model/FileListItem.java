@@ -26,6 +26,7 @@ public class FileListItem {
 	public FileListItem(File f) {
 		absolutPath = f.getAbsolutePath();
     	setName(FilenameUtils.getBaseName(f.getName()));
+    	setNewName("");
         setChecked(false);
         setExtension(FilenameUtils.getExtension(f.getName()));
         setSize(f.length(), genSizeText(f.length(), 0));

@@ -54,7 +54,6 @@ public class OptionPanelController extends UIController {
 				if (event.getCode() == KeyCode.DELETE) {
 					ObservableList<String> items = fileExtensionList.getSelectionModel().getSelectedItems();
 					items.forEach(item -> mainApp.removeFileExtension(item));
-					fileExtensionList.getItems().removeAll(items);
 					mainApp.clearFileList();
 					mainApp.updateFileList();
 				}
@@ -63,7 +62,7 @@ public class OptionPanelController extends UIController {
 	}
 
 	@FXML
-	private void handleAdd() {
+	public void handleAdd() {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("New file extension");
 		dialog.setHeaderText("Please enter a new file extension");
@@ -124,6 +123,11 @@ public class OptionPanelController extends UIController {
 	
 	public void addFileExtension(String extension) {
 		fileExtensionList.getItems().add(extension);
+		fileExtensionList.refresh();
+	}
+	
+	public void removeFileExtension(String extension) {
+		fileExtensionList.getItems().remove(extension);
 		fileExtensionList.refresh();
 	}
 }

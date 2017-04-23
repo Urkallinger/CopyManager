@@ -87,6 +87,9 @@ public class ExtensionListDialogController extends UIController {
 
 	@FXML
 	private void handleCancel() {
+		mainApp.clearFileList();
+		mainApp.updateFileList();
+		
 		Stage stage = (Stage) btnCancel.getScene().getWindow();
 		stage.close();
 	}

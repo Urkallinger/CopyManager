@@ -2,11 +2,11 @@ package de.urkallinger.copymanager.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.model.FileListItem.SizeObj;
+import de.urkallinger.copymanager.utils.FileNameBuilder;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -32,8 +32,6 @@ public class FileOverviewController extends UIController {
 	private TableColumn<FileListItem, String> extCol = new TableColumn<>();
 	@FXML
 	private TableColumn<FileListItem, SizeObj> sizeCol = new TableColumn<>();
-
-	private final Pattern templPattern = Pattern.compile("#(\\d+)");
 
 	@FXML
 	private void initialize() {
@@ -93,19 +91,11 @@ public class FileOverviewController extends UIController {
 
 	public void updateNewFileName(final Pattern pattern, final String template) {
 		if(template.isEmpty()) return;
+		FileNameBuilder nameBuilder = new FileNameBuilder(pattern, template, logger);
 		
 		table.getItems().forEach(item -> {
-			String nn = template;
-			// TODO: try-catch und Fehlermeldung auf console ausgeben (oder "no match" oder so...)
-			Matcher m = pattern.matcher(item.getName());
-			if (m.matches()) {
-				Matcher mx = templPattern.matcher(nn);
-				while (mx.find()) {
-					int num = Integer.valueOf(mx.group(1));
-					nn = nn.replace("#" + num, m.group(num));
-				}
-				item.setNewName(nn);
-			}
+			if(!item.isChecked()) return; // continue
+			item.setNewName(nameBuilder.buildFileName(item));
 		});
 	}
 

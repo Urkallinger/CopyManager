@@ -66,7 +66,7 @@ public class RootLayoutController extends UIController {
 	}
 
 	@FXML
-	private void handleOpen() {
+	public void handleOpen() {
 		Optional<File> file = Optional.empty();
 
 		DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -102,7 +102,7 @@ public class RootLayoutController extends UIController {
 	}
 	
 	@FXML
-	private void handleRefresh() {
+	public void handleRefresh() {
 		Optional<File> currDir = mainApp.getCurrentDir();
 		if (currDir.isPresent()) {
 			mainApp.updateFileCache();
