@@ -9,6 +9,8 @@ import de.urkallinger.copymanager.controller.ConsoleController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
+import de.urkallinger.copymanager.exceptions.FileCopierInProgressException;
+import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -187,7 +189,11 @@ public class MainApp extends Application {
 	
 	public void readFiles(ParamCallback<List<FileListItem>> callback) {
 		currentDir.ifPresent(rootDir -> {
-			fm.readFiles(rootDir, callback);
+			try {
+				fm.readFiles(rootDir, callback);
+			} catch (FileReaderInProgressException e) {
+				logger.error(e.getMessage());
+			}
 		});
 	}
 	
@@ -213,7 +219,11 @@ public class MainApp extends Application {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			Optional<File> dest = Optional.ofNullable(directoryChooser.showDialog(this.primaryStage));
 			dest.ifPresent(dir -> {
-				fm.copyFiles(files, dir);
+				try {
+					fm.copyFiles(files, dir);
+				} catch (FileCopierInProgressException e) {
+					logger.error(e.getMessage());
+				}
 			});
 		} else {
 			logger.info("no files to copy.");
@@ -229,7 +239,9 @@ public class MainApp extends Application {
 		return currentDir;
 	}
 
-	public void setCurrentDir(File f) {
+	public void setCurrentDir(File f) throws FileReaderInProgressException {
+		if(fm.isReadingFiles()) throw new FileReaderInProgressException("there is already a thread reading files.");
+		
 		currentDir = Optional.ofNullable(f);
 		currentDir.ifPresent(dir -> {
 			logger.info("current directory: " + dir);

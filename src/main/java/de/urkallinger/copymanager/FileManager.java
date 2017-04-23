@@ -6,6 +6,8 @@ import java.util.List;
 
 import de.urkallinger.copymanager.callables.FileCopier;
 import de.urkallinger.copymanager.callables.FileReader;
+import de.urkallinger.copymanager.exceptions.FileCopierInProgressException;
+import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
 
 public class FileManager {
@@ -25,14 +27,15 @@ public class FileManager {
 		return extensions;
 	}
 
-	public void readFiles(File rootDir, ParamCallback<List<FileListItem>> callback) {
+	public void readFiles(File rootDir, ParamCallback<List<FileListItem>> callback) 
+			throws FileReaderInProgressException {
 		if(!fileReader.isAlive()) {
 			Runnable reader = new FileReader(logger, rootDir, callback);
 			fileReader = new Thread(reader, "FileReader");
 			fileReader.setDaemon(true);
 			fileReader.start();
 		} else {
-			logger.error("there is already a thread reading files.");
+			throw new FileReaderInProgressException("there is already a thread reading files.");
 		}
 	}
 	
@@ -40,14 +43,15 @@ public class FileManager {
 		return fileReader.isAlive();
 	}
 
-	public void copyFiles(final List<FileListItem> files, final File targetDir) {
+	public void copyFiles(final List<FileListItem> files, final File targetDir)
+			throws FileCopierInProgressException {
 		if(!copyThread.isAlive()) {
 			Runnable cpy = new FileCopier(files, targetDir, logger);
 			copyThread = new Thread(cpy, "FileCopier");
 			copyThread.setDaemon(true);
 			copyThread.start();
 		} else {
-			logger.error("there is already a thread copying files.");
+			throw new FileCopierInProgressException("there is already a thread copying files.");
 		}
 	}
 	

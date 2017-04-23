@@ -8,6 +8,7 @@ import java.util.Set;
 
 import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.dialogs.ExtensionListDialog;
+import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -91,8 +92,12 @@ public class RootLayoutController extends UIController {
 				}
 			};
 			
-			mainApp.setCurrentDir(currDir);
-			mainApp.readFiles(cb);
+			try {
+				mainApp.setCurrentDir(currDir);
+				mainApp.readFiles(cb);
+			} catch (FileReaderInProgressException e) {
+				logger.error(e.getMessage());
+			}
 		});
 	}
 
