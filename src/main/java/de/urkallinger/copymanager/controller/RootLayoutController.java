@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import de.urkallinger.copymanager.Config;
 import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.dialogs.ExtensionListDialog;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
@@ -70,7 +71,12 @@ public class RootLayoutController extends UIController {
 	public void handleOpen() {
 		Optional<File> file = Optional.empty();
 
+		Config cfg = Config.getInstance();
+		cfg.loadConfig();
+		File dir = new File(cfg.getLastSrcDir());
+		
 		DirectoryChooser directoryChooser = new DirectoryChooser();
+		if(dir.exists()) directoryChooser.setInitialDirectory(dir);
 		file = Optional.ofNullable(directoryChooser.showDialog(stage));
 		file.ifPresent(currDir -> {
 			ParamCallback<List<FileListItem>> cb = new ParamCallback<List<FileListItem>>() {
@@ -92,6 +98,9 @@ public class RootLayoutController extends UIController {
 				}
 			};
 			
+			cfg.setLastSrcDir(currDir.getAbsolutePath());
+			cfg.saveConfig();
+			
 			try {
 				mainApp.setCurrentDir(currDir);
 				mainApp.readFiles(cb);
@@ -102,7 +111,7 @@ public class RootLayoutController extends UIController {
 	}
 
 	@FXML
-	private void handleCopy() {
+	public void handleCopy() {
 		mainApp.copyFiles();
 	}
 	

@@ -1,9 +1,12 @@
 package de.urkallinger.copymanager.controller;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import de.urkallinger.copymanager.Config;
+import de.urkallinger.copymanager.dialogs.PatternDialog;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -27,6 +30,10 @@ public class OptionPanelController extends UIController {
 	@FXML
 	private Button btnAdd = new Button();
 	@FXML
+	private Button btnLoad = new Button();
+	@FXML
+	private Button btnSave = new Button();
+	@FXML
 	private TextField txtPattern = new TextField();
 	@FXML
 	private TextField txtTemplate = new TextField();
@@ -42,11 +49,26 @@ public class OptionPanelController extends UIController {
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
 		btnAdd.setGraphic(new ImageView(imgRes));
 
+		imgRes = new Image(getClass().getResourceAsStream("/images/load.png"));
+		btnLoad.setGraphic(new ImageView(imgRes));
+		
+		imgRes = new Image(getClass().getResourceAsStream("/images/save.png"));
+		btnSave.setGraphic(new ImageView(imgRes));
+		
 		imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
 		btnClear.setGraphic(new ImageView(imgRes));
 		
 		imgRes = new Image(getClass().getResourceAsStream("/images/useTemplate.png"));
 		btnUseTemplate.setGraphic(new ImageView(imgRes));
+		
+		txtPattern.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if(event.getCode() == KeyCode.S && event.isControlDown()) {
+					handleSavePattern();
+				}
+			}
+		});
 		
 		fileExtensionList.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
@@ -81,8 +103,6 @@ public class OptionPanelController extends UIController {
 		});
 	}
 
-
-
 	@FXML
 	private void handleUseTemplate() {
     	if(!getPattern().isPresent()) {
@@ -102,6 +122,41 @@ public class OptionPanelController extends UIController {
 		mainApp.clearNewFileName();
 	}
 
+	@FXML
+	public void handleLoadPattern() {
+		Config cfg = Config.getInstance();
+		cfg.loadConfig();
+		Map<String, String> pattern = cfg.getPattern();
+		
+		if(pattern.size() > 0) {
+			PatternDialog dialog = new PatternDialog(mainApp, logger);
+			dialog.setParentStage(mainApp.getPrimaryStage());
+			dialog.setPattern(pattern);
+			dialog.show();
+			dialog.getSelectedPattern().ifPresent(pat -> txtPattern.setText(pat));
+		} else {
+			logger.warning("no pattern found.");
+		}
+	}
+	
+	@FXML
+	private void handleSavePattern() {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Save Pattern");
+		dialog.setHeaderText("Please enter a name for the pattern");
+		Optional<String> result = dialog.showAndWait();
+		result.ifPresent(name -> {
+			if (name.isEmpty()) return;
+			
+			getPattern().ifPresent(pat -> {
+				Config cfg = Config.getInstance();
+				cfg.loadConfig();
+				cfg.addPattern(name, pat.toString());
+				cfg.saveConfig();
+			});
+		});
+	}
+	
 	public Optional<Pattern> getPattern() {
 		Optional<Pattern> opt = Optional.empty();
 		if (!txtPattern.getText().isEmpty()) {

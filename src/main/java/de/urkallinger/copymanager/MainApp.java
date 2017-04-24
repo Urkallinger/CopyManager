@@ -57,10 +57,18 @@ public class MainApp extends Application {
 						rootController.handleOpen();
 					}
 					break;
+				case P:
+					if(event.isControlDown()) {
+						optController.handleLoadPattern();
+					}
+					break;
 				case PLUS:
 					if(event.isControlDown()) {
 						optController.handleAdd();
 					}
+					break;
+				case F1:
+					rootController.handleCopy();
 					break;
 				case F5:
 					rootController.handleRefresh();
@@ -216,10 +224,17 @@ public class MainApp extends Application {
 	public void copyFiles() {
 		List<FileListItem> files = fileOverviewController.getCheckedFiles();
 		if (files.size() > 0) {
+			Config cfg = Config.getInstance();
+			cfg.loadConfig();
+			File target = new File(cfg.getLastDestDir());
+			
 			DirectoryChooser directoryChooser = new DirectoryChooser();
+			if(target.exists()) directoryChooser.setInitialDirectory(target);
 			Optional<File> dest = Optional.ofNullable(directoryChooser.showDialog(this.primaryStage));
 			dest.ifPresent(dir -> {
 				try {
+					cfg.setLastDestDir(dir.getAbsolutePath());
+					cfg.saveConfig();
 					fm.copyFiles(files, dir);
 				} catch (FileCopierInProgressException e) {
 					logger.error(e.getMessage());
@@ -240,7 +255,9 @@ public class MainApp extends Application {
 	}
 
 	public void setCurrentDir(File f) throws FileReaderInProgressException {
-		if(fm.isReadingFiles()) throw new FileReaderInProgressException("there is already a thread reading files.");
+		if(fm.isReadingFiles()) {
+			throw new FileReaderInProgressException("there is already a thread reading files.");
+		}
 		
 		currentDir = Optional.ofNullable(f);
 		currentDir.ifPresent(dir -> {

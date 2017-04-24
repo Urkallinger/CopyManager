@@ -40,12 +40,25 @@
 		<ListView fx:id="fileExtensionList" AnchorPane.bottomAnchor="200.0"
 			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
 			AnchorPane.topAnchor="50.0" />
-		<Label prefHeight="30.0" text="pattern" AnchorPane.bottomAnchor="150.0"
-			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-			<font>
-				<Font size="15.0" />
-			</font>
-		</Label>
+		<HBox AnchorPane.bottomAnchor="155.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0">
+			<children>
+				<Label prefHeight="36.0" text="pattern">
+					<font>
+						<Font size="15.0" />
+					</font>
+				</Label>
+				<HBox HBox.hgrow="ALWAYS" />
+				<Button fx:id="btnLoad" onAction="#handleLoadPattern"
+					prefHeight="36.0" prefWidth="36.0">
+					<HBox.margin>
+						<Insets right="10.0" />
+					</HBox.margin>
+				</Button>
+				<Button fx:id="btnSave" onAction="#handleSavePattern"
+					prefHeight="36.0" prefWidth="36.0" />
+			</children>
+		</HBox>
 		<TextField fx:id="txtPattern" text="(.*)"
 			AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="0.0"
 			AnchorPane.rightAnchor="0.0">
@@ -54,13 +67,15 @@
 			</font>
 		</TextField>
 		<Label prefHeight="30.0" text="template"
-			AnchorPane.bottomAnchor="80.0">
+			AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0">
 			<font>
 				<Font size="15.0" />
 			</font>
 		</Label>
-		<TextField fx:id="txtTemplate" AnchorPane.bottomAnchor="50.0"
-			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" text="#1">
+		<TextField fx:id="txtTemplate" text="#1"
+			AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0">
 			<font>
 				<Font name="Consolas" size="15.0" />
 			</font>
