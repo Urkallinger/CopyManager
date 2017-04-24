@@ -36,9 +36,11 @@ public class PatternDialogController extends UIController {
 	private void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+		nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
+		patternCol.prefWidthProperty().bind(table.widthProperty().multiply(0.74));
+		
 		nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		patternCol.setCellValueFactory(cellData -> cellData.getValue().patternProperty());
-
 		patternCol.setCellFactory(
 				new Callback<TableColumn<PatternListItem, String>, TableCell<PatternListItem, String>>() {
 
