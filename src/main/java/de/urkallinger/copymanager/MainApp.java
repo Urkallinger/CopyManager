@@ -48,34 +48,33 @@ public class MainApp extends Application {
 	}
 	
 	private void addGlobalKeyEvents() {
-		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				switch(event.getCode()) {
-				case O:
-					if(event.isControlDown()) {
-						rootController.handleOpen();
-					}
-					break;
-				case P:
-					if(event.isControlDown()) {
-						optController.handleLoadPattern();
-					}
-					break;
-				case PLUS:
-					if(event.isControlDown()) {
-						optController.handleAdd();
-					}
-					break;
-				case F1:
-					rootController.handleCopy();
-					break;
-				case F5:
-					rootController.handleRefresh();
-					break;
-				default:
-					break;
+		// EventFilter verwenden, da manche Events von Controls (bsp. Textfeld)
+		// gefressen werden und nie beim EventHandler ankommen
+		scene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+			switch(event.getCode()) {
+			case O:
+				if(event.isControlDown()) {
+					rootController.handleOpen();
 				}
+				break;
+			case P:
+				if(event.isControlDown()) {
+					optController.handleLoadPattern();
+				}
+				break;
+			case PLUS:
+				if(event.isControlDown()) {
+					optController.handleAdd();
+				}
+				break;
+			case F1:
+				rootController.handleCopy();
+				break;
+			case F5:
+				rootController.handleRefresh();
+				break;
+			default:
+				break;
 			}
 		});
 	}
