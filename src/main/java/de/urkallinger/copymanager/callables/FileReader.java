@@ -10,7 +10,7 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.commons.io.FileUtils;
 
-import de.urkallinger.copymanager.LoggerCallback;
+import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Platform;
@@ -18,11 +18,9 @@ import javafx.application.Platform;
 public class FileReader implements Runnable {
 
 	private final File rootDir;
-	private final LoggerCallback logger;
 	private final ParamCallback<List<FileListItem>> callback;
 
-	public FileReader(LoggerCallback logger, File rootDir, ParamCallback<List<FileListItem>> callback) {
-		this.logger = logger;
+	public FileReader(File rootDir, ParamCallback<List<FileListItem>> callback) {
 		this.rootDir = rootDir;
 		this.callback = callback;
 	}
@@ -31,7 +29,7 @@ public class FileReader implements Runnable {
 		return new FutureTask<>(new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
-				return logger.action("read files from " + rootDir, true);
+				return MainApp.getLogger().action("read files from " + rootDir, true);
 			}
 		});
 	}
@@ -44,9 +42,11 @@ public class FileReader implements Runnable {
 		List<FileListItem> items = new ArrayList<>(files.size());
 		files.forEach(f -> items.add(new FileListItem(f)));
 		try {
-			logger.setDone(extReadInfo.get());
+			MainApp.getLogger().setDone(extReadInfo.get());
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			MainApp.getLogger()
+				.error("an error occured while reading files from: " + rootDir);
+			MainApp.getLogger().error(e.getMessage());
 		}
 		callback.call(items);
 	}

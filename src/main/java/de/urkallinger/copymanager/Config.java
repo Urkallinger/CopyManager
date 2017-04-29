@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -44,10 +43,9 @@ public class Config {
 				Unmarshaller m = context.createUnmarshaller();
 				Config cfg = (Config) m.unmarshal(cfgFile);
 				copy(cfg);
-			} catch (PropertyException e) {
-				e.printStackTrace();
 			} catch (JAXBException e) {
-				e.printStackTrace();
+				MainApp.getLogger().error("an error occured while loading the configuration.");
+				MainApp.getLogger().error(e.getMessage());
 			}
 		}
 	}
@@ -67,10 +65,9 @@ public class Config {
 			Marshaller m = context.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			m.marshal(this, cfgFile);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (JAXBException | IOException e) {
+			MainApp.getLogger().error("an error occured while saving the configuration.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 

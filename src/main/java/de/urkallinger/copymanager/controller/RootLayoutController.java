@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import de.urkallinger.copymanager.Config;
+import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.dialogs.ExtensionListDialog;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
@@ -63,7 +64,8 @@ public class RootLayoutController extends UIController {
 			imgRes = new Image(getClass().getResourceAsStream("/images/uncheckAll.png"));
 			btnUncheckAll.setGraphic(new ImageView(imgRes));
 		} catch (Exception e) {
-			e.printStackTrace();
+			MainApp.getLogger().error("an error occured while preparing the root layout.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 
@@ -87,7 +89,7 @@ public class RootLayoutController extends UIController {
 							Set<String> extensions = new HashSet<>();
 							files.forEach(fli -> extensions.add(fli.getExtension()));
 							mainApp.cacheFileListItems(files);
-							ExtensionListDialog dialog = new ExtensionListDialog(mainApp, logger);
+							ExtensionListDialog dialog = new ExtensionListDialog(mainApp);
 							dialog.setParentStage(stage);
 							dialog.setExtensions(extensions);
 							dialog.setDir(currDir.getAbsolutePath());
@@ -105,7 +107,7 @@ public class RootLayoutController extends UIController {
 				mainApp.setCurrentDir(currDir);
 				mainApp.readFiles(cb);
 			} catch (FileReaderInProgressException e) {
-				logger.error(e.getMessage());
+				MainApp.getLogger().error(e.getMessage());
 			}
 		});
 	}
@@ -124,7 +126,7 @@ public class RootLayoutController extends UIController {
 			mainApp.updateFileList();
 		}
 		else {
-			logger.warning("cannot refresh. no directory selected.");
+			MainApp.getLogger().warning("cannot refresh. no directory selected.");
 		}
 		
 	}

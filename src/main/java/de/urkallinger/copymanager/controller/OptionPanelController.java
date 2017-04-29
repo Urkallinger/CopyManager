@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import de.urkallinger.copymanager.Config;
+import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.dialogs.PatternDialog;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -106,12 +107,12 @@ public class OptionPanelController extends UIController {
 	@FXML
 	private void handleUseTemplate() {
     	if(!getPattern().isPresent()) {
-    		logger.warning("no pattern defined.");
+    		MainApp.getLogger().warning("no pattern defined.");
     		return;
     	}
     	
     	if(getTemplate().isEmpty()) {
-    		logger.warning("no template defined.");
+    		MainApp.getLogger().warning("no template defined.");
     		return;
     	}
 		mainApp.updateNewFileName();
@@ -129,13 +130,13 @@ public class OptionPanelController extends UIController {
 		Map<String, String> pattern = cfg.getPattern();
 		
 		if(pattern.size() > 0) {
-			PatternDialog dialog = new PatternDialog(mainApp, logger);
+			PatternDialog dialog = new PatternDialog(mainApp);
 			dialog.setParentStage(mainApp.getPrimaryStage());
 			dialog.setPattern(pattern);
 			dialog.show();
 			dialog.getSelectedPattern().ifPresent(pat -> txtPattern.setText(pat));
 		} else {
-			logger.warning("no pattern found.");
+			MainApp.getLogger().warning("no pattern found.");
 		}
 	}
 	
@@ -165,8 +166,8 @@ public class OptionPanelController extends UIController {
 				Pattern pattern = Pattern.compile(txtPattern.getText());
 				opt = Optional.of(pattern);
 			} catch (PatternSyntaxException e) {
-				logger.error("error compiling pattern");
-				logger.error(e.getMessage());
+				MainApp.getLogger().error("an error occured while compiling the pattern.");
+				MainApp.getLogger().error(e.getMessage());
 			}
 		}
 		return opt;

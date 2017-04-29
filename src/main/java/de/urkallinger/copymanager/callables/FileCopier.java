@@ -9,7 +9,7 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.commons.io.FileUtils;
 
-import de.urkallinger.copymanager.LoggerCallback;
+import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.model.FileListItem;
 import javafx.application.Platform;
 
@@ -17,12 +17,10 @@ public class FileCopier implements Runnable {
 
 	private final List<FileListItem> files;
 	private final File targetDir;
-	private final LoggerCallback logger;
 	
-	public FileCopier(List<FileListItem> files, File targetDir, LoggerCallback logger) {
+	public FileCopier(List<FileListItem> files, File targetDir) {
 		this.files = files;
 		this.targetDir = targetDir;
-		this.logger = logger;
 	}
 	
 	@Override
@@ -43,17 +41,15 @@ public class FileCopier implements Runnable {
 			try {
 				copyFilesThread.join();
 				if (copyFile.get()) {
-					logger.setDone(cpyInfo.get());
+					MainApp.getLogger().setDone(cpyInfo.get());
 				} else {
-					logger.setFailed(cpyInfo.get());
+					MainApp.getLogger().setFailed(cpyInfo.get());
 				}
 
 			} catch (InterruptedException e) {
-				// TODO SLF4J Logging implementieren
-				e.printStackTrace();
+				MainApp.getLogger().error(e.getMessage());
 			} catch (ExecutionException e) {
-				// TODO SLF4J Logging implementieren
-				e.printStackTrace();
+				MainApp.getLogger().error(e.getMessage());
 			}
 		});
 	}
@@ -62,9 +58,10 @@ public class FileCopier implements Runnable {
 		return new FutureTask<>(new Callable<Integer>() {
 		    @Override
 		    public Integer call() throws Exception {
-		    	return logger.action("-> from: " + from.getAbsolutePath() + "\n" +
-						         	  "-> to:   " + to.getAbsolutePath(),
-						         	  true);
+		    	return MainApp.getLogger()
+		    			.action("-> from: " + from.getAbsolutePath() + "\n" +
+		    					"-> to:   " + to.getAbsolutePath(),
+		    					true);
 		    }
 		});
 	}
@@ -76,7 +73,7 @@ public class FileCopier implements Runnable {
 				try {
 					FileUtils.copyFile(from, to);
 				} catch (IOException e) {
-					// TODO SLF4J Logging implementieren
+					MainApp.getLogger().error(e.getMessage());
 					return false;
 				}
 				return true;

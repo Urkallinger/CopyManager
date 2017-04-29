@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 
-import de.urkallinger.copymanager.LoggerCallback;
+import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.model.FileListItem;
 
 public class FileNameBuilder {
@@ -14,12 +14,10 @@ public class FileNameBuilder {
 	private final Pattern folderPattern = Pattern.compile("#f(\\d+)");
 	private final Pattern userPattern;
 	private final String template;
-	private final LoggerCallback logger;
 
-	public FileNameBuilder(final Pattern pattern, final String template, LoggerCallback logger) {
+	public FileNameBuilder(final Pattern pattern, final String template) {
 		this.userPattern = pattern;
 		this.template = template;
-		this.logger = logger;
 	}
 
 	public String buildFileName(FileListItem item) {
@@ -31,7 +29,7 @@ public class FileNameBuilder {
 			nn = replaceFolderWildCard(nn, item);
 			item.setNewName(nn);
 		} else {
-			logger.warning("no pattern match for \"" + item.getName() + "\"");
+			MainApp.getLogger().warning("no pattern match for \"" + item.getName() + "\"");
 		}
 
 		return nn;
@@ -46,7 +44,7 @@ public class FileNameBuilder {
 				nn = nn.replace("#" + num, m.group(num).trim());
 			}
 		} catch (IndexOutOfBoundsException e) {
-			logger.error("error with #" + num + ". index out of bounds. (" + item.getName() + ")");
+			MainApp.getLogger().error("error with #" + num + ". index out of bounds. (" + item.getName() + ")");
 		}
 		return nn;
 	}
@@ -63,7 +61,7 @@ public class FileNameBuilder {
 				nn = nn.replace("#f" + num, split[split.length - num].trim());
 			}
 		} catch (IndexOutOfBoundsException e) {
-			logger.error("error with #f" + num + ". index out of bounds. (" + item.getName() + ")");
+			MainApp.getLogger().error("error with #f" + num + ". index out of bounds. (" + item.getName() + ")");
 		}
 		return nn;
 	}

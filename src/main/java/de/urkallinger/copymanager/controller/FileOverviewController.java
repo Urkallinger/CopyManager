@@ -91,7 +91,7 @@ public class FileOverviewController extends UIController {
 
 	public void updateNewFileName(final Pattern pattern, final String template) {
 		if(template.isEmpty()) return;
-		FileNameBuilder nameBuilder = new FileNameBuilder(pattern, template, logger);
+		FileNameBuilder nameBuilder = new FileNameBuilder(pattern, template);
 		
 		table.getItems().forEach(item -> {
 			if(!item.isChecked()) return; // continue

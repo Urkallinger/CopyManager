@@ -24,6 +24,8 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
+	private static CMLogger logger = new DefaultLogger(); 
+	
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 
@@ -34,7 +36,6 @@ public class MainApp extends Application {
 
 	private FileManager fm;
 	private Optional<File> currentDir = Optional.empty();
-	private LoggerCallback logger;
 	private Scene scene;
 
 	private ParamCallback<List<FileListItem>> getUpdateFileCacheCallback() {
@@ -89,14 +90,10 @@ public class MainApp extends Application {
 		showOptionPanel();
 
 		logger = consoleController;
-		rootController.setLogger(logger);
-		consoleController.setLogger(logger);
-		fileOverviewController.setLogger(logger);
-		optController.setLogger(logger);
 
 		addGlobalKeyEvents();
 		
-		fm = new FileManager(logger);
+		fm = new FileManager();
 	}
 
 	/**
@@ -120,7 +117,8 @@ public class MainApp extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MainApp.getLogger().error("an error occured while loading the root layout.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 
@@ -134,7 +132,8 @@ public class MainApp extends Application {
 
 			fileOverviewController = loader.getController();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MainApp.getLogger().error("an error occured while loading the file overview.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 
@@ -149,7 +148,8 @@ public class MainApp extends Application {
 			optController.setMainApp(this);
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			MainApp.getLogger().error("an error occured while loading the option panel.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 
@@ -163,7 +163,8 @@ public class MainApp extends Application {
 			consoleController = loader.getController();
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			MainApp.getLogger().error("an error occured while loading the console panel.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 
@@ -263,6 +264,10 @@ public class MainApp extends Application {
 		});
 	}
 
+	public static CMLogger getLogger() {
+		return MainApp.logger;
+	}
+	
 	public static void main(String[] args) {
 		launch(args);
 	}

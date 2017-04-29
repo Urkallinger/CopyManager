@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-import de.urkallinger.copymanager.LoggerCallback;
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.controller.PatternDialogController;
 import javafx.fxml.FXMLLoader;
@@ -16,15 +15,13 @@ import javafx.stage.Stage;
 
 public class PatternDialog {
 	private final MainApp mainApp;
-	private final LoggerCallback logger;
-
+	
 	private Stage parentStage;
 	private Map<String, String> pattern;
 	private PatternDialogController dialogController;
 	
-	public PatternDialog(MainApp mainApp, LoggerCallback logger) {
+	public PatternDialog(MainApp mainApp) {
 		this.mainApp = mainApp;
-		this.logger = logger;
 	}
 	
 	public void setParentStage(Stage parentStage) {
@@ -60,8 +57,8 @@ public class PatternDialog {
 			stage.showAndWait();
 
 		} catch (IOException e) {
-			logger.error("an error occured while preparing the pattern dialog!");
-			logger.error(e.getMessage());
+			MainApp.getLogger().error("an error occured while preparing the pattern dialog.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 	

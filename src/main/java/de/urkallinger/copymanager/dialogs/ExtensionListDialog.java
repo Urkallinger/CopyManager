@@ -3,7 +3,6 @@ package de.urkallinger.copymanager.dialogs;
 import java.io.IOException;
 import java.util.Set;
 
-import de.urkallinger.copymanager.LoggerCallback;
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.controller.ExtensionListDialogController;
 import javafx.fxml.FXMLLoader;
@@ -16,16 +15,14 @@ import javafx.stage.Stage;
 public class ExtensionListDialog {
 
 	private final MainApp mainApp;
-	private final LoggerCallback logger;
 
 	private Stage parentStage;
 	private Set<String> extensions;
 	private String dir = "";
 	private ExtensionListDialogController dialogController;
 
-	public ExtensionListDialog(MainApp mainApp, LoggerCallback logger) {
+	public ExtensionListDialog(MainApp mainApp) {
 		this.mainApp = mainApp;
-		this.logger = logger;
 	}
 
 	public void setParentStage(Stage parentStage) {
@@ -66,8 +63,8 @@ public class ExtensionListDialog {
 			stage.showAndWait();
 
 		} catch (IOException e) {
-			logger.error("an error occured while preparing the extension dialog!");
-			logger.error(e.getMessage());
+			MainApp.getLogger().error("an error occured while preparing the extension dialog.");
+			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package de.urkallinger.copymanager;
 
-public interface LoggerCallback {
+public interface CMLogger {
 	void info(String info);
 	void warning(String warning);
 	void error(String error);

@@ -14,12 +14,10 @@ public class FileManager {
 
 	private List<FileListItem> fileCache = new ArrayList<>();
 	private List<String> extensions;
-	private LoggerCallback logger;
 	private Thread fileReader = new Thread();
 	private Thread copyThread = new Thread();
 
-	public FileManager(final LoggerCallback logger) {
-		this.logger = logger;
+	public FileManager() {
 		this.extensions = new ArrayList<>();
 	}
 
@@ -30,7 +28,7 @@ public class FileManager {
 	public void readFiles(File rootDir, ParamCallback<List<FileListItem>> callback) 
 			throws FileReaderInProgressException {
 		if(!fileReader.isAlive()) {
-			Runnable reader = new FileReader(logger, rootDir, callback);
+			Runnable reader = new FileReader(rootDir, callback);
 			fileReader = new Thread(reader, "FileReader");
 			fileReader.setDaemon(true);
 			fileReader.start();
@@ -46,7 +44,7 @@ public class FileManager {
 	public void copyFiles(final List<FileListItem> files, final File targetDir)
 			throws FileCopierInProgressException {
 		if(!copyThread.isAlive()) {
-			Runnable cpy = new FileCopier(files, targetDir, logger);
+			Runnable cpy = new FileCopier(files, targetDir);
 			copyThread = new Thread(cpy, "FileCopier");
 			copyThread.setDaemon(true);
 			copyThread.start();
