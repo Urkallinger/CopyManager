@@ -5,9 +5,11 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import de.urkallinger.copymanager.Config;
+import de.urkallinger.copymanager.Configuration;
+import de.urkallinger.copymanager.ConfigurationManager;
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.dialogs.PatternDialog;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -44,7 +46,7 @@ public class OptionPanelController extends UIController {
 	private Button btnUseTemplate = new Button();
 
 	@FXML
-	private void initialize() {
+	public void initialize() {
 		fileExtensionList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
@@ -107,12 +109,12 @@ public class OptionPanelController extends UIController {
 	@FXML
 	private void handleUseTemplate() {
     	if(!getPattern().isPresent()) {
-    		MainApp.getLogger().warning("no pattern defined.");
+    		MainApp.getLogger().warning(Str.get("OptionPanelController.no_pattern_defined"));
     		return;
     	}
     	
     	if(getTemplate().isEmpty()) {
-    		MainApp.getLogger().warning("no template defined.");
+    		MainApp.getLogger().warning(Str.get("OptionPanelController.no_template_defined"));
     		return;
     	}
 		mainApp.updateNewFileName();
@@ -125,8 +127,7 @@ public class OptionPanelController extends UIController {
 
 	@FXML
 	public void handleLoadPattern() {
-		Config cfg = Config.getInstance();
-		cfg.loadConfig();
+		Configuration cfg = ConfigurationManager.loadConfiguration();
 		Map<String, String> pattern = cfg.getPattern();
 		
 		if(pattern.size() > 0) {
@@ -136,7 +137,7 @@ public class OptionPanelController extends UIController {
 			dialog.show();
 			dialog.getSelectedPattern().ifPresent(pat -> txtPattern.setText(pat));
 		} else {
-			MainApp.getLogger().warning("no pattern found.");
+			MainApp.getLogger().warning(Str.get("OptionPanelController.no_saved_pattern_found"));
 		}
 	}
 	
@@ -150,10 +151,9 @@ public class OptionPanelController extends UIController {
 			if (name.isEmpty()) return;
 			
 			getPattern().ifPresent(pat -> {
-				Config cfg = Config.getInstance();
-				cfg.loadConfig();
+				Configuration cfg = ConfigurationManager.loadConfiguration();
 				cfg.addPattern(name, pat.toString());
-				cfg.saveConfig();
+				ConfigurationManager.saveConfiguration(cfg);
 			});
 		});
 	}
@@ -166,7 +166,7 @@ public class OptionPanelController extends UIController {
 				Pattern pattern = Pattern.compile(txtPattern.getText());
 				opt = Optional.of(pattern);
 			} catch (PatternSyntaxException e) {
-				MainApp.getLogger().error("an error occured while compiling the pattern.");
+				MainApp.getLogger().error(Str.get("OptionPanelController.pattern_compile_err"));
 				MainApp.getLogger().error(e.getMessage());
 			}
 		}

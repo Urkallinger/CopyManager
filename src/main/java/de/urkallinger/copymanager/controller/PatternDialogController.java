@@ -3,7 +3,8 @@ package de.urkallinger.copymanager.controller;
 import java.util.Map;
 import java.util.Optional;
 
-import de.urkallinger.copymanager.Config;
+import de.urkallinger.copymanager.Configuration;
+import de.urkallinger.copymanager.ConfigurationManager;
 import de.urkallinger.copymanager.model.PatternListItem;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -33,7 +34,7 @@ public class PatternDialogController extends UIController {
 	private Optional<String> selection = Optional.empty();
 
 	@FXML
-	private void initialize() {
+	public void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
@@ -85,10 +86,9 @@ public class PatternDialogController extends UIController {
 
 	private void deletePattern(PatternListItem pattern) {
 		table.getItems().remove(pattern);
-		Config cfg = Config.getInstance();
-		cfg.loadConfig();
+		Configuration cfg = ConfigurationManager.loadConfiguration();
 		cfg.getPattern().remove(pattern.getName());
-		cfg.saveConfig();
+		ConfigurationManager.saveConfiguration(cfg);
 	}
 
 	@FXML

@@ -12,6 +12,7 @@ import de.urkallinger.copymanager.controller.RootLayoutController;
 import de.urkallinger.copymanager.exceptions.FileCopierInProgressException;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -79,11 +80,19 @@ public class MainApp extends Application {
 		});
 	}
 
+	private void createConfig() {
+		if(!ConfigurationManager.configurationExists()) {
+			ConfigurationManager.createNewConfiguration();
+		}
+	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("CopyManager");
 
+		createConfig();
+		
 		initRootLayout();
 		showConsole();
 		showFileOverview();
@@ -103,6 +112,8 @@ public class MainApp extends Application {
 		try {
 			// Load root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
+			
+			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/RootLayout.fxml"));
 			rootLayout = (BorderPane) loader.load();
 
@@ -117,7 +128,7 @@ public class MainApp extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (IOException e) {
-			MainApp.getLogger().error("an error occured while loading the root layout.");
+			MainApp.getLogger().error(Str.get("MainApp.load_root_layout_err"));
 			MainApp.getLogger().error(e.getMessage());
 		}
 	}
@@ -132,7 +143,7 @@ public class MainApp extends Application {
 
 			fileOverviewController = loader.getController();
 		} catch (IOException e) {
-			MainApp.getLogger().error("an error occured while loading the file overview.");
+			MainApp.getLogger().error(Str.get("MainApp.load_file_overview_err"));
 			MainApp.getLogger().error(e.getMessage());
 		}
 	}
@@ -148,7 +159,7 @@ public class MainApp extends Application {
 			optController.setMainApp(this);
 
 		} catch (IOException e) {
-			MainApp.getLogger().error("an error occured while loading the option panel.");
+			MainApp.getLogger().error(Str.get("MainApp.load_option_panel_err"));
 			MainApp.getLogger().error(e.getMessage());
 		}
 	}
@@ -163,7 +174,7 @@ public class MainApp extends Application {
 			consoleController = loader.getController();
 
 		} catch (IOException e) {
-			MainApp.getLogger().error("an error occured while loading the console panel.");
+			MainApp.getLogger().error(Str.get("MainApp.load_console_err"));
 			MainApp.getLogger().error(e.getMessage());
 		}
 	}
@@ -172,14 +183,16 @@ public class MainApp extends Application {
 		if(!fm.getFileExtensions().contains(extension)) {
 			fm.getFileExtensions().add(extension);
 			optController.addFileExtension(extension);
-			logger.info("new file extension: " + extension);
+			String info = String.format(Str.get("MainApp.new_file_ext"), extension);
+			MainApp.getLogger().info(info);
 		}
 	}
 
 	public void removeFileExtension(String extension) {
 		fm.getFileExtensions().remove(extension);
 		optController.removeFileExtension(extension);
-		logger.info("file extension deleted: " + extension);
+		String info = String.format(Str.get("MainApp.file_ext_removed"), extension);
+		MainApp.getLogger().info(info);
 	}
 
 	public void updateNewFileName() {
@@ -199,7 +212,7 @@ public class MainApp extends Application {
 			try {
 				fm.readFiles(rootDir, callback);
 			} catch (FileReaderInProgressException e) {
-				logger.error(e.getMessage());
+				MainApp.getLogger().error(e.getMessage());
 			}
 		});
 	}
@@ -223,8 +236,7 @@ public class MainApp extends Application {
 	public void copyFiles() {
 		List<FileListItem> files = fileOverviewController.getCheckedFiles();
 		if (files.size() > 0) {
-			Config cfg = Config.getInstance();
-			cfg.loadConfig();
+			Configuration cfg = ConfigurationManager.loadConfiguration();
 			File target = new File(cfg.getLastDestDir());
 			
 			DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -233,14 +245,14 @@ public class MainApp extends Application {
 			dest.ifPresent(dir -> {
 				try {
 					cfg.setLastDestDir(dir.getAbsolutePath());
-					cfg.saveConfig();
+					ConfigurationManager.saveConfiguration(cfg);
 					fm.copyFiles(files, dir);
 				} catch (FileCopierInProgressException e) {
-					logger.error(e.getMessage());
+					MainApp.getLogger().error(e.getMessage());
 				}
 			});
 		} else {
-			logger.info("no files to copy.");
+			MainApp.getLogger().info("no files to copy.");
 		}
 
 	}
@@ -260,14 +272,15 @@ public class MainApp extends Application {
 		
 		currentDir = Optional.ofNullable(f);
 		currentDir.ifPresent(dir -> {
-			logger.info("current directory: " + dir);
+			String info = String.format(Str.get("MainApp.curr_dir_set"), dir);
+			MainApp.getLogger().info(info);
 		});
 	}
 
 	public static CMLogger getLogger() {
 		return MainApp.logger;
 	}
-	
+
 	public static void main(String[] args) {
 		launch(args);
 	}

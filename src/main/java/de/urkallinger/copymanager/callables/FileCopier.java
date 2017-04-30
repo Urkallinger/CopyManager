@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
 
 public class FileCopier implements Runnable {
@@ -58,10 +59,8 @@ public class FileCopier implements Runnable {
 		return new FutureTask<>(new Callable<Integer>() {
 		    @Override
 		    public Integer call() throws Exception {
-		    	return MainApp.getLogger()
-		    			.action("-> from: " + from.getAbsolutePath() + "\n" +
-		    					"-> to:   " + to.getAbsolutePath(),
-		    					true);
+		    	String action = String.format(Str.get("FileCopier.copy_action"), from.getAbsolutePath(), to.getAbsolutePath());
+		    	return MainApp.getLogger().action(action, true);
 		    }
 		});
 	}

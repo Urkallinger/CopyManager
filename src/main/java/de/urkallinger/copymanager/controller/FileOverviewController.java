@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import de.urkallinger.copymanager.MainApp;
+import de.urkallinger.copymanager.exceptions.CMException;
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.model.FileListItem.SizeObj;
 import de.urkallinger.copymanager.utils.FileNameBuilder;
@@ -34,7 +36,7 @@ public class FileOverviewController extends UIController {
 	private TableColumn<FileListItem, SizeObj> sizeCol = new TableColumn<>();
 
 	@FXML
-	private void initialize() {
+	public void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		chbCol.setCellValueFactory(cellData -> cellData.getValue().chbProperty().asObject());
@@ -95,7 +97,12 @@ public class FileOverviewController extends UIController {
 		
 		table.getItems().forEach(item -> {
 			if(!item.isChecked()) return; // continue
-			item.setNewName(nameBuilder.buildFileName(item));
+			try {
+				String nn = nameBuilder.buildFileName(item);
+				item.setNewName(nn);
+			} catch (CMException e) {
+				MainApp.getLogger().error(e.getMessage());
+			}
 		});
 	}
 

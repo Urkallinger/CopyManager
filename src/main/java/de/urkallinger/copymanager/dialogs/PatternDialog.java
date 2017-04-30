@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.controller.PatternDialogController;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -57,7 +58,7 @@ public class PatternDialog {
 			stage.showAndWait();
 
 		} catch (IOException e) {
-			MainApp.getLogger().error("an error occured while preparing the pattern dialog.");
+			MainApp.getLogger().error(Str.get("PatternDialog.init_err"));
 			MainApp.getLogger().error(e.getMessage());
 		}
 	}

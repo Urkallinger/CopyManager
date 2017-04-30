@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 
-import de.urkallinger.copymanager.MainApp;
+import de.urkallinger.copymanager.exceptions.CMException;
 import de.urkallinger.copymanager.model.FileListItem;
 
 public class FileNameBuilder {
@@ -20,22 +20,22 @@ public class FileNameBuilder {
 		this.template = template;
 	}
 
-	public String buildFileName(FileListItem item) {
+	public String buildFileName(FileListItem item) throws CMException {
 		String nn = template; // new name
 
 		Matcher m = userPattern.matcher(item.getName());
 		if (m.matches()) {
 			nn = replaceUserWildCard(nn, item, m);
 			nn = replaceFolderWildCard(nn, item);
-			item.setNewName(nn);
 		} else {
-			MainApp.getLogger().warning("no pattern match for \"" + item.getName() + "\"");
+			String msg = String.format(Str.get("FileNameBuilder.no_pattern_match"), item.getName());
+			throw new CMException(msg);
 		}
 
 		return nn;
 	}
 
-	private String replaceUserWildCard(String nn, FileListItem item, Matcher m) {
+	private String replaceUserWildCard(String nn, FileListItem item, Matcher m) throws CMException {
 		Matcher mx = templPattern.matcher(nn);
 		int num = -1;
 		try {
@@ -44,12 +44,13 @@ public class FileNameBuilder {
 				nn = nn.replace("#" + num, m.group(num).trim());
 			}
 		} catch (IndexOutOfBoundsException e) {
-			MainApp.getLogger().error("error with #" + num + ". index out of bounds. (" + item.getName() + ")");
+			String msg = String.format(Str.get("FileNameBuilder.ioob"), num, item.getName());
+			throw new CMException(msg);
 		}
 		return nn;
 	}
 
-	private String replaceFolderWildCard(String nn, FileListItem item) {
+	private String replaceFolderWildCard(String nn, FileListItem item) throws CMException {
 		Matcher mx = folderPattern.matcher(nn);
 		String path = FilenameUtils.separatorsToWindows(item.getAbsolutPath());
 		String[] split = path.split("\\\\");
@@ -61,7 +62,8 @@ public class FileNameBuilder {
 				nn = nn.replace("#f" + num, split[split.length - num].trim());
 			}
 		} catch (IndexOutOfBoundsException e) {
-			MainApp.getLogger().error("error with #f" + num + ". index out of bounds. (" + item.getName() + ")");
+			String msg = String.format(Str.get("FileNameBuilder.dir_ioob"), num, item.getName());
+			throw new CMException(msg);
 		}
 		return nn;
 	}

@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import de.urkallinger.copymanager.Config;
+import de.urkallinger.copymanager.Configuration;
+import de.urkallinger.copymanager.ConfigurationManager;
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.dialogs.ExtensionListDialog;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -47,7 +49,7 @@ public class RootLayoutController extends UIController {
 	}
 	
 	@FXML
-	private void initialize() {
+	public void initialize() {
 		try {
 			Image imgRes = new Image(getClass().getResourceAsStream("/images/folder.png"));
 			btnOpen.setGraphic(new ImageView(imgRes));
@@ -64,7 +66,7 @@ public class RootLayoutController extends UIController {
 			imgRes = new Image(getClass().getResourceAsStream("/images/uncheckAll.png"));
 			btnUncheckAll.setGraphic(new ImageView(imgRes));
 		} catch (Exception e) {
-			MainApp.getLogger().error("an error occured while preparing the root layout.");
+			MainApp.getLogger().error(Str.get("RootLayoutController.init_err"));
 			MainApp.getLogger().error(e.getMessage());
 		}
 	}
@@ -73,8 +75,7 @@ public class RootLayoutController extends UIController {
 	public void handleOpen() {
 		Optional<File> file = Optional.empty();
 
-		Config cfg = Config.getInstance();
-		cfg.loadConfig();
+		Configuration cfg = ConfigurationManager.loadConfiguration();
 		File dir = new File(cfg.getLastSrcDir());
 		
 		DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -101,7 +102,7 @@ public class RootLayoutController extends UIController {
 			};
 			
 			cfg.setLastSrcDir(currDir.getAbsolutePath());
-			cfg.saveConfig();
+			ConfigurationManager.saveConfiguration(cfg);
 			
 			try {
 				mainApp.setCurrentDir(currDir);
@@ -126,7 +127,7 @@ public class RootLayoutController extends UIController {
 			mainApp.updateFileList();
 		}
 		else {
-			MainApp.getLogger().warning("cannot refresh. no directory selected.");
+			MainApp.getLogger().warning(Str.get("RootLayoutController.refresh_no_dir"));
 		}
 		
 	}

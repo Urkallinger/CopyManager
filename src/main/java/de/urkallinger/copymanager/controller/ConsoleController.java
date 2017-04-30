@@ -27,8 +27,7 @@ public class ConsoleController extends UIController implements CMLogger {
 	private ImageView unlocked;
 	
 	@FXML
-	private void initialize() {
-		
+	public void initialize() {
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
 		btnClear.setGraphic(new ImageView(imgRes));
 		

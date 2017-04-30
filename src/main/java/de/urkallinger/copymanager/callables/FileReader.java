@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
 
 public class FileReader implements Runnable {
@@ -29,7 +30,8 @@ public class FileReader implements Runnable {
 		return new FutureTask<>(new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
-				return MainApp.getLogger().action("read files from " + rootDir, true);
+				String action = String.format(Str.get("FileReader.read_action"), rootDir);
+				return MainApp.getLogger().action(action, true);
 			}
 		});
 	}
@@ -44,8 +46,8 @@ public class FileReader implements Runnable {
 		try {
 			MainApp.getLogger().setDone(extReadInfo.get());
 		} catch (InterruptedException | ExecutionException e) {
-			MainApp.getLogger()
-				.error("an error occured while reading files from: " + rootDir);
+			String error = String.format(Str.get("FileReader.read_err"), rootDir);
+			MainApp.getLogger().error(error);
 			MainApp.getLogger().error(e.getMessage());
 		}
 		callback.call(items);
