@@ -45,10 +45,10 @@ public class FileOverviewController extends UIController {
 		extCol.setCellValueFactory(cellData -> cellData.getValue().extensionProperty());
 		sizeCol.setCellValueFactory(cellData -> cellData.getValue().sizeProperty());
 
-		chbCol.prefWidthProperty().bind(table.widthProperty().multiply(0.5));
+		chbCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
 		nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.35));
 		newNameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.35));
-		extCol.prefWidthProperty().bind(table.widthProperty().multiply(0.10));
+		extCol.prefWidthProperty().bind(table.widthProperty().multiply(0.14));
 		sizeCol.prefWidthProperty().bind(table.widthProperty().multiply(0.10));
 
 		chbCol.setCellFactory(CheckBoxTableCell.forTableColumn(new Callback<Integer, ObservableValue<Boolean>>() {

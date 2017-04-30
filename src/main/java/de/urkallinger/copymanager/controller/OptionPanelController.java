@@ -89,8 +89,8 @@ public class OptionPanelController extends UIController {
 	@FXML
 	public void handleAdd() {
 		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("New file extension");
-		dialog.setHeaderText("Please enter a new file extension");
+		dialog.setTitle(Str.get("OptionPanelController.new_file_ext_title"));
+		dialog.setHeaderText(Str.get("OptionPanelController.new_file_ext"));
 		Optional<String> result = dialog.showAndWait();
 		result.ifPresent(ext -> {
 			if (ext.isEmpty())
@@ -144,8 +144,8 @@ public class OptionPanelController extends UIController {
 	@FXML
 	private void handleSavePattern() {
 		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Save Pattern");
-		dialog.setHeaderText("Please enter a name for the pattern");
+		dialog.setTitle(Str.get("OptionPanelController.save_pattern_title"));
+		dialog.setHeaderText(Str.get("OptionPanelController.save_pattern"));
 		Optional<String> result = dialog.showAndWait();
 		result.ifPresent(name -> {
 			if (name.isEmpty()) return;

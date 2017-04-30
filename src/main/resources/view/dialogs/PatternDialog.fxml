@@ -19,8 +19,8 @@
 		<TableView fx:id="table" prefHeight="200.0"
 			BorderPane.alignment="CENTER">
 			<columns>
-				<TableColumn fx:id="nameCol"  prefWidth="50.0" text="name" />
-				<TableColumn fx:id="patternCol" text="pattern" />
+				<TableColumn fx:id="nameCol"  prefWidth="50.0" text="%keywords.name" />
+				<TableColumn fx:id="patternCol" text="%keywords.pattern" />
 			</columns>
 		</TableView>
 	</center>
@@ -32,9 +32,9 @@
 			BorderPane.alignment="CENTER">
 			<buttons>
 				<Button fx:id="btnOk" onAction="#handleOk" mnemonicParsing="false"
-					text="OK" />
+					text="%keywords.ok" />
 				<Button fx:id="btnCancel" onAction="#handleCancel"
-					mnemonicParsing="false" text="cancel" />
+					mnemonicParsing="false" text="%keywords.cancel" />
 			</buttons>
 		</ButtonBar>
 	</bottom>

@@ -9,6 +9,7 @@ import de.urkallinger.copymanager.callables.FileReader;
 import de.urkallinger.copymanager.exceptions.FileCopierInProgressException;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.utils.Str;
 
 public class FileManager {
 
@@ -33,7 +34,7 @@ public class FileManager {
 			fileReader.setDaemon(true);
 			fileReader.start();
 		} else {
-			throw new FileReaderInProgressException("there is already a thread reading files.");
+			throw new FileReaderInProgressException(Str.get("FileManager.thread_already_reading_err"));
 		}
 	}
 	
@@ -49,7 +50,7 @@ public class FileManager {
 			copyThread.setDaemon(true);
 			copyThread.start();
 		} else {
-			throw new FileCopierInProgressException("there is already a thread copying files.");
+			throw new FileCopierInProgressException(Str.get("FileManager.thread_already_copying_err"));
 		}
 	}
 	

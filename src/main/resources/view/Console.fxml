@@ -27,7 +27,7 @@
 						<Insets bottom="10.0" />
 					</VBox.margin>
 					<tooltip>
-						<Tooltip text="clear console">
+						<Tooltip text="%view.Console.clear_console">
 							<font>
 								<Font size="15.0" />
 							</font>
@@ -37,7 +37,7 @@
 				<ToggleButton mnemonicParsing="false" prefHeight="30.0"
 					prefWidth="30.0" fx:id="btnScrollLock" onAction="#onScrollLock">
 					<tooltip>
-						<Tooltip text="toggle scroll lock">
+						<Tooltip text="%view.Console.toggle_scroll_lock">
 							<font>
 								<Font size="15.0" />
 							</font>

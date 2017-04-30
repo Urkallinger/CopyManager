@@ -136,6 +136,7 @@ public class MainApp extends Application {
 	public void showFileOverview() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
+			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/FileOverview.fxml"));
 			AnchorPane fileOverview = (AnchorPane) loader.load();
 
@@ -151,6 +152,7 @@ public class MainApp extends Application {
 	public void showOptionPanel() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
+			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/OptionPanel.fxml"));
 			AnchorPane optionPanel = (AnchorPane) loader.load();
 
@@ -167,6 +169,7 @@ public class MainApp extends Application {
 	public void showConsole() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
+			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/Console.fxml"));
 			AnchorPane console = (AnchorPane) loader.load();
 
@@ -252,7 +255,7 @@ public class MainApp extends Application {
 				}
 			});
 		} else {
-			MainApp.getLogger().info("no files to copy.");
+			MainApp.getLogger().info(Str.get("MainApp.no_files_to_copy"));
 		}
 
 	}
@@ -267,7 +270,7 @@ public class MainApp extends Application {
 
 	public void setCurrentDir(File f) throws FileReaderInProgressException {
 		if(fm.isReadingFiles()) {
-			throw new FileReaderInProgressException("there is already a thread reading files.");
+			throw new FileReaderInProgressException(Str.get("FileManager.thread_already_reading_err"));
 		}
 		
 		currentDir = Optional.ofNullable(f);

@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 
 <BorderPane prefHeight="700.0" prefWidth="900.0"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
@@ -30,7 +32,7 @@
 				<Button fx:id="btnCopy" onAction="#handleCopy"
 					ButtonBar.buttonData="LEFT">
 					<tooltip>
-						<Tooltip text="copy selected files">
+						<Tooltip text="%view.RootLayout.copy_files">
 							<font>
 								<Font size="15.0" />
 							</font>
@@ -40,7 +42,7 @@
 				<Button fx:id="btnRefresh" onAction="#handleRefresh"
 					ButtonBar.buttonData="LEFT">
 					<tooltip>
-						<Tooltip text="refresh file list">
+						<Tooltip text="%view.RootLayout.refresh_files">
 							<font>
 								<Font size="15.0" />
 							</font>
@@ -50,7 +52,7 @@
 				<Button fx:id="btnCheckAll" onAction="#handleCheckAll"
 					ButtonBar.buttonData="LEFT">
 					<tooltip>
-						<Tooltip text="select all files">
+						<Tooltip text="%view.RootLayout.select_all">
 							<font>
 								<Font size="15.0" />
 							</font>
@@ -60,13 +62,14 @@
 				<Button fx:id="btnUncheckAll" onAction="#handleUncheckAll"
 					ButtonBar.buttonData="LEFT">
 					<tooltip>
-						<Tooltip text="deselect all files">
+						<Tooltip text="%view.RootLayout.deselect_all">
 							<font>
 								<Font size="15.0" />
 							</font>
 						</Tooltip>
 					</tooltip>
 				</Button>
+				<MenuButton fx:id="btnLanguage" ButtonBar.buttonData="LEFT" />
 				<HBox />
 			</buttons>
 			<padding>
@@ -75,9 +78,10 @@
 		</ButtonBar>
 	</top>
 	<center>
-		<SplitPane dividerPositions="0.7" orientation="VERTICAL" BorderPane.alignment="CENTER">
+		<SplitPane dividerPositions="0.7" orientation="VERTICAL"
+			BorderPane.alignment="CENTER">
 			<items>
-				<SplitPane dividerPositions="0.2">
+				<SplitPane dividerPositions="0.25">
 					<items>
 						<AnchorPane fx:id="leftArea" minWidth="180" />
 						<AnchorPane fx:id="rightArea" minWidth="400" />

@@ -19,7 +19,7 @@
 		<HBox prefHeight="40.0" AnchorPane.leftAnchor="0.0"
 			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
-				<Label prefHeight="40.0" text="file extensions">
+				<Label prefHeight="40.0" text="%keywords.extensions">
 					<font>
 						<Font size="15.0" />
 					</font>
@@ -28,7 +28,7 @@
 				<Button fx:id="btnAdd" mnemonicParsing="false" onAction="#handleAdd"
 					prefHeight="36.0" prefWidth="36.0">
 					<tooltip>
-						<Tooltip text="add new file extension">
+						<Tooltip text="%view.OptionPanel.add_new_file_ex">
 							<font>
 								<Font size="15.0" />
 							</font>
@@ -43,7 +43,7 @@
 		<HBox AnchorPane.bottomAnchor="155.0" AnchorPane.leftAnchor="0.0"
 			AnchorPane.rightAnchor="0.0">
 			<children>
-				<Label prefHeight="36.0" text="pattern">
+				<Label prefHeight="36.0" text="%keywords.pattern">
 					<font>
 						<Font size="15.0" />
 					</font>
@@ -66,7 +66,7 @@
 				<Font name="Consolas" size="15.0" />
 			</font>
 		</TextField>
-		<Label prefHeight="30.0" text="template"
+		<Label prefHeight="30.0" text="%keywords.template"
 			AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="0.0"
 			AnchorPane.rightAnchor="0.0">
 			<font>
@@ -83,7 +83,7 @@
 		<Button fx:id="btnClear" mnemonicParsing="false" onAction="#handleClear"
 			prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
 			<tooltip>
-				<Tooltip text="clear new filename">
+				<Tooltip text="%view.OptionPanel.clear_new_filename">
 					<font>
 						<Font size="15.0" />
 					</font>
@@ -94,7 +94,7 @@
 			onAction="#handleUseTemplate" prefWidth="70.0"
 			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="80.0">
 			<tooltip>
-				<Tooltip text="use pattern and template to generate new filename">
+				<Tooltip text="%view.OptionPanel.use_pattern_and_template">
 					<font>
 						<Font size="15.0" />
 					</font>

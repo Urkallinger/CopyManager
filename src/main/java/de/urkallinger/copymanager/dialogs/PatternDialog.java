@@ -36,7 +36,7 @@ public class PatternDialog {
 	public void show() {
 		try {
 			Stage stage = new Stage();
-			stage.setTitle("Pattern");
+			stage.setTitle(Str.get("keywords.pattern"));
 			stage.initOwner(parentStage);
 			stage.initModality(Modality.APPLICATION_MODAL);
 
@@ -44,6 +44,7 @@ public class PatternDialog {
 			stage.getIcons().add(icon);
 
 			FXMLLoader loader = new FXMLLoader();
+			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/dialogs/PatternDialog.fxml"));
 			BorderPane layout = (BorderPane) loader.load();
 

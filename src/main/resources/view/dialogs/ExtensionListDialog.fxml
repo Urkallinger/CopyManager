@@ -21,7 +21,7 @@
 			<columns>
 				<TableColumn fx:id="chbCol" maxWidth="30.0" minWidth="30.0"
 					prefWidth="30.0" resizable="false" sortable="false" />
-				<TableColumn fx:id="extCol" prefWidth="75.0" text="extension" />
+				<TableColumn fx:id="extCol" prefWidth="75.0" text="%keywords.extension" />
 			</columns>
 			<columnResizePolicy>
 				<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -36,30 +36,22 @@
 			BorderPane.alignment="CENTER">
 			<buttons>
 				<Button fx:id="btnOk" onAction="#handleOk" mnemonicParsing="false"
-					text="OK" />
+					text="%keywords.ok" />
 				<Button fx:id="btnCancel" onAction="#handleCancel"
-					mnemonicParsing="false" text="cancel" />
+					mnemonicParsing="false" text="%keywords.cancel" />
 			</buttons>
 		</ButtonBar>
 	</bottom>
 	<top>
 		<HBox BorderPane.alignment="CENTER">
 			<children>
-				<Label text="Extensions found in:">
+				<Label text="%view.dialogs.ExtensionListDialog.found_ext">
 					<font>
 						<Font size="15.0" />
 					</font>
 					<HBox.margin>
 						<Insets />
 					</HBox.margin>
-					<padding>
-						<Insets right="20.0" />
-					</padding>
-				</Label>
-				<Label fx:id="lblDirPath">
-					<font>
-						<Font size="15.0" />
-					</font>
 				</Label>
 			</children>
 			<padding>

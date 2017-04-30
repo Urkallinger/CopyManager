@@ -15,9 +15,13 @@ import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -36,6 +40,8 @@ public class RootLayoutController extends UIController {
 	private Button btnCheckAll = new Button();
 	@FXML
 	private Button btnUncheckAll = new Button();
+	@FXML
+	private MenuButton btnLanguage = new MenuButton();
 	@FXML
 	private AnchorPane leftArea = new AnchorPane();
 	@FXML
@@ -65,6 +71,13 @@ public class RootLayoutController extends UIController {
 			
 			imgRes = new Image(getClass().getResourceAsStream("/images/uncheckAll.png"));
 			btnUncheckAll.setGraphic(new ImageView(imgRes));
+			
+			Configuration cfg = ConfigurationManager.loadConfiguration();
+			String imgPath = String.format("/images/flags/%s.png", cfg.getLocale().toString());
+			imgRes = new Image(getClass().getResourceAsStream(imgPath));
+			btnLanguage.setGraphic(new ImageView(imgRes));
+			
+			createLanguageMenuItems();
 		} catch (Exception e) {
 			MainApp.getLogger().error(Str.get("RootLayoutController.init_err"));
 			MainApp.getLogger().error(e.getMessage());
@@ -93,7 +106,6 @@ public class RootLayoutController extends UIController {
 							ExtensionListDialog dialog = new ExtensionListDialog(mainApp);
 							dialog.setParentStage(stage);
 							dialog.setExtensions(extensions);
-							dialog.setDir(currDir.getAbsolutePath());
 							dialog.show();
 						}
 					};
@@ -140,6 +152,33 @@ public class RootLayoutController extends UIController {
 	@FXML
 	private void handleUncheckAll() {
 		mainApp.setAllChecked(false);
+	}
+	
+	private void createLanguageMenuItems() {
+		String[] supported = {"de", "en"};
+
+		for(String lang : supported) {
+			MenuItem item = new MenuItem();
+			String imgPath = String.format("/images/flags/%s.png", lang);
+			Image imgRes = new Image(getClass().getResourceAsStream(imgPath));
+			
+			item.setGraphic(new ImageView(imgRes));
+			item.setOnAction(new EventHandler<ActionEvent>() {
+				
+				@Override
+				public void handle(ActionEvent event) {
+					Configuration cfg = ConfigurationManager.loadConfiguration();
+					cfg.SetLocale(lang);
+					ConfigurationManager.saveConfiguration(cfg);
+					
+					String info = String.format(Str.get("RootLayoutController.switch_language"), lang);
+					MainApp.getLogger().info(info);
+					btnLanguage.setGraphic(new ImageView(imgRes));
+					
+				}
+			});
+			btnLanguage.getItems().add(item);
+		}
 	}
 	
 	private void setDefaultAnchors(Node node) {

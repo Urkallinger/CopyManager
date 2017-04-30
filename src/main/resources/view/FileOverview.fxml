@@ -14,10 +14,10 @@
 			<columns>
 				<TableColumn fx:id="chbCol" maxWidth="30.0" prefWidth="30.0"
 					resizable="false" sortable="false" editable="true" />
-				<TableColumn fx:id="nameCol" prefWidth="-1.0" text="filename" />
-				<TableColumn fx:id="newNameCol" prefWidth="-1.0" text="new filename" />
-				<TableColumn fx:id="extCol" prefWidth="-1.0" text="extension" />
-				<TableColumn fx:id="sizeCol" prefWidth="-1.0" text="size" />
+				<TableColumn fx:id="nameCol" prefWidth="-1.0" text="%keywords.filename" />
+				<TableColumn fx:id="newNameCol" prefWidth="-1.0" text="%keywords.new_filename" />
+				<TableColumn fx:id="extCol" prefWidth="-1.0" text="%keywords.extension" />
+				<TableColumn fx:id="sizeCol" prefWidth="-1.0" text="%keywords.size" />
 			</columns>
 		</TableView>
 	</children>

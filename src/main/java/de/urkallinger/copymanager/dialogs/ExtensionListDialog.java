@@ -19,7 +19,6 @@ public class ExtensionListDialog {
 
 	private Stage parentStage;
 	private Set<String> extensions;
-	private String dir = "";
 	private ExtensionListDialogController dialogController;
 
 	public ExtensionListDialog(MainApp mainApp) {
@@ -34,10 +33,6 @@ public class ExtensionListDialog {
 		this.extensions = extensions;
 	}
 	
-	public void setDir(String dir) {
-		this.dir = dir;
-	}
-	
 	public void show() {
 		try {
 			Stage stage = new Stage();
@@ -49,13 +44,13 @@ public class ExtensionListDialog {
 			stage.getIcons().add(icon);
 
 			FXMLLoader loader = new FXMLLoader();
+			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/dialogs/ExtensionListDialog.fxml"));
 			BorderPane layout = (BorderPane) loader.load();
 
 			dialogController = loader.getController();
 			dialogController.setMainApp(mainApp);
 			dialogController.addListItems(extensions);
-			dialogController.setDir(dir);
 
 			Scene scene = new Scene(layout);
 			stage.setMinWidth(layout.getMinWidth() + 50);
