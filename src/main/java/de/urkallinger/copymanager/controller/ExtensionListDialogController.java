@@ -4,7 +4,6 @@ import java.util.Set;
 
 import de.urkallinger.copymanager.model.ExtensionListItem;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,6 +33,7 @@ public class ExtensionListDialogController extends UIController {
 	@FXML
 	private void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		table.setOnKeyPressed(event -> handleTableKeyEvent(event));
 
 		chbCol.setCellValueFactory(cellData -> cellData.getValue().chbProperty().asObject());
 		extCol.setCellValueFactory(cellData -> cellData.getValue().extensionProperty());
@@ -45,39 +45,35 @@ public class ExtensionListDialogController extends UIController {
 				return item.chbProperty();
 			}
 		}));
-
-		table.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				switch (event.getCode()) {
-				case SPACE:
-					table.getSelectionModel().getSelectedItems().forEach(item -> {
-						item.setChecked(!item.isChecked());
-					});
-					break;
-
-				case ENTER:
-					handleOk();
-					break;
-					
-				case ESCAPE:
-					handleCancel();
-					break;
-					
-				default:
-					break;
-				}
-			}
-		});
 	}
 
+	private void handleTableKeyEvent(KeyEvent event) {
+		switch (event.getCode()) {
+		case SPACE:
+			table.getSelectionModel().getSelectedItems().forEach(item -> {
+				item.setChecked(!item.isChecked());
+			});
+			break;
+
+		case ENTER:
+			handleOk();
+			break;
+			
+		case ESCAPE:
+			handleCancel();
+			break;
+			
+		default:
+			break;
+		}
+	}
+	
 	@FXML
 	private void handleOk() {
-		table.getItems().forEach(eli -> {
-			if (eli.isChecked()) {
-				mainApp.addFileExtension(eli.getExtension());
-			}
-		});
+		table.getItems().stream()
+			.filter(i -> i.isChecked())
+			.forEach(i -> mainApp.addFileExtension(i.getExtension()));
+		
 		mainApp.clearFileList();
 		mainApp.updateFileList();
 

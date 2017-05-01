@@ -1,8 +1,8 @@
 package de.urkallinger.copymanager.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.exceptions.CMException;
@@ -10,7 +10,6 @@ import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.model.FileListItem.SizeObj;
 import de.urkallinger.copymanager.utils.FileNameBuilder;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
@@ -38,7 +37,8 @@ public class FileOverviewController extends UIController {
 	@FXML
 	public void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		
+		table.setOnKeyPressed(event -> handleTableKeyEvent(event));
+
 		chbCol.setCellValueFactory(cellData -> cellData.getValue().chbProperty().asObject());
 		nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		newNameCol.setCellValueFactory(cellData -> cellData.getValue().newNameProperty());
@@ -59,32 +59,23 @@ public class FileOverviewController extends UIController {
 			}
 		}));
 
-		sizeCol.setCellFactory(new Callback<TableColumn<FileListItem, SizeObj>, TableCell<FileListItem, SizeObj>>() {
+		sizeCol.setCellFactory(value -> new TableCell<FileListItem, SizeObj>() {
 			@Override
-			public TableCell<FileListItem, SizeObj> call(TableColumn<FileListItem, SizeObj> cell) {
-				return new TableCell<FileListItem, SizeObj>() {
-					@Override
-					protected void updateItem(SizeObj item, boolean empty) {
-						super.updateItem(item, empty);
-						if (!isEmpty()) {
-							setText(item.getText());
-						}
-					}
-				};
-			}
-		});
-
-		table.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.SPACE) {
-					table.getSelectionModel().getSelectedItems().forEach(item -> {
-						item.setChecked(!item.isChecked());
-					});
+			protected void updateItem(SizeObj item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!isEmpty()) {
+					setText(item.getText());
 				}
 			}
 		});
+	}
 
+	private void handleTableKeyEvent(KeyEvent event) {
+		if (event.getCode() == KeyCode.SPACE) {
+			table.getSelectionModel().getSelectedItems().forEach(item -> 
+				item.setChecked(!item.isChecked())
+			);
+		}
 	}
 
 	public void addListItems(List<FileListItem> items) {
@@ -92,11 +83,13 @@ public class FileOverviewController extends UIController {
 	}
 
 	public void updateNewFileName(final Pattern pattern, final String template) {
-		if(template.isEmpty()) return;
+		if (template.isEmpty())
+			return;
 		FileNameBuilder nameBuilder = new FileNameBuilder(pattern, template);
-		
+
 		table.getItems().forEach(item -> {
-			if(!item.isChecked()) return; // continue
+			if (!item.isChecked())
+				return; // continue
 			try {
 				String nn = nameBuilder.buildFileName(item);
 				item.setNewName(nn);
@@ -109,16 +102,11 @@ public class FileOverviewController extends UIController {
 	public void clearNewFileName() {
 		table.getItems().forEach(item -> item.setNewName(""));
 	}
-	
+
 	public List<FileListItem> getCheckedFiles() {
-		List<FileListItem> flis = new ArrayList<>();
-		table.getItems().forEach(fli -> {
-			if(fli.isChecked()) {
-				flis.add(fli);
-			}
-		});
-		
-		return flis;
+		return table.getItems().stream()
+				.filter(i -> i.isChecked())		// nur selektierte Elemente 
+				.collect(Collectors.toList());  // gefilterte Elemente in Liste speichern
 	}
 
 	public void clearFileList() {
@@ -127,8 +115,6 @@ public class FileOverviewController extends UIController {
 	}
 
 	public void setAllChecked(boolean checked) {
-		table.getItems().forEach(item -> {
-			item.setChecked(checked);
-		});
+		table.getItems().forEach(item -> item.setChecked(checked));
 	}
 }

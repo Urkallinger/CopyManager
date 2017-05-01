@@ -15,8 +15,6 @@ import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -163,20 +161,16 @@ public class RootLayoutController extends UIController {
 			Image imgRes = new Image(getClass().getResourceAsStream(imgPath));
 			
 			item.setGraphic(new ImageView(imgRes));
-			item.setOnAction(new EventHandler<ActionEvent>() {
+			item.setOnAction(event -> {
+				Configuration cfg = ConfigurationManager.loadConfiguration();
+				cfg.SetLocale(lang);
+				ConfigurationManager.saveConfiguration(cfg);
 				
-				@Override
-				public void handle(ActionEvent event) {
-					Configuration cfg = ConfigurationManager.loadConfiguration();
-					cfg.SetLocale(lang);
-					ConfigurationManager.saveConfiguration(cfg);
-					
-					String info = String.format(Str.get("RootLayoutController.switch_language"), lang);
-					MainApp.getLogger().info(info);
-					btnLanguage.setGraphic(new ImageView(imgRes));
-					
-				}
+				String info = String.format(Str.get("RootLayoutController.switch_language"), lang);
+				MainApp.getLogger().info(info);
+				btnLanguage.setGraphic(new ImageView(imgRes));
 			});
+			
 			btnLanguage.getItems().add(item);
 		}
 	}

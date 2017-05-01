@@ -6,7 +6,6 @@ import java.util.Optional;
 import de.urkallinger.copymanager.Configuration;
 import de.urkallinger.copymanager.ConfigurationManager;
 import de.urkallinger.copymanager.model.PatternListItem;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
@@ -16,7 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class PatternDialogController extends UIController {
 
@@ -36,52 +34,44 @@ public class PatternDialogController extends UIController {
 	@FXML
 	public void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
+		table.setOnKeyPressed(event -> handleTableKeyEvent(event));
+		
 		nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
 		patternCol.prefWidthProperty().bind(table.widthProperty().multiply(0.74));
-		
+
 		nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		patternCol.setCellValueFactory(cellData -> cellData.getValue().patternProperty());
-		patternCol.setCellFactory(
-				new Callback<TableColumn<PatternListItem, String>, TableCell<PatternListItem, String>>() {
 
-					@Override
-					public TableCell<PatternListItem, String> call(TableColumn<PatternListItem, String> param) {
-						return new TableCell<PatternListItem, String>() {
-							@Override
-							protected void updateItem(String item, boolean empty) {
-								super.updateItem(item, empty);
-								if (!isEmpty()) {
-									setText(item);
-									setFont(new Font("Consolas", 15));
-								} else {
-									setText(null);
-								}
-							};
-						};
-					}
-				});
-
-		table.setOnKeyPressed(new EventHandler<KeyEvent>() {
+		patternCol.setCellFactory(call -> new TableCell<PatternListItem, String>() {
 			@Override
-			public void handle(KeyEvent event) {
-				switch (event.getCode()) {
-				case ENTER:
-					handleOk();
-					break;
-
-				case ESCAPE:
-					handleCancel();
-					break;
-
-				case DELETE:
-					PatternListItem pattern = table.getSelectionModel().getSelectedItem();
-					deletePattern(pattern);
-				default:
-					break;
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!isEmpty()) {
+					setText(item);
+					setFont(new Font("Consolas", 15));
+				} else {
+					setText(null);
 				}
 			}
 		});
+	}
+	
+	private void handleTableKeyEvent(KeyEvent event) {
+		switch (event.getCode()) {
+		case ENTER:
+			handleOk();
+			break;
+
+		case ESCAPE:
+			handleCancel();
+			break;
+
+		case DELETE:
+			PatternListItem pattern = table.getSelectionModel().getSelectedItem();
+			deletePattern(pattern);
+		default:
+			break;
+		}
 	}
 
 	private void deletePattern(PatternListItem pattern) {

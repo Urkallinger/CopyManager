@@ -36,16 +36,32 @@ public class MainApp extends Application {
 	private RootLayoutController rootController;
 
 	private FileManager fm;
-	private Optional<File> currentDir = Optional.empty();
 	private Scene scene;
+	private Optional<File> currentDir = Optional.empty();
+	
+	@Override
+	public void start(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("CopyManager");
 
-	private ParamCallback<List<FileListItem>> getUpdateFileCacheCallback() {
-		return new ParamCallback<List<FileListItem>>() {
-			@Override
-			public void call(List<FileListItem> fileList) {
-				fm.setFileCache(fileList);
-			}
-		};
+		createConfig();
+		
+		initRootLayout();
+		showConsole();
+		showFileOverview();
+		showOptionPanel();
+
+		logger = consoleController;
+
+		addGlobalKeyEvents();
+		
+		fm = new FileManager();
+	}
+	
+	private void createConfig() {
+		if(!ConfigurationManager.configurationExists()) {
+			ConfigurationManager.createNewConfiguration();
+		}
 	}
 	
 	private void addGlobalKeyEvents() {
@@ -78,31 +94,6 @@ public class MainApp extends Application {
 				break;
 			}
 		});
-	}
-
-	private void createConfig() {
-		if(!ConfigurationManager.configurationExists()) {
-			ConfigurationManager.createNewConfiguration();
-		}
-	}
-	
-	@Override
-	public void start(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("CopyManager");
-
-		createConfig();
-		
-		initRootLayout();
-		showConsole();
-		showFileOverview();
-		showOptionPanel();
-
-		logger = consoleController;
-
-		addGlobalKeyEvents();
-		
-		fm = new FileManager();
 	}
 
 	/**
@@ -207,7 +198,12 @@ public class MainApp extends Application {
 	}
 
 	public void updateFileCache() {
-		readFiles(getUpdateFileCacheCallback());
+		readFiles(new ParamCallback<List<FileListItem>>() {
+			@Override
+			public void call(List<FileListItem> fileList) {
+				fm.setFileCache(fileList);
+			}
+		});
 	}
 	
 	public void readFiles(ParamCallback<List<FileListItem>> callback) {

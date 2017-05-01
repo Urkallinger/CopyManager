@@ -11,7 +11,6 @@ import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.dialogs.PatternDialog;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -48,6 +47,7 @@ public class OptionPanelController extends UIController {
 	@FXML
 	public void initialize() {
 		fileExtensionList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		fileExtensionList.setOnKeyPressed(event -> handleListKeyEvent(event));
 		
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
 		btnAdd.setGraphic(new ImageView(imgRes));
@@ -64,28 +64,24 @@ public class OptionPanelController extends UIController {
 		imgRes = new Image(getClass().getResourceAsStream("/images/useTemplate.png"));
 		btnUseTemplate.setGraphic(new ImageView(imgRes));
 		
-		txtPattern.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				if(event.getCode() == KeyCode.S && event.isControlDown()) {
-					handleSavePattern();
-				}
-			}
-		});
-		
-		fileExtensionList.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.DELETE) {
-					ObservableList<String> items = fileExtensionList.getSelectionModel().getSelectedItems();
-					items.forEach(item -> mainApp.removeFileExtension(item));
-					mainApp.clearFileList();
-					mainApp.updateFileList();
-				}
-			}
-		});
+		txtPattern.setOnKeyPressed(event -> handlePatternKeyEvent(event));
 	}
 
+	private void handlePatternKeyEvent(KeyEvent event) {
+		if(event.getCode() == KeyCode.S && event.isControlDown()) {
+			handleSavePattern();
+		}
+	}
+	
+	private void handleListKeyEvent(KeyEvent event) {
+		if (event.getCode() == KeyCode.DELETE) {
+			ObservableList<String> items = fileExtensionList.getSelectionModel().getSelectedItems();
+			items.forEach(item -> mainApp.removeFileExtension(item));
+			mainApp.clearFileList();
+			mainApp.updateFileList();
+		}
+	}
+	
 	@FXML
 	public void handleAdd() {
 		TextInputDialog dialog = new TextInputDialog();
