@@ -29,4 +29,13 @@ public class DefaultLogger implements CMLogger {
 	@Override
 	public void setFailed(int idx) {}
 
+	@Override
+	public void setProgress(double x) {
+		int p = (int) (x*100);
+		System.out.println(p+"%");
+	}
+
+	@Override
+	public void enableProgressBar(boolean enable) {}
+
 }

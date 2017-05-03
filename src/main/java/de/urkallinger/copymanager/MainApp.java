@@ -170,6 +170,7 @@ public class MainApp extends Application {
 		} catch (IOException e) {
 			MainApp.getLogger().error(Str.get("MainApp.load_console_err"));
 			MainApp.getLogger().error(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

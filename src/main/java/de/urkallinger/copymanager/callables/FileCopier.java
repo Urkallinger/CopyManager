@@ -18,19 +18,22 @@ public class FileCopier implements Runnable {
 
 	private final List<FileListItem> files;
 	private final File targetDir;
-	
+
 	public FileCopier(List<FileListItem> files, File targetDir) {
 		this.files = files;
 		this.targetDir = targetDir;
 	}
-	
+
 	@Override
 	public void run() {
-		files.forEach(fli -> {
-			final String name = fli.getNewName().isEmpty() ? fli.getName() : fli.getNewName();
-			final String newName = name + "." + fli.getExtension();
+		double stepSize = 1.0 / files.size();
+		double step = 0;
+		MainApp.getLogger().enableProgressBar(true);
+		for(FileListItem file : files) {
+			final String name = file.getNewName().isEmpty() ? file.getName() : file.getNewName();
+			final String newName = name + "." + file.getExtension();
 
-			File from = new File(fli.getAbsolutPath());
+			File from = new File(file.getAbsolutPath());
 			File to = new File(targetDir, newName);
 
 			FutureTask<Integer> cpyInfo = getCpyInfoTask(from, to);
@@ -46,25 +49,30 @@ public class FileCopier implements Runnable {
 				} else {
 					MainApp.getLogger().setFailed(cpyInfo.get());
 				}
-
 			} catch (InterruptedException e) {
 				MainApp.getLogger().error(e.getMessage());
 			} catch (ExecutionException e) {
 				MainApp.getLogger().error(e.getMessage());
 			}
-		});
+			step += stepSize;
+			MainApp.getLogger().setProgress(step);
+		}
+		// Sieht schöner aus, wenn ProgressBar nicht instant verschwindet
+		try { Thread.sleep(2000); } catch (Exception e) {}
+		MainApp.getLogger().enableProgressBar(false);
 	}
 
 	private FutureTask<Integer> getCpyInfoTask(File from, File to) {
 		return new FutureTask<>(new Callable<Integer>() {
-		    @Override
-		    public Integer call() throws Exception {
-		    	String action = String.format(Str.get("FileCopier.copy_action"), from.getAbsolutePath(), to.getAbsolutePath());
-		    	return MainApp.getLogger().action(action, true);
-		    }
+			@Override
+			public Integer call() throws Exception {
+				String action = String.format(Str.get("FileCopier.copy_action"), from.getAbsolutePath(),
+						to.getAbsolutePath());
+				return MainApp.getLogger().action(action, true);
+			}
 		});
 	}
-	
+
 	private FutureTask<Boolean> getCpyFileTask(File from, File to, FutureTask<Integer> cpyInfoTask) {
 		return new FutureTask<>(new Callable<Boolean>() {
 			public Boolean call() {

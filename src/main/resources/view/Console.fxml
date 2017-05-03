@@ -2,11 +2,13 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="200.0" xmlns="http://javafx.com/javafx/8.0.111"
@@ -34,8 +36,8 @@
 						</Tooltip>
 					</tooltip>
 				</Button>
-				<ToggleButton mnemonicParsing="false" prefHeight="30.0"
-					prefWidth="30.0" fx:id="btnScrollLock" onAction="#onScrollLock">
+				<ToggleButton fx:id="btnScrollLock" mnemonicParsing="false"
+					onAction="#onScrollLock" prefHeight="30.0" prefWidth="30.0">
 					<tooltip>
 						<Tooltip text="%view.Console.toggle_scroll_lock">
 							<font>
@@ -46,5 +48,11 @@
 				</ToggleButton>
 			</children>
 		</VBox>
+		<ProgressBar fx:id="progressBar" prefWidth="200.0"
+			progress="0.0" style="-fx-accent: #729917;" visible="false"
+			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="45.0" />
+		<Label prefHeight="18.0" prefWidth="40.0"
+			AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" visible="false" />
 	</children>
 </AnchorPane>

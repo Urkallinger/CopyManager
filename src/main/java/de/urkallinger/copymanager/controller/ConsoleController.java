@@ -7,10 +7,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -21,7 +23,9 @@ public class ConsoleController extends UIController implements CMLogger {
 	private Button btnClear = new Button();
 	@FXML
 	private ToggleButton btnScrollLock = new ToggleButton();
-
+	@FXML
+	private ProgressBar progressBar = new ProgressBar();
+	
 	private ImageView locked;
 	private ImageView unlocked;
 
@@ -135,5 +139,23 @@ public class ConsoleController extends UIController implements CMLogger {
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
 		console.getItems().get(idx).setGraphic(new ImageView(imgRes));
 		console.refresh();
+	}
+
+	@Override
+	public void setProgress(final double x) {
+		Platform.runLater(() -> {
+			progressBar.setProgress(x);
+		});
+	}
+
+	@Override
+	public void enableProgressBar(boolean enable) {
+		progressBar.setVisible(enable);
+		progressBar.setProgress(0.0);
+		if(enable) {
+			AnchorPane.setBottomAnchor(console, 25.0);
+		} else {
+			AnchorPane.setBottomAnchor(console, 0.0);
+		}
 	}
 }
