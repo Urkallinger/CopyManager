@@ -52,7 +52,5 @@
 			progress="0.0" style="-fx-accent: #729917;" visible="false"
 			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
 			AnchorPane.rightAnchor="45.0" />
-		<Label prefHeight="18.0" prefWidth="40.0"
-			AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" visible="false" />
 	</children>
 </AnchorPane>

@@ -36,6 +36,6 @@ public class DefaultLogger implements CMLogger {
 	}
 
 	@Override
-	public void enableProgressBar(boolean enable) {}
+	public void enableProgressBar(boolean enable, final long millis) {}
 
 }

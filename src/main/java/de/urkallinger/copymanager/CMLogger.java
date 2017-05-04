@@ -8,5 +8,5 @@ public interface CMLogger {
 	void setDone(int idx);
 	void setFailed(int idx);
 	void setProgress(double x);
-	void enableProgressBar(boolean enable);
+	void enableProgressBar(boolean enable, final long millis);
 }

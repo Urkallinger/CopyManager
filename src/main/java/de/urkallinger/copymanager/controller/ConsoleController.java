@@ -89,12 +89,7 @@ public class ConsoleController extends UIController implements CMLogger {
 	private void addListItem(ConsoleItem item) {
 		console.getItems().add(item);
 		if (btnScrollLock.isSelected()) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					console.scrollTo(console.getItems().size() - 1);
-				}
-			});
+			Platform.runLater(() -> console.scrollTo(console.getItems().size() - 1));
 		}
 	}
 
@@ -143,19 +138,24 @@ public class ConsoleController extends UIController implements CMLogger {
 
 	@Override
 	public void setProgress(final double x) {
-		Platform.runLater(() -> {
-			progressBar.setProgress(x);
-		});
+		Platform.runLater(() -> progressBar.setProgress(x));
 	}
 
 	@Override
-	public void enableProgressBar(boolean enable) {
-		progressBar.setVisible(enable);
-		progressBar.setProgress(0.0);
-		if(enable) {
-			AnchorPane.setBottomAnchor(console, 25.0);
-		} else {
-			AnchorPane.setBottomAnchor(console, 0.0);
-		}
+	public void enableProgressBar(boolean enable, final long millis) {
+		Thread t = new Thread(() -> {
+			try {Thread.sleep(millis);} catch(Exception e) {}
+			Platform.runLater(() -> {
+				progressBar.setVisible(enable);
+				progressBar.setProgress(0.0);
+				if(enable) {
+					AnchorPane.setBottomAnchor(console, 25.0);
+				} else {
+					AnchorPane.setBottomAnchor(console, 0.0);
+				}
+			});
+		});
+		t.setDaemon(true);
+		t.start();
 	}
 }

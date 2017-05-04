@@ -28,7 +28,7 @@ public class FileCopier implements Runnable {
 	public void run() {
 		double stepSize = 1.0 / files.size();
 		double step = 0;
-		MainApp.getLogger().enableProgressBar(true);
+		MainApp.getLogger().enableProgressBar(true, 0);
 		for(FileListItem file : files) {
 			final String name = file.getNewName().isEmpty() ? file.getName() : file.getNewName();
 			final String newName = name + "." + file.getExtension();
@@ -57,9 +57,7 @@ public class FileCopier implements Runnable {
 			step += stepSize;
 			MainApp.getLogger().setProgress(step);
 		}
-		// Sieht schöner aus, wenn ProgressBar nicht instant verschwindet
-		try { Thread.sleep(2000); } catch (Exception e) {}
-		MainApp.getLogger().enableProgressBar(false);
+		MainApp.getLogger().enableProgressBar(false, 2000);
 	}
 
 	private FutureTask<Integer> getCpyInfoTask(File from, File to) {
