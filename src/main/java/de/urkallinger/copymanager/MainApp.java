@@ -90,6 +90,15 @@ public class MainApp extends Application {
 			case F5:
 				rootController.handleRefresh();
 				break;
+			case DIGIT1:
+				if(event.isControlDown()) {
+					rootController.handleCheckAll();
+				}
+				break;
+			case DIGIT2:
+				if(event.isControlDown()) {
+					rootController.handleUncheckAll();
+				}
 			default:
 				break;
 			}
@@ -170,7 +179,6 @@ public class MainApp extends Application {
 		} catch (IOException e) {
 			MainApp.getLogger().error(Str.get("MainApp.load_console_err"));
 			MainApp.getLogger().error(e.getMessage());
-			e.printStackTrace();
 		}
 	}
 
@@ -199,12 +207,7 @@ public class MainApp extends Application {
 	}
 
 	public void updateFileCache() {
-		readFiles(new ParamCallback<List<FileListItem>>() {
-			@Override
-			public void call(List<FileListItem> fileList) {
-				fm.setFileCache(fileList);
-			}
-		});
+		readFiles((List<FileListItem> fileList) -> fm.setFileCache(fileList));
 	}
 	
 	public void readFiles(ParamCallback<List<FileListItem>> callback) {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -27,12 +26,9 @@ public class FileReader implements Runnable {
 	}
 
 	private FutureTask<Integer> getFileExtInfoTask() {
-		return new FutureTask<>(new Callable<Integer>() {
-			@Override
-			public Integer call() throws Exception {
-				String action = String.format(Str.get("FileReader.read_action"), rootDir);
-				return MainApp.getLogger().action(action, true);
-			}
+		return new FutureTask<>(() -> {
+			String action = String.format(Str.get("FileReader.read_action"), rootDir);
+			return MainApp.getLogger().action(action, true);
 		});
 	}
 

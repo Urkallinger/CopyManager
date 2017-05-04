@@ -3,7 +3,6 @@ package de.urkallinger.copymanager.callables;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -61,28 +60,23 @@ public class FileCopier implements Runnable {
 	}
 
 	private FutureTask<Integer> getCpyInfoTask(File from, File to) {
-		return new FutureTask<>(new Callable<Integer>() {
-			@Override
-			public Integer call() throws Exception {
-				String action = String.format(Str.get("FileCopier.copy_action"), from.getAbsolutePath(),
-						to.getAbsolutePath());
-				return MainApp.getLogger().action(action, true);
-			}
+		return new FutureTask<>(() -> {
+			String action = String.format(Str.get("FileCopier.copy_action"),
+					from.getAbsolutePath(), to.getAbsolutePath());
+			return MainApp.getLogger().action(action, true);
 		});
 	}
 
 	private FutureTask<Boolean> getCpyFileTask(File from, File to, FutureTask<Integer> cpyInfoTask) {
-		return new FutureTask<>(new Callable<Boolean>() {
-			public Boolean call() {
-				Platform.runLater(cpyInfoTask);
-				try {
-					FileUtils.copyFile(from, to);
-				} catch (IOException e) {
-					MainApp.getLogger().error(e.getMessage());
-					return false;
-				}
-				return true;
+		return new FutureTask<>(() -> {
+			Platform.runLater(cpyInfoTask);
+			try {
+				FileUtils.copyFile(from, to);
+			} catch (IOException e) {
+				MainApp.getLogger().error(e.getMessage());
+				return false;
 			}
+			return true;
 		});
 	}
 }
