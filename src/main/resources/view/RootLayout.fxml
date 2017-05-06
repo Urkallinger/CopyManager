@@ -69,6 +69,16 @@
 						</Tooltip>
 					</tooltip>
 				</Button>
+				<Button fx:id="btnSettings" onAction="#handleSettings"
+					ButtonBar.buttonData="LEFT">
+					<tooltip>
+						<Tooltip text="%view.RootLayout.settings">
+							<font>
+								<Font size="15.0" />
+							</font>
+						</Tooltip>
+					</tooltip>
+				</Button>
 				<MenuButton fx:id="btnLanguage" ButtonBar.buttonData="LEFT" />
 				<HBox />
 			</buttons>

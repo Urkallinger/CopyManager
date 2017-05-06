@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import de.urkallinger.copymanager.Configuration;
-import de.urkallinger.copymanager.ConfigurationManager;
 import de.urkallinger.copymanager.MainApp;
+import de.urkallinger.copymanager.config.Configuration;
+import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.dialogs.PatternDialog;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.collections.ObservableList;
@@ -103,7 +103,7 @@ public class OptionPanelController extends UIController {
 	}
 
 	@FXML
-	private void handleUseTemplate() {
+	public void handleUseTemplate() {
     	if(!getPattern().isPresent()) {
     		MainApp.getLogger().warning(Str.get("OptionPanelController.no_pattern_defined"));
     		return;

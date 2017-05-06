@@ -25,7 +25,7 @@ public class ConsoleController extends UIController implements CMLogger {
 	private ToggleButton btnScrollLock = new ToggleButton();
 	@FXML
 	private ProgressBar progressBar = new ProgressBar();
-	
+
 	private ImageView locked;
 	private ImageView unlocked;
 
@@ -95,24 +95,31 @@ public class ConsoleController extends UIController implements CMLogger {
 
 	@Override
 	public void error(String text) {
-		ConsoleItem item = new ConsoleItem(text, Color.RED);
-		addListItem(item);
+		Platform.runLater(() -> {
+			ConsoleItem item = new ConsoleItem(text, Color.RED);
+			addListItem(item);
+		});
 	}
 
 	@Override
 	public void warning(String text) {
-		ConsoleItem item = new ConsoleItem(text, Color.DARKORANGE);
-		addListItem(item);
+		Platform.runLater(() -> {
+			ConsoleItem item = new ConsoleItem(text, Color.rgb(255, 100, 0));
+			addListItem(item);
+		});
 	}
 
 	@Override
 	public void info(String text) {
-		ConsoleItem item = new ConsoleItem(text, Color.BLACK);
-		addListItem(item);
+		Platform.runLater(() -> {
+			ConsoleItem item = new ConsoleItem(text, Color.BLACK);
+			addListItem(item);
+		});
 	}
 
 	@Override
 	public int action(String text, boolean indicator) {
+		// TODO: Platform.runLater -> überlegen wie man das hin bekommt, wegen Rückgabetyp
 		ConsoleItem item = new ConsoleItem(text, Color.BLUE);
 		if (indicator) {
 			item.setGraphic(getLoadingIndicator());
@@ -123,17 +130,21 @@ public class ConsoleController extends UIController implements CMLogger {
 	}
 
 	@Override
-	public void setDone(int idx) {
-		Image imgRes = new Image(getClass().getResourceAsStream("/images/done.png"));
-		console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-		console.refresh();
+	public void setDone(final int idx) {
+		Platform.runLater(() -> {
+			Image imgRes = new Image(getClass().getResourceAsStream("/images/done.png"));
+			console.getItems().get(idx).setGraphic(new ImageView(imgRes));
+			console.refresh();
+		});
 	}
 
 	@Override
-	public void setFailed(int idx) {
-		Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
-		console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-		console.refresh();
+	public void setFailed(final int idx) {
+		Platform.runLater(() -> {
+			Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
+			console.getItems().get(idx).setGraphic(new ImageView(imgRes));
+			console.refresh();
+		});
 	}
 
 	@Override
@@ -144,11 +155,14 @@ public class ConsoleController extends UIController implements CMLogger {
 	@Override
 	public void enableProgressBar(boolean enable, final long millis) {
 		Thread t = new Thread(() -> {
-			try {Thread.sleep(millis);} catch(Exception e) {}
+			try {
+				Thread.sleep(millis);
+			} catch (Exception e) {
+			}
 			Platform.runLater(() -> {
 				progressBar.setVisible(enable);
 				progressBar.setProgress(0.0);
-				if(enable) {
+				if (enable) {
 					AnchorPane.setBottomAnchor(console, 25.0);
 				} else {
 					AnchorPane.setBottomAnchor(console, 0.0);

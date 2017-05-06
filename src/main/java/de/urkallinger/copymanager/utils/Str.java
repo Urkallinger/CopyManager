@@ -3,8 +3,8 @@ package de.urkallinger.copymanager.utils;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import de.urkallinger.copymanager.Configuration;
-import de.urkallinger.copymanager.ConfigurationManager;
+import de.urkallinger.copymanager.config.Configuration;
+import de.urkallinger.copymanager.config.ConfigurationManager;
 
 public class Str {
 	

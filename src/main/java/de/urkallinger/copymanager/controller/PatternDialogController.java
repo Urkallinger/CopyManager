@@ -3,8 +3,8 @@ package de.urkallinger.copymanager.controller;
 import java.util.Map;
 import java.util.Optional;
 
-import de.urkallinger.copymanager.Configuration;
-import de.urkallinger.copymanager.ConfigurationManager;
+import de.urkallinger.copymanager.config.Configuration;
+import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.model.PatternListItem;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

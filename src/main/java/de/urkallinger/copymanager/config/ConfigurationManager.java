@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager;
+package de.urkallinger.copymanager.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.utils.Str;
 
 public class ConfigurationManager {

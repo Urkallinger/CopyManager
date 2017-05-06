@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import de.urkallinger.copymanager.config.Configuration;
+import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.controller.ConsoleController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
@@ -44,7 +46,7 @@ public class MainApp extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("CopyManager");
 
-		createConfig();
+		updateConfig();
 		
 		initRootLayout();
 		showConsole();
@@ -58,9 +60,12 @@ public class MainApp extends Application {
 		fm = new FileManager();
 	}
 	
-	private void createConfig() {
+	private void updateConfig() {
 		if(!ConfigurationManager.configurationExists()) {
 			ConfigurationManager.createNewConfiguration();
+		} else {
+			Configuration cfg = ConfigurationManager.loadConfiguration();
+			ConfigurationManager.saveConfiguration(cfg);
 		}
 	}
 	
@@ -77,6 +82,11 @@ public class MainApp extends Application {
 			case P:
 				if(event.isControlDown()) {
 					optController.handleLoadPattern();
+				}
+				break;
+			case U:
+				if(event.isControlDown()) {
+					optController.handleUseTemplate();
 				}
 				break;
 			case PLUS:

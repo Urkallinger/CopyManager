@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import de.urkallinger.copymanager.Configuration;
-import de.urkallinger.copymanager.ConfigurationManager;
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
+import de.urkallinger.copymanager.config.Configuration;
+import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.dialogs.ExtensionListDialog;
+import de.urkallinger.copymanager.dialogs.SettingsDialog;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
@@ -38,6 +39,8 @@ public class RootLayoutController extends UIController {
 	private Button btnCheckAll = new Button();
 	@FXML
 	private Button btnUncheckAll = new Button();
+	@FXML
+	private Button btnSettings = new Button();
 	@FXML
 	private MenuButton btnLanguage = new MenuButton();
 	@FXML
@@ -69,6 +72,9 @@ public class RootLayoutController extends UIController {
 			
 			imgRes = new Image(getClass().getResourceAsStream("/images/uncheckAll.png"));
 			btnUncheckAll.setGraphic(new ImageView(imgRes));
+			
+			imgRes = new Image(getClass().getResourceAsStream("/images/settings.png"));
+			btnSettings.setGraphic(new ImageView(imgRes));
 			
 			Configuration cfg = ConfigurationManager.loadConfiguration();
 			String imgPath = String.format("/images/flags/%s.png", cfg.getLocale().toString());
@@ -150,6 +156,12 @@ public class RootLayoutController extends UIController {
 	@FXML
 	public void handleUncheckAll() {
 		mainApp.setAllChecked(false);
+	}
+	
+	@FXML
+	public void handleSettings() {
+		SettingsDialog dialog = new SettingsDialog(mainApp);
+		dialog.show();
 	}
 	
 	private void createLanguageMenuItems() {
