@@ -6,6 +6,7 @@ import java.util.Optional;
 import de.urkallinger.copymanager.Configuration;
 import de.urkallinger.copymanager.ConfigurationManager;
 import de.urkallinger.copymanager.model.PatternListItem;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
@@ -80,6 +81,14 @@ public class PatternDialogController extends UIController {
 		cfg.getPattern().remove(pattern.getName());
 		ConfigurationManager.saveConfiguration(cfg);
 	}
+	
+	private void requestFocus() {
+		Platform.runLater(() -> {
+			table.requestFocus();
+			table.getSelectionModel().select(0);
+			table.getFocusModel().focus(0);
+		});
+	}
 
 	@FXML
 	private void handleOk() {
@@ -100,6 +109,8 @@ public class PatternDialogController extends UIController {
 			PatternListItem item = new PatternListItem(k, v);
 			table.getItems().add(item);
 		});
+		
+		requestFocus();
 	}
 
 	public Optional<String> getSelectedPattern() {

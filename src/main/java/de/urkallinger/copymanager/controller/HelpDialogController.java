@@ -1,6 +1,7 @@
 package de.urkallinger.copymanager.controller;
 
 import de.urkallinger.copymanager.model.HelpItem;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
@@ -23,7 +24,7 @@ public class HelpDialogController extends UIController {
 	@FXML
 	public void initialize() {
 		table.setOnKeyPressed(event -> handleTableKeyEvent(event));
-		
+
 		colTopic.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
 		colDescr.prefWidthProperty().bind(table.widthProperty().multiply(0.74));
 
@@ -32,18 +33,28 @@ public class HelpDialogController extends UIController {
 
 		HelpItem hiRoot = new HelpItem();
 		hiRoot.setTopic("SHORTCUTS");
-		
+
 		HelpItem hi = new HelpItem();
 		hi.setTopic("STRG+O");
 		hi.setDescr("Open Directory");
-		
+
 		TreeItem<HelpItem> root = new TreeItem<>(hiRoot);
 		TreeItem<HelpItem> ti = new TreeItem<>(hi);
 		root.getChildren().add(ti);
-		
+
 		table.setRoot(root);
+		requestFocus();
+
 	}
 	
+	private void requestFocus() {
+		Platform.runLater(() -> {
+			table.requestFocus();
+			table.getSelectionModel().select(0);
+			table.getFocusModel().focus(0);
+		});
+	}
+
 	private void handleTableKeyEvent(KeyEvent event) {
 		switch (event.getCode()) {
 		case ESCAPE:
@@ -54,6 +65,7 @@ public class HelpDialogController extends UIController {
 			break;
 		}
 	}
+
 	@FXML
 	private void handleOk() {
 		Stage stage = (Stage) btnOk.getScene().getWindow();

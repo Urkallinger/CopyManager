@@ -9,6 +9,7 @@ import de.urkallinger.copymanager.exceptions.CMException;
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.model.FileListItem.SizeObj;
 import de.urkallinger.copymanager.utils.FileNameBuilder;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
@@ -77,9 +78,18 @@ public class FileOverviewController extends UIController {
 			);
 		}
 	}
+	
+	private void requestFocus() {
+		Platform.runLater(() -> {
+			table.requestFocus();
+			table.getSelectionModel().select(0);
+			table.getFocusModel().focus(0);
+		});
+	}
 
 	public void addListItems(List<FileListItem> items) {
 		table.getItems().addAll(items);
+		requestFocus();
 	}
 
 	public void updateNewFileName(final Pattern pattern, final String template) {

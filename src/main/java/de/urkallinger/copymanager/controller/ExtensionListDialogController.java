@@ -3,6 +3,7 @@ package de.urkallinger.copymanager.controller;
 import java.util.Set;
 
 import de.urkallinger.copymanager.model.ExtensionListItem;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -95,9 +96,18 @@ public class ExtensionListDialogController extends UIController {
 			ExtensionListItem eli = new ExtensionListItem(ext, false);
 			table.getItems().add(eli);
 		});
+		requestFocus();
 	}
 	
 	public void setDir(String dir) {
 		this.lblDirPath.setText(dir);
+	}
+	
+	private void requestFocus() {
+		Platform.runLater(() -> {
+			table.requestFocus();
+			table.getSelectionModel().select(0);
+			table.getFocusModel().focus(0);
+		});
 	}
 }
