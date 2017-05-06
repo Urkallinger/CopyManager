@@ -71,9 +71,6 @@
 				</Button>
 				<MenuButton fx:id="btnLanguage" ButtonBar.buttonData="LEFT" />
 				<HBox />
-				<Button fx:id="btnHelp" onAction="#handleHelp" ButtonBar.buttonData="RIGHT">
-				
-				</Button>
 			</buttons>
 			<padding>
 				<Insets left="10.0" right="10.0" />
