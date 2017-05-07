@@ -14,7 +14,10 @@
 	</padding>
 	<center>
 		<ScrollPane fx:id="scroll" prefHeight="200.0" prefWidth="200.0"
-			BorderPane.alignment="CENTER">
+			BorderPane.alignment="CENTER"
+			style="-fx-focus-color: transparent; 
+				   -fx-faint-focus-color: transparent; 
+				   -fx-background-insets: 0, 0, 1, 2;">
 			<content>
 				<GridPane fx:id="grid">
 					<columnConstraints>
