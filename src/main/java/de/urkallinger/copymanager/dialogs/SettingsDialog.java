@@ -8,24 +8,25 @@ import de.urkallinger.copymanager.utils.Str;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class SettingsDialog {
 	private final MainApp mainApp;
-	
+
 	private Stage parentStage;
 	private SettingsDialogController dialogController;
-	
+
 	public SettingsDialog(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}
-	
+
 	public void setParentStage(Stage parentStage) {
 		this.parentStage = parentStage;
 	}
-	
+
 	public void show() {
 		try {
 			Stage stage = new Stage();
@@ -45,6 +46,7 @@ public class SettingsDialog {
 			dialogController.setMainApp(mainApp);
 
 			Scene scene = new Scene(layout);
+			addShortCuts(scene, stage);
 			stage.setResizable(false);
 			stage.setScene(scene);
 			stage.showAndWait();
@@ -53,5 +55,18 @@ public class SettingsDialog {
 			// TODO: Übersetzung
 			MainApp.getLogger().error(Str.get("Fehler beim Dialog laden."));
 		}
+	}
+
+	private void addShortCuts(final Scene scene, final Stage stage) {
+		scene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+			switch (event.getCode()) {
+			case ESCAPE:
+				stage.close();
+				break;
+
+			default:
+				break;
+			}
+		});
 	}
 }

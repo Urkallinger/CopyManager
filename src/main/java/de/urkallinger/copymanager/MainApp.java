@@ -55,7 +55,7 @@ public class MainApp extends Application {
 
 		logger = consoleController;
 
-		addGlobalKeyEvents();
+		addGlobalShortCuts();
 		
 		fm = new FileManager();
 	}
@@ -69,7 +69,7 @@ public class MainApp extends Application {
 		}
 	}
 	
-	private void addGlobalKeyEvents() {
+	private void addGlobalShortCuts() {
 		// EventFilter verwenden, da manche Events von Controls (bsp. Textfeld)
 		// gefressen werden und nie beim EventHandler ankommen
 		scene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
