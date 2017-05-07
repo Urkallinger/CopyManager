@@ -62,7 +62,7 @@ public class FileCopier implements Runnable {
 					MainApp.getLogger().error(e.getMessage());
 				}
 			} else {
-				String msg = String.format("Can not copy file. File already exists. (%s)", to.getAbsolutePath());
+				String msg = String.format(Str.get("FileCopier.override_file_exists"), to.getAbsolutePath());
 				MainApp.getLogger().warning(msg);
 			}
 			step += stepSize;
