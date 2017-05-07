@@ -1,7 +1,11 @@
 package de.urkallinger.copymanager.controller;
 
+import java.util.concurrent.CountDownLatch;
+
 import de.urkallinger.copymanager.CMLogger;
+import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.model.ConsoleItem;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -89,67 +93,102 @@ public class ConsoleController extends UIController implements CMLogger {
 	private void addListItem(ConsoleItem item) {
 		console.getItems().add(item);
 		if (btnScrollLock.isSelected()) {
-			Platform.runLater(() -> console.scrollTo(console.getItems().size() - 1));
+			Runnable run = () -> console.scrollTo(console.getItems().size() - 1);
+			execute(run);
 		}
 	}
 
 	@Override
 	public void error(String text) {
-		Platform.runLater(() -> {
+		Runnable run = () -> {
 			ConsoleItem item = new ConsoleItem(text, Color.RED);
 			addListItem(item);
-		});
+		};
+		
+		execute(run);
 	}
 
 	@Override
 	public void warning(String text) {
-		Platform.runLater(() -> {
+		Runnable run = () -> {
 			ConsoleItem item = new ConsoleItem(text, Color.rgb(255, 100, 0));
 			addListItem(item);
-		});
+		};
+
+		execute(run);
 	}
 
 	@Override
 	public void info(String text) {
-		Platform.runLater(() -> {
+		Runnable run = () -> {
 			ConsoleItem item = new ConsoleItem(text, Color.BLACK);
 			addListItem(item);
-		});
+		};
+		
+		execute(run);
 	}
 
 	@Override
 	public int action(String text, boolean indicator) {
-		// TODO: Platform.runLater -> überlegen wie man das hin bekommt, wegen Rückgabetyp
-		ConsoleItem item = new ConsoleItem(text, Color.BLUE);
-		if (indicator) {
-			item.setGraphic(getLoadingIndicator());
+		CountDownLatch latch = new CountDownLatch(1);
+		Runnable run = () -> {
+			ConsoleItem item = new ConsoleItem(text, Color.BLUE);
+			if (indicator) {
+				item.setGraphic(getLoadingIndicator());
+			}
+			addListItem(item);
+			latch.countDown();
+		};
+		
+		if(Platform.isFxApplicationThread()) {
+			run.run();
+			return console.getItems().size() - 1;
+		} else {
+			Platform.runLater(run);
+			try {
+				latch.await();
+				return console.getItems().size() - 1;
+			} catch (InterruptedException e) {
+				return -1;
+			}
 		}
-		addListItem(item);
-
-		return console.getItems().size() - 1;
 	}
 
 	@Override
 	public void setDone(final int idx) {
-		Platform.runLater(() -> {
-			Image imgRes = new Image(getClass().getResourceAsStream("/images/done.png"));
-			console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-			console.refresh();
-		});
+		Runnable run = () -> {
+			try {
+				Image imgRes = new Image(getClass().getResourceAsStream("/images/done.png"));
+				console.getItems().get(idx).setGraphic(new ImageView(imgRes));
+				console.refresh();
+			} catch (IndexOutOfBoundsException e) {
+				String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
+				MainApp.getLogger().error(msg);
+			}
+		};
+
+		execute(run);
 	}
 
 	@Override
 	public void setFailed(final int idx) {
-		Platform.runLater(() -> {
-			Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
-			console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-			console.refresh();
-		});
+		Runnable run = () -> {
+			try {
+				Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
+				console.getItems().get(idx).setGraphic(new ImageView(imgRes));
+				console.refresh();
+			} catch (IndexOutOfBoundsException e) {
+				String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
+				MainApp.getLogger().error(msg);
+			}
+		};
+		execute(run);
 	}
 
 	@Override
 	public void setProgress(final double x) {
-		Platform.runLater(() -> progressBar.setProgress(x));
+		Runnable run = () -> progressBar.setProgress(x);
+		execute(run);
 	}
 
 	@Override
@@ -171,5 +210,13 @@ public class ConsoleController extends UIController implements CMLogger {
 		});
 		t.setDaemon(true);
 		t.start();
+	}
+	
+	private void execute (Runnable run) {
+		if(Platform.isFxApplicationThread()) {
+			run.run();
+		} else {
+			Platform.runLater(run);
+		}
 	}
 }

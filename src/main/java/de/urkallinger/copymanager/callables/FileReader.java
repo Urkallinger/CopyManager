@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 import org.apache.commons.io.FileUtils;
 
@@ -13,7 +11,6 @@ import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
-import javafx.application.Platform;
 
 public class FileReader implements Runnable {
 
@@ -25,27 +22,16 @@ public class FileReader implements Runnable {
 		this.callback = callback;
 	}
 
-	private FutureTask<Integer> getFileExtInfoTask() {
-		return new FutureTask<>(() -> {
-			String action = String.format(Str.get("FileReader.read_action"), rootDir);
-			return MainApp.getLogger().action(action, true);
-		});
-	}
-
 	@Override
 	public void run() {
-		FutureTask<Integer> extReadInfo = getFileExtInfoTask();
-		Platform.runLater(extReadInfo);
+		String action = String.format(Str.get("FileReader.read_action"), rootDir);
+		int idx = MainApp.getLogger().action(action, true);
+		
 		Collection<File> files = FileUtils.listFiles(rootDir, null, true);
 		List<FileListItem> items = new ArrayList<>(files.size());
 		files.forEach(f -> items.add(new FileListItem(f)));
-		try {
-			MainApp.getLogger().setDone(extReadInfo.get());
-		} catch (InterruptedException | ExecutionException e) {
-			String error = String.format(Str.get("FileReader.read_err"), rootDir);
-			MainApp.getLogger().error(error);
-			MainApp.getLogger().error(e.getMessage());
-		}
+		
+		MainApp.getLogger().setDone(idx);
 		callback.call(items);
 	}
 }

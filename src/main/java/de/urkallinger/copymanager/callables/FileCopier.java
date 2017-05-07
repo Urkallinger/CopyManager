@@ -3,8 +3,6 @@ package de.urkallinger.copymanager.callables;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 import org.apache.commons.io.FileUtils;
 
@@ -14,7 +12,6 @@ import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.config.Settings;
 import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
-import javafx.application.Platform;
 
 public class FileCopier implements Runnable {
 
@@ -43,24 +40,16 @@ public class FileCopier implements Runnable {
 			// Wenn Ziel nicht existiert -> kopieren
 			// Wenn Ziel exisitiert und überschreiben aktiviert ist -> kopieren
 			if (!to.exists() || (to.exists() && cfg.getSetting(Settings.OVERRIDE_FILES))) {
-				FutureTask<Integer> cpyInfo = getCpyInfoTask(from, to);
-				FutureTask<Boolean> copyFile = getCpyFileTask(from, to, cpyInfo);
-
-				Thread copyFilesThread = new Thread(copyFile);
+				Thread copyFilesThread = new Thread(getCpyFileRunnable(from, to));
+				copyFilesThread.setDaemon(true);
 				copyFilesThread.start();
 
 				try {
 					copyFilesThread.join();
-					if (copyFile.get()) {
-						MainApp.getLogger().setDone(cpyInfo.get());
-					} else {
-						MainApp.getLogger().setFailed(cpyInfo.get());
-					}
 				} catch (InterruptedException e) {
 					MainApp.getLogger().error(e.getMessage());
-				} catch (ExecutionException e) {
-					MainApp.getLogger().error(e.getMessage());
 				}
+
 			} else {
 				String msg = String.format(Str.get("FileCopier.override_file_exists"), to.getAbsolutePath());
 				MainApp.getLogger().warning(msg);
@@ -71,24 +60,19 @@ public class FileCopier implements Runnable {
 		MainApp.getLogger().enableProgressBar(false, 2000);
 	}
 
-	private FutureTask<Integer> getCpyInfoTask(File from, File to) {
-		return new FutureTask<>(() -> {
-			String action = String.format(Str.get("FileCopier.copy_action"), from.getAbsolutePath(),
+	private Runnable getCpyFileRunnable(File from, File to) {
+		return () -> {
+			String action = String.format(Str.get("FileCopier.copy_action"), 
+					from.getAbsolutePath(),
 					to.getAbsolutePath());
-			return MainApp.getLogger().action(action, true);
-		});
-	}
-
-	private FutureTask<Boolean> getCpyFileTask(File from, File to, FutureTask<Integer> cpyInfoTask) {
-		return new FutureTask<>(() -> {
+			int idx = MainApp.getLogger().action(action, true);
 			try {
-				Platform.runLater(cpyInfoTask);
 				FileUtils.copyFile(from, to);
+				MainApp.getLogger().setDone(idx);
 			} catch (IOException e) {
+				MainApp.getLogger().setFailed(idx);
 				MainApp.getLogger().error(e.getMessage());
-				return false;
 			}
-			return true;
-		});
+		};
 	}
 }
