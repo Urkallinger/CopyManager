@@ -9,9 +9,9 @@ public class ExtensionListItem {
 	private final BooleanProperty chb = new SimpleBooleanProperty();
 	private final StringProperty extension = new SimpleStringProperty();
 
-	public ExtensionListItem(String extension, boolean checked) {
+	public ExtensionListItem(String extension) {
 		setExtension(extension);
-		setChecked(checked);
+		setChecked(false);
 	}
 	
 	public final BooleanProperty chbProperty() {

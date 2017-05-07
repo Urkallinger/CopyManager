@@ -13,6 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -35,6 +36,7 @@ public class ExtensionListDialogController extends UIController {
 	private void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		table.setOnKeyPressed(event -> handleTableKeyEvent(event));
+		table.setOnMouseClicked(event -> handleMouseCllick(event));
 
 		chbCol.setCellValueFactory(cellData -> cellData.getValue().chbProperty().asObject());
 		extCol.setCellValueFactory(cellData -> cellData.getValue().extensionProperty());
@@ -46,6 +48,13 @@ public class ExtensionListDialogController extends UIController {
 				return item.chbProperty();
 			}
 		}));
+	}
+
+	private void handleMouseCllick(MouseEvent event) {
+		table.getSelectionModel().getSelectedItems().forEach(item -> {
+			item.setChecked(!item.isChecked());
+		});
+		event.consume();
 	}
 
 	private void handleTableKeyEvent(KeyEvent event) {
@@ -93,7 +102,7 @@ public class ExtensionListDialogController extends UIController {
 
 	public void addListItems(Set<String> extensions) {
 		extensions.forEach(ext -> {
-			ExtensionListItem eli = new ExtensionListItem(ext, false);
+			ExtensionListItem eli = new ExtensionListItem(ext);
 			table.getItems().add(eli);
 		});
 		requestFocus();
