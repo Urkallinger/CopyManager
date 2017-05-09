@@ -1,11 +1,12 @@
 package de.urkallinger.copymanager.dialogs;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import de.urkallinger.copymanager.MainApp;
-import de.urkallinger.copymanager.controller.PatternDialogController;
+import de.urkallinger.copymanager.controller.RenameConfigsDialogController;
+import de.urkallinger.copymanager.model.RenameConfigItem;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,14 +15,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class PatternDialog {
+public class RenameConfigsDialog {
 	private final MainApp mainApp;
 	
 	private Stage parentStage;
-	private Map<String, String> pattern;
-	private PatternDialogController dialogController;
+	private List<RenameConfigItem> renameConfigs;
+	private RenameConfigsDialogController dialogController;
 	
-	public PatternDialog(MainApp mainApp) {
+	public RenameConfigsDialog(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}
 	
@@ -29,14 +30,14 @@ public class PatternDialog {
 		this.parentStage = parentStage;
 	}
 	
-	public void setPattern(Map<String, String> pattern) {
-		this.pattern = pattern;
+	public void setRenameConfigs(List<RenameConfigItem> renameConfigs) {
+		this.renameConfigs = renameConfigs;
 	}
 	
 	public void show() {
 		try {
 			Stage stage = new Stage();
-			stage.setTitle(Str.get("keywords.pattern"));
+			stage.setTitle(Str.get("RenameConfigsDialog.title"));
 			stage.initOwner(parentStage);
 			stage.initModality(Modality.APPLICATION_MODAL);
 
@@ -45,12 +46,12 @@ public class PatternDialog {
 
 			FXMLLoader loader = new FXMLLoader();
 			loader.setResources(Str.getBundle());
-			loader.setLocation(getClass().getResource("/view/dialogs/PatternDialog.fxml"));
+			loader.setLocation(getClass().getResource("/view/dialogs/RenameConfigsDialog.fxml"));
 			BorderPane layout = (BorderPane) loader.load();
 
 			dialogController = loader.getController();
 			dialogController.setMainApp(mainApp);
-			dialogController.addListItems(pattern);
+			dialogController.addListItems(renameConfigs);
 
 			Scene scene = new Scene(layout);
 			stage.setMinWidth(layout.getMinWidth() + 50);
@@ -59,14 +60,14 @@ public class PatternDialog {
 			stage.showAndWait();
 
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("PatternDialog.init_err"));
+			MainApp.getLogger().error(Str.get("RenameConfigsDialog.init_err"));
 			MainApp.getLogger().error(e.getMessage());
 		}
 	}
 	
-	public Optional<String> getSelectedPattern() {
+	public Optional<RenameConfigItem> getSelectedRenameConfig() {
 		if(dialogController != null) {
-			return dialogController.getSelectedPattern();
+			return dialogController.getSelectedRenameConfig();
 		} else {
 			return Optional.empty();
 		}

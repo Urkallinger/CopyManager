@@ -12,7 +12,7 @@
 
 
 <BorderPane
-	fx:controller="de.urkallinger.copymanager.controller.PatternDialogController"
+	fx:controller="de.urkallinger.copymanager.controller.RenameConfigsDialogController"
 	minHeight="400" minWidth="600" prefHeight="400.0" prefWidth="600.0"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
 	<center>
@@ -21,6 +21,7 @@
 			<columns>
 				<TableColumn fx:id="nameCol"  prefWidth="50.0" text="%keywords.name" />
 				<TableColumn fx:id="patternCol" text="%keywords.pattern" />
+				<TableColumn fx:id="templateCol" text="%keywords.template" />
 			</columns>
 		</TableView>
 	</center>

@@ -1,6 +1,8 @@
 package de.urkallinger.copymanager.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -8,20 +10,22 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.urkallinger.copymanager.model.RenameConfigItem;
+
 @XmlRootElement(name = "configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Configuration {
 	
 	private String lastSrcDir;
 	private String lastDestDir;
-	private Map<String, String> pattern;
+	private List<RenameConfigItem> renameConfigurations;
 	private String locale;
 	private Map<Settings, Boolean> settings;
 	
 	public Configuration() {
 		this.lastSrcDir = "";
 		this.lastDestDir = "";
-		this.pattern = new HashMap<>();
+		this.renameConfigurations = new ArrayList<>();
 		this.locale = Locale.ENGLISH.toString();
 		this.settings = new HashMap<>();
 		setDefaultSettings();
@@ -47,12 +51,12 @@ public class Configuration {
 		this.lastDestDir = lastDestDir;
 	}
 
-	public Map<String, String> getPattern() {
-		return pattern;
+	public List<RenameConfigItem> getRenameConfigurations() {
+		return renameConfigurations;
 	}
 
-	public void addPattern(String name, String pattern) {
-		this.pattern.put(name, pattern);
+	public void addRenameConfiguration(String name, String pattern, String template) {
+		this.renameConfigurations.add(new RenameConfigItem(name, pattern, template));
 	}
 
 	public Locale getLocale() {

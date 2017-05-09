@@ -1,6 +1,6 @@
 package de.urkallinger.copymanager.controller;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -8,7 +8,8 @@ import java.util.regex.PatternSyntaxException;
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
-import de.urkallinger.copymanager.dialogs.PatternDialog;
+import de.urkallinger.copymanager.dialogs.RenameConfigsDialog;
+import de.urkallinger.copymanager.model.RenameConfigItem;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -63,14 +64,6 @@ public class OptionPanelController extends UIController {
 		
 		imgRes = new Image(getClass().getResourceAsStream("/images/useTemplate.png"));
 		btnUseTemplate.setGraphic(new ImageView(imgRes));
-		
-		txtPattern.setOnKeyPressed(event -> handlePatternKeyEvent(event));
-	}
-
-	private void handlePatternKeyEvent(KeyEvent event) {
-		if(event.getCode() == KeyCode.S && event.isControlDown()) {
-			handleSavePattern();
-		}
 	}
 	
 	private void handleListKeyEvent(KeyEvent event) {
@@ -104,15 +97,9 @@ public class OptionPanelController extends UIController {
 
 	@FXML
 	public void handleUseTemplate() {
-    	if(!getPattern().isPresent()) {
-    		MainApp.getLogger().warning(Str.get("OptionPanelController.no_pattern_defined"));
-    		return;
-    	}
-    	
-    	if(getTemplate().isEmpty()) {
-    		MainApp.getLogger().warning(Str.get("OptionPanelController.no_template_defined"));
-    		return;
-    	}
+		if(!validateRenameConfig()) {
+			return;
+		}
 		mainApp.updateNewFileName();
 	}
 	
@@ -122,36 +109,58 @@ public class OptionPanelController extends UIController {
 	}
 
 	@FXML
-	public void handleLoadPattern() {
+	public void handleLoadRenameConfigs() {
 		Configuration cfg = ConfigurationManager.loadConfiguration();
-		Map<String, String> pattern = cfg.getPattern();
+		List<RenameConfigItem> renameConfigs = cfg.getRenameConfigurations();
 		
-		if(pattern.size() > 0) {
-			PatternDialog dialog = new PatternDialog(mainApp);
+		if(renameConfigs.size() > 0) {
+			RenameConfigsDialog dialog = new RenameConfigsDialog(mainApp);
 			dialog.setParentStage(mainApp.getPrimaryStage());
-			dialog.setPattern(pattern);
+			dialog.setRenameConfigs(renameConfigs);
 			dialog.show();
-			dialog.getSelectedPattern().ifPresent(pat -> txtPattern.setText(pat));
+			dialog.getSelectedRenameConfig().ifPresent(renameConfig -> {
+				txtPattern.setText(renameConfig.getPattern());
+				txtTemplate.setText(renameConfig.getTemplate());
+			});
 		} else {
-			MainApp.getLogger().warning(Str.get("OptionPanelController.no_saved_pattern_found"));
+			MainApp.getLogger().warning(Str.get("OptionPanelController.no_saved_rename_configs_found"));
 		}
 	}
 	
 	@FXML
-	private void handleSavePattern() {
+	public void handleSavePattern() {
+		if(!validateRenameConfig()) {
+			return;
+		}
 		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle(Str.get("OptionPanelController.save_pattern_title"));
-		dialog.setHeaderText(Str.get("OptionPanelController.save_pattern"));
+		dialog.setTitle(Str.get("OptionPanelController.save_rename_config"));
+		dialog.setHeaderText(Str.get("OptionPanelController.save_rename_config_text"));
 		Optional<String> result = dialog.showAndWait();
+		
 		result.ifPresent(name -> {
-			if (name.isEmpty()) return;
+			if (name.isEmpty()) {
+				MainApp.getLogger().error(Str.get("OptionPanelController.rename_config_invalid_name"));
+				return;
+			}
 			
-			getPattern().ifPresent(pat -> {
-				Configuration cfg = ConfigurationManager.loadConfiguration();
-				cfg.addPattern(name, pat.toString());
-				ConfigurationManager.saveConfiguration(cfg);
-			});
+			Configuration cfg = ConfigurationManager.loadConfiguration();
+			cfg.addRenameConfiguration(name, txtPattern.getText(), txtTemplate.getText());
+			ConfigurationManager.saveConfiguration(cfg);
 		});
+	}
+	
+	private boolean validateRenameConfig() {
+		if(!getPattern().isPresent()) {
+    		MainApp.getLogger().warning(Str.get("OptionPanelController.no_pattern_defined"));
+    		return false;
+    	}
+    	
+    	if(getTemplate().isEmpty()) {
+    		MainApp.getLogger().warning(Str.get("OptionPanelController.no_template_defined"));
+    		return false;
+    	}
+    	
+    	return true;
 	}
 	
 	public Optional<Pattern> getPattern() {

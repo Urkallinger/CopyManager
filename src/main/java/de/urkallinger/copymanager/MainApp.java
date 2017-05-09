@@ -81,7 +81,7 @@ public class MainApp extends Application {
 				break;
 			case P:
 				if(event.isControlDown()) {
-					optController.handleLoadPattern();
+					optController.handleLoadRenameConfigs();
 				}
 				break;
 			case U:
@@ -92,6 +92,11 @@ public class MainApp extends Application {
 			case PLUS:
 				if(event.isControlDown()) {
 					optController.handleAdd();
+				}
+				break;
+			case S:
+				if(event.isControlDown()) {
+					optController.handleSavePattern();
 				}
 				break;
 			case F1:

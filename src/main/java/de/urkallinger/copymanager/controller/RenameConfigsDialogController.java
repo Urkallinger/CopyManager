@@ -1,11 +1,11 @@
 package de.urkallinger.copymanager.controller;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
-import de.urkallinger.copymanager.model.PatternListItem;
+import de.urkallinger.copymanager.model.RenameConfigItem;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -17,20 +17,22 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class PatternDialogController extends UIController {
+public class RenameConfigsDialogController extends UIController {
 
 	@FXML
-	private TableView<PatternListItem> table = new TableView<>();
+	private TableView<RenameConfigItem> table = new TableView<>();
 	@FXML
-	private TableColumn<PatternListItem, String> nameCol = new TableColumn<>();
+	private TableColumn<RenameConfigItem, String> nameCol = new TableColumn<>();
 	@FXML
-	private TableColumn<PatternListItem, String> patternCol = new TableColumn<>();
+	private TableColumn<RenameConfigItem, String> patternCol = new TableColumn<>();
+	@FXML
+	private TableColumn<RenameConfigItem, String> templateCol = new TableColumn<>();
 	@FXML
 	Button btnOk = new Button();
 	@FXML
 	Button btnCancel = new Button();
 
-	private Optional<String> selection = Optional.empty();
+	private Optional<RenameConfigItem> selection = Optional.empty();
 
 	@FXML
 	public void initialize() {
@@ -38,12 +40,27 @@ public class PatternDialogController extends UIController {
 		table.setOnKeyPressed(event -> handleTableKeyEvent(event));
 		
 		nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
-		patternCol.prefWidthProperty().bind(table.widthProperty().multiply(0.74));
+		patternCol.prefWidthProperty().bind(table.widthProperty().multiply(0.37));
+		templateCol.prefWidthProperty().bind(table.widthProperty().multiply(0.37));
 
 		nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		patternCol.setCellValueFactory(cellData -> cellData.getValue().patternProperty());
+		templateCol.setCellValueFactory(cellData -> cellData.getValue().templateProperty());
 
-		patternCol.setCellFactory(call -> new TableCell<PatternListItem, String>() {
+		patternCol.setCellFactory(call -> new TableCell<RenameConfigItem, String>() {
+			@Override
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!isEmpty()) {
+					setText(item);
+					setFont(new Font("Consolas", 15));
+				} else {
+					setText(null);
+				}
+			}
+		});
+		
+		templateCol.setCellFactory(call -> new TableCell<RenameConfigItem, String>() {
 			@Override
 			protected void updateItem(String item, boolean empty) {
 				super.updateItem(item, empty);
@@ -68,17 +85,17 @@ public class PatternDialogController extends UIController {
 			break;
 
 		case DELETE:
-			PatternListItem pattern = table.getSelectionModel().getSelectedItem();
-			deletePattern(pattern);
+			RenameConfigItem renameConfig = table.getSelectionModel().getSelectedItem();
+			deleteRenameConfig(renameConfig);
 		default:
 			break;
 		}
 	}
 
-	private void deletePattern(PatternListItem pattern) {
-		table.getItems().remove(pattern);
+	private void deleteRenameConfig(RenameConfigItem renameConfig) {
+		table.getItems().remove(renameConfig);
 		Configuration cfg = ConfigurationManager.loadConfiguration();
-		cfg.getPattern().remove(pattern.getName());
+		cfg.getRenameConfigurations().remove(renameConfig);
 		ConfigurationManager.saveConfiguration(cfg);
 	}
 	
@@ -92,8 +109,8 @@ public class PatternDialogController extends UIController {
 
 	@FXML
 	private void handleOk() {
-		Optional<PatternListItem> item = Optional.ofNullable(table.getSelectionModel().getSelectedItem());
-		item.ifPresent(it -> selection = Optional.ofNullable(it.getPattern()));
+		Optional<RenameConfigItem> item = Optional.ofNullable(table.getSelectionModel().getSelectedItem());
+		item.ifPresent(it -> selection = Optional.ofNullable(it));
 		Stage stage = (Stage) btnOk.getScene().getWindow();
 		stage.close();
 	}
@@ -104,16 +121,12 @@ public class PatternDialogController extends UIController {
 		stage.close();
 	}
 
-	public void addListItems(Map<String, String> pattern) {
-		pattern.forEach((k, v) -> {
-			PatternListItem item = new PatternListItem(k, v);
-			table.getItems().add(item);
-		});
-		
+	public void addListItems(List<RenameConfigItem> renameConfigs) {
+		table.getItems().addAll(renameConfigs);
 		requestFocus();
 	}
 
-	public Optional<String> getSelectedPattern() {
+	public Optional<RenameConfigItem> getSelectedRenameConfig() {
 		return selection;
 	}
 }

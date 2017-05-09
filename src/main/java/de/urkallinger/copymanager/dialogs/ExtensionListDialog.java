@@ -36,7 +36,7 @@ public class ExtensionListDialog {
 	public void show() {
 		try {
 			Stage stage = new Stage();
-			stage.setTitle("Extensions");
+			stage.setTitle(Str.get("keywords.extensions"));
 			stage.initOwner(parentStage);
 			stage.initModality(Modality.APPLICATION_MODAL);
 
