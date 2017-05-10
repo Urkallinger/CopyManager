@@ -59,7 +59,7 @@ public class FileNameBuilder {
 		try {
 			while (mx.find()) {
 				num = Integer.valueOf(mx.group(1));
-				nn = nn.replace("#f" + num, split[split.length - num].trim());
+				nn = nn.replace("#f" + num, split[split.length - num - 1].trim());
 			}
 		} catch (IndexOutOfBoundsException e) {
 			String msg = String.format(Str.get("FileNameBuilder.dir_ioob"), num, item.getName());
