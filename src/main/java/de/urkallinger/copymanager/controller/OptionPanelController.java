@@ -10,12 +10,15 @@ import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.dialogs.RenameConfigsDialog;
 import de.urkallinger.copymanager.model.RenameConfigItem;
+import de.urkallinger.copymanager.model.ReplacementItem;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
@@ -31,7 +34,9 @@ public class OptionPanelController extends UIController {
 	@FXML
 	private ListView<String> fileExtensionList = new ListView<>();
 	@FXML
-	private Button btnAdd = new Button();
+	private Button btnAddFileEx = new Button();
+	@FXML
+	private Button btnAddFileReplacement = new Button();
 	@FXML
 	private Button btnLoad = new Button();
 	@FXML
@@ -44,6 +49,12 @@ public class OptionPanelController extends UIController {
 	private Button btnClear = new Button();	
 	@FXML
 	private Button btnUseTemplate = new Button();
+	@FXML
+	private TableView<ReplacementItem> tblReplacement = new TableView<>();
+	@FXML
+	private TableColumn<ReplacementItem, String> colOldValue = new TableColumn<>();
+	@FXML
+	private TableColumn<ReplacementItem, String> colNewValue = new TableColumn<>();
 
 	@FXML
 	public void initialize() {
@@ -51,8 +62,11 @@ public class OptionPanelController extends UIController {
 		fileExtensionList.setOnKeyPressed(event -> handleListKeyEvent(event));
 		
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
-		btnAdd.setGraphic(new ImageView(imgRes));
+		btnAddFileEx.setGraphic(new ImageView(imgRes));
 
+		imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
+		btnAddFileReplacement.setGraphic(new ImageView(imgRes));
+		
 		imgRes = new Image(getClass().getResourceAsStream("/images/load.png"));
 		btnLoad.setGraphic(new ImageView(imgRes));
 		
@@ -64,6 +78,9 @@ public class OptionPanelController extends UIController {
 		
 		imgRes = new Image(getClass().getResourceAsStream("/images/useTemplate.png"));
 		btnUseTemplate.setGraphic(new ImageView(imgRes));
+		
+		colOldValue.setCellValueFactory(cellData -> cellData.getValue().oldValueProperty());
+		colNewValue.setCellValueFactory(cellData -> cellData.getValue().newValueProperty());
 	}
 	
 	private void handleListKeyEvent(KeyEvent event) {
@@ -76,7 +93,7 @@ public class OptionPanelController extends UIController {
 	}
 	
 	@FXML
-	public void handleAdd() {
+	public void handleAddExtension() {
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle(Str.get("OptionPanelController.new_file_ext_title"));
 		dialog.setHeaderText(Str.get("OptionPanelController.new_file_ext"));
@@ -93,6 +110,13 @@ public class OptionPanelController extends UIController {
 			mainApp.clearFileList();
 			mainApp.updateFileList();
 		});
+	}
+	
+	@FXML
+	public void handleAddReplacement() {
+		tblReplacement.getItems().add(new ReplacementItem("aa", "bb"));
+		tblReplacement.refresh();
+		MainApp.getLogger().info("replacement added");
 	}
 
 	@FXML

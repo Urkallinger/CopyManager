@@ -73,9 +73,9 @@ public class FileOverviewController extends UIController {
 
 	private void handleTableKeyEvent(KeyEvent event) {
 		if (event.getCode() == KeyCode.SPACE) {
-			table.getSelectionModel().getSelectedItems().forEach(item -> 
-				item.setChecked(!item.isChecked())
-			);
+			table.getSelectionModel()
+			     .getSelectedItems()
+			     .forEach(item -> item.setChecked(!item.isChecked()));
 		}
 	}
 	
@@ -97,15 +97,15 @@ public class FileOverviewController extends UIController {
 			return;
 		FileNameBuilder nameBuilder = new FileNameBuilder(pattern, template);
 
-		table.getItems().forEach(item -> {
-			if (!item.isChecked())
-				return; // continue
-			try {
-				String nn = nameBuilder.buildFileName(item);
-				item.setNewName(nn);
-			} catch (CMException e) {
-				MainApp.getLogger().error(e.getMessage());
-			}
+		table.getItems().stream()
+			.filter(FileListItem::isChecked)
+			.forEach(item -> {
+				try {
+					String nn = nameBuilder.buildFileName(item);
+					item.setNewName(nn);
+				} catch (CMException e) {
+					MainApp.getLogger().error(e.getMessage());
+				}
 		});
 	}
 
@@ -115,8 +115,8 @@ public class FileOverviewController extends UIController {
 
 	public List<FileListItem> getCheckedFiles() {
 		return table.getItems().stream()
-				.filter(i -> i.isChecked())		// nur selektierte Elemente 
-				.collect(Collectors.toList());  // gefilterte Elemente in Liste speichern
+				.filter(FileListItem::isChecked) // nur selektierte Elemente 
+				.collect(Collectors.toList());   // gefilterte Elemente in Liste speichern
 	}
 
 	public void clearFileList() {

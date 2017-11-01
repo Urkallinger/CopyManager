@@ -91,7 +91,7 @@ public class MainApp extends Application {
 				break;
 			case PLUS:
 				if(event.isControlDown()) {
-					optController.handleAdd();
+					optController.handleAddExtension();
 				}
 				break;
 			case S:
