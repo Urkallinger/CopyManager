@@ -11,9 +11,10 @@ import de.urkallinger.copymanager.controller.ConsoleController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
+import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.exceptions.FileCopierInProgressException;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
-import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.files.FileManager;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -53,6 +54,8 @@ public class MainApp extends Application {
 		showFileOverview();
 		showOptionPanel();
 
+		optController.setFileOverview(fileOverviewController);
+		
 		logger = consoleController;
 
 		addGlobalShortCuts();
@@ -211,10 +214,6 @@ public class MainApp extends Application {
 		optController.removeFileExtension(extension);
 		String info = String.format(Str.get("MainApp.file_ext_removed"), extension);
 		MainApp.getLogger().info(info);
-	}
-
-	public void updateNewFileName() {
-		fileOverviewController.updateNewFileName(optController.getPattern().get(), optController.getTemplate());
 	}
 
 	public void clearNewFileName() {

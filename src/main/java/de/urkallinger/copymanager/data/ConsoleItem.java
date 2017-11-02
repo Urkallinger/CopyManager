@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.model;
+package de.urkallinger.copymanager.data;
 
 import javafx.scene.Node;
 import javafx.scene.paint.Color;

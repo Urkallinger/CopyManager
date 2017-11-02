@@ -1,40 +1,31 @@
-package de.urkallinger.copymanager.utils;
+package de.urkallinger.copymanager.files.filter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.io.FilenameUtils;
 
 import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.exceptions.CMException;
+import de.urkallinger.copymanager.utils.Str;
 
-public class FileNameBuilder {
+public class RegExFilter implements FileNameFilter {
 
 	private final Pattern templPattern = Pattern.compile("#(\\d+)");
 	private final Pattern folderPattern = Pattern.compile("#f(\\d+)");
 	private final Pattern userPattern;
 	private final String template;
-
-	public FileNameBuilder(final Pattern pattern, final String template) {
-		this.userPattern = pattern;
+	
+	public RegExFilter(final String pattern, final String template) throws CMException {
+		try {
+			this.userPattern = Pattern.compile(pattern);
+		} catch (PatternSyntaxException e) {
+			throw new CMException(Str.get("OptionPanelController.pattern_compile_err"));
+		}
 		this.template = template;
 	}
-
-	public String buildFileName(FileListItem item) throws CMException {
-		String nn = template; // new name
-
-		Matcher m = userPattern.matcher(item.getName());
-		if (m.matches()) {
-			nn = replaceUserWildCard(nn, item, m);
-			nn = replaceFolderWildCard(nn, item);
-		} else {
-			String msg = String.format(Str.get("FileNameBuilder.no_pattern_match"), item.getName());
-			throw new CMException(msg);
-		}
-
-		return nn;
-	}
-
+	
 	private String replaceUserWildCard(String nn, FileListItem item, Matcher m) throws CMException {
 		Matcher mx = templPattern.matcher(nn);
 		int num = -1;
@@ -65,6 +56,22 @@ public class FileNameBuilder {
 			String msg = String.format(Str.get("FileNameBuilder.dir_ioob"), num, item.getName());
 			throw new CMException(msg);
 		}
+		return nn;
+	}
+	
+	@Override
+	public String filter(FileListItem item) throws CMException {
+		String nn = template; // new name
+
+		Matcher m = userPattern.matcher(item.getNewName());
+		if (m.matches()) {
+			nn = replaceUserWildCard(nn, item, m);
+			nn = replaceFolderWildCard(nn, item);
+		} else {
+			String msg = String.format(Str.get("FileNameBuilder.no_pattern_match"), item.getName());
+			throw new CMException(msg);
+		}
+
 		return nn;
 	}
 }

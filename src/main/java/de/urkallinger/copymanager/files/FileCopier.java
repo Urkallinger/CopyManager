@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.callables;
+package de.urkallinger.copymanager.files;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +15,7 @@ import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.config.Settings;
-import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
 
 public class FileCopier implements Runnable {

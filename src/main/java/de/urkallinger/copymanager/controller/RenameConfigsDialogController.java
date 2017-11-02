@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
-import de.urkallinger.copymanager.model.RenameConfigItem;
+import de.urkallinger.copymanager.data.RenameConfigItem;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

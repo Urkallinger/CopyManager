@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.model;
+package de.urkallinger.copymanager.data;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

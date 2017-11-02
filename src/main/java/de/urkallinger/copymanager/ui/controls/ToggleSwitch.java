@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.controls;
+package de.urkallinger.copymanager.ui.controls;
 
 import de.urkallinger.copymanager.utils.Str;
 import javafx.beans.property.SimpleBooleanProperty;

@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.model;
+package de.urkallinger.copymanager.data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -2,7 +2,7 @@ package de.urkallinger.copymanager.controller;
 
 import java.util.Set;
 
-import de.urkallinger.copymanager.model.ExtensionListItem;
+import de.urkallinger.copymanager.data.ExtensionListItem;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;

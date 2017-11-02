@@ -90,7 +90,7 @@
 						</Button>
 					</children>
 				</HBox>
-				<TableView fx:id="tblReplacement">
+				<TableView fx:id="tblReplacement" editable="true">
 					<columns>
 						<TableColumn fx:id="colOldValue" text="%keywords.old_value" />
 						<TableColumn fx:id="colNewValue" text="%keywords.new_value" />

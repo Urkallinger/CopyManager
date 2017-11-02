@@ -1,14 +1,14 @@
 package de.urkallinger.copymanager.controller;
 
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import de.urkallinger.copymanager.MainApp;
+import de.urkallinger.copymanager.data.FileListItem;
+import de.urkallinger.copymanager.data.FileListItem.SizeObj;
 import de.urkallinger.copymanager.exceptions.CMException;
-import de.urkallinger.copymanager.model.FileListItem;
-import de.urkallinger.copymanager.model.FileListItem.SizeObj;
-import de.urkallinger.copymanager.utils.FileNameBuilder;
+import de.urkallinger.copymanager.files.filter.FileNameFilter;
+import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -92,21 +92,29 @@ public class FileOverviewController extends UIController {
 		requestFocus();
 	}
 
-	public void updateNewFileName(final Pattern pattern, final String template) {
-		if (template.isEmpty())
+	public void updateNewFileName(List<FileNameFilter> filters) {
+		if(!isAnyElementSelected()) {
+			MainApp.getLogger().warning(Str.get("FileOverviewController.no_file_selected"));
 			return;
-		FileNameBuilder nameBuilder = new FileNameBuilder(pattern, template);
-
-		table.getItems().stream()
-			.filter(FileListItem::isChecked)
-			.forEach(item -> {
-				try {
-					String nn = nameBuilder.buildFileName(item);
-					item.setNewName(nn);
-				} catch (CMException e) {
-					MainApp.getLogger().error(e.getMessage());
-				}
-		});
+		}
+		
+		table.getItems()
+			 .stream()
+			 .filter(FileListItem::isChecked)
+			 .peek(item -> item.setNewName(item.getName()))
+			 .forEach(item -> filters.forEach(filter -> filterItemName(item, filter)));
+	}
+	
+	private boolean isAnyElementSelected() {
+		return table.getItems().stream().filter(FileListItem::isChecked).findAny().isPresent();
+	}
+	
+	private void filterItemName(FileListItem item, FileNameFilter filter) {
+		try {
+			item.setNewName(filter.filter(item));
+		} catch (CMException e) {
+			MainApp.getLogger().error(e.getMessage());
+		}
 	}
 
 	public void clearNewFileName() {

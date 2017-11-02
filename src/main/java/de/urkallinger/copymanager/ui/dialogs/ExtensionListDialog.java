@@ -1,12 +1,10 @@
-package de.urkallinger.copymanager.dialogs;
+package de.urkallinger.copymanager.ui.dialogs;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 import de.urkallinger.copymanager.MainApp;
-import de.urkallinger.copymanager.controller.RenameConfigsDialogController;
-import de.urkallinger.copymanager.model.RenameConfigItem;
+import de.urkallinger.copymanager.controller.ExtensionListDialogController;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,29 +13,30 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class RenameConfigsDialog {
+public class ExtensionListDialog {
+
 	private final MainApp mainApp;
-	
+
 	private Stage parentStage;
-	private List<RenameConfigItem> renameConfigs;
-	private RenameConfigsDialogController dialogController;
-	
-	public RenameConfigsDialog(MainApp mainApp) {
+	private Set<String> extensions;
+	private ExtensionListDialogController dialogController;
+
+	public ExtensionListDialog(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}
-	
+
 	public void setParentStage(Stage parentStage) {
 		this.parentStage = parentStage;
 	}
 	
-	public void setRenameConfigs(List<RenameConfigItem> renameConfigs) {
-		this.renameConfigs = renameConfigs;
+	public void setExtensions(Set<String> extensions) {
+		this.extensions = extensions;
 	}
 	
 	public void show() {
 		try {
 			Stage stage = new Stage();
-			stage.setTitle(Str.get("RenameConfigsDialog.title"));
+			stage.setTitle(Str.get("keywords.extensions"));
 			stage.initOwner(parentStage);
 			stage.initModality(Modality.APPLICATION_MODAL);
 
@@ -46,12 +45,12 @@ public class RenameConfigsDialog {
 
 			FXMLLoader loader = new FXMLLoader();
 			loader.setResources(Str.getBundle());
-			loader.setLocation(getClass().getResource("/view/dialogs/RenameConfigsDialog.fxml"));
+			loader.setLocation(getClass().getResource("/view/dialogs/ExtensionListDialog.fxml"));
 			BorderPane layout = (BorderPane) loader.load();
 
 			dialogController = loader.getController();
 			dialogController.setMainApp(mainApp);
-			dialogController.addListItems(renameConfigs);
+			dialogController.addListItems(extensions);
 
 			Scene scene = new Scene(layout);
 			stage.setMinWidth(layout.getMinWidth() + 50);
@@ -60,16 +59,8 @@ public class RenameConfigsDialog {
 			stage.showAndWait();
 
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("RenameConfigsDialog.init_err"));
+			MainApp.getLogger().error(Str.get("ExtensionListDialog.init_err"));
 			MainApp.getLogger().error(e.getMessage());
-		}
-	}
-	
-	public Optional<RenameConfigItem> getSelectedRenameConfig() {
-		if(dialogController != null) {
-			return dialogController.getSelectedRenameConfig();
-		} else {
-			return Optional.empty();
 		}
 	}
 }

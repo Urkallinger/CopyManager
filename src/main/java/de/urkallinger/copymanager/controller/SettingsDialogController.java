@@ -5,7 +5,7 @@ import java.util.Map;
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.config.Settings;
-import de.urkallinger.copymanager.controls.ToggleSwitch;
+import de.urkallinger.copymanager.ui.controls.ToggleSwitch;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

@@ -4,7 +4,7 @@ import java.util.concurrent.CountDownLatch;
 
 import de.urkallinger.copymanager.CMLogger;
 import de.urkallinger.copymanager.MainApp;
-import de.urkallinger.copymanager.model.ConsoleItem;
+import de.urkallinger.copymanager.data.ConsoleItem;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

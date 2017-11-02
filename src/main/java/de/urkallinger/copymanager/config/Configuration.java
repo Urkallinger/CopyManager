@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.urkallinger.copymanager.model.RenameConfigItem;
+import de.urkallinger.copymanager.data.RenameConfigItem;
 
 @XmlRootElement(name = "configuration")
 @XmlAccessorType(XmlAccessType.FIELD)

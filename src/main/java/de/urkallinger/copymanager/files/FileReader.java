@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.callables;
+package de.urkallinger.copymanager.files;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.apache.commons.io.FileUtils;
 
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
-import de.urkallinger.copymanager.model.FileListItem;
+import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
 
 public class FileReader implements Runnable {

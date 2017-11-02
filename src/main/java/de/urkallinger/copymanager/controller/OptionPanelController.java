@@ -1,26 +1,33 @@
 package de.urkallinger.copymanager.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
-import de.urkallinger.copymanager.dialogs.RenameConfigsDialog;
-import de.urkallinger.copymanager.model.RenameConfigItem;
-import de.urkallinger.copymanager.model.ReplacementItem;
+import de.urkallinger.copymanager.data.RenameConfigItem;
+import de.urkallinger.copymanager.data.ReplacementItem;
+import de.urkallinger.copymanager.exceptions.CMException;
+import de.urkallinger.copymanager.files.filter.FileNameFilter;
+import de.urkallinger.copymanager.files.filter.RegExFilter;
+import de.urkallinger.copymanager.files.filter.ReplaceFilter;
+import de.urkallinger.copymanager.ui.dialogs.RenameConfigsDialog;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -56,10 +63,14 @@ public class OptionPanelController extends UIController {
 	@FXML
 	private TableColumn<ReplacementItem, String> colNewValue = new TableColumn<>();
 
+	private FileOverviewController fileOverview;
+	
 	@FXML
 	public void initialize() {
 		fileExtensionList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		fileExtensionList.setOnKeyPressed(event -> handleListKeyEvent(event));
+		fileExtensionList.setOnKeyPressed(event -> handleExtensionListKeyEvent(event));
+		
+		tblReplacement.setOnKeyPressed(event -> handleReplacementKeyEvent(event));
 		
 		Image imgRes = new Image(getClass().getResourceAsStream("/images/add.png"));
 		btnAddFileEx.setGraphic(new ImageView(imgRes));
@@ -81,14 +92,43 @@ public class OptionPanelController extends UIController {
 		
 		colOldValue.setCellValueFactory(cellData -> cellData.getValue().oldValueProperty());
 		colNewValue.setCellValueFactory(cellData -> cellData.getValue().newValueProperty());
+		
+		colOldValue.setCellFactory(TextFieldTableCell.forTableColumn());
+		colOldValue.setOnEditCommit(
+		    new EventHandler<CellEditEvent<ReplacementItem, String>>() {
+		        @Override
+		        public void handle(CellEditEvent<ReplacementItem, String> t) {
+		        	ReplacementItem item = t.getRowValue();
+		            item.setOldValue(t.getNewValue());
+		        }
+		    }
+		);
+		
+		colNewValue.setCellFactory(TextFieldTableCell.forTableColumn());
+		colNewValue.setOnEditCommit(
+		    new EventHandler<CellEditEvent<ReplacementItem, String>>() {
+		        @Override
+		        public void handle(CellEditEvent<ReplacementItem, String> t) {
+		        	ReplacementItem item = t.getRowValue();
+		            item.setNewValue(t.getNewValue());
+		        }
+		    }
+		);
 	}
 	
-	private void handleListKeyEvent(KeyEvent event) {
+	private void handleExtensionListKeyEvent(KeyEvent event) {
 		if (event.getCode() == KeyCode.DELETE) {
 			ObservableList<String> items = fileExtensionList.getSelectionModel().getSelectedItems();
 			items.forEach(item -> mainApp.removeFileExtension(item));
 			mainApp.clearFileList();
 			mainApp.updateFileList();
+		}
+	}
+	
+	private void handleReplacementKeyEvent(KeyEvent event) {
+		if (event.getCode() == KeyCode.DELETE) {
+			ReplacementItem selected = tblReplacement.getSelectionModel().getSelectedItem();
+			tblReplacement.getItems().removeIf(item -> item.equals(selected));
 		}
 	}
 	
@@ -114,17 +154,33 @@ public class OptionPanelController extends UIController {
 	
 	@FXML
 	public void handleAddReplacement() {
-		tblReplacement.getItems().add(new ReplacementItem("aa", "bb"));
-		tblReplacement.refresh();
-		MainApp.getLogger().info("replacement added");
+		String o = Str.get("keywords.old_value");
+		String n = Str.get("keywords.new_value");
+		tblReplacement.getItems().add(new ReplacementItem(o, n));
 	}
 
 	@FXML
 	public void handleUseTemplate() {
-		if(!validateRenameConfig()) {
+		if(!isValidTemplateAndPattern()) {
 			return;
 		}
-		mainApp.updateNewFileName();
+		try {
+			RegExFilter regExFilter = new RegExFilter(getPattern(), getTemplate());
+			
+			// Erst RegExFilter hinzufügen
+			List<FileNameFilter> filters = new ArrayList<>();
+			filters.add(regExFilter);
+			
+			// Alle weiteren Filter werden auf das Ergebnis des RegEx angewendet
+			filters.addAll(tblReplacement.getItems()
+					.stream()
+					.map(rep -> new ReplaceFilter(rep.getOldValue(), rep.getNewValue()))
+					.collect(Collectors.toList()));
+			
+			fileOverview.updateNewFileName(filters);
+		} catch (CMException e) {
+			MainApp.getLogger().error(e.getMessage());
+		}
 	}
 	
 	@FXML
@@ -153,7 +209,7 @@ public class OptionPanelController extends UIController {
 	
 	@FXML
 	public void handleSavePattern() {
-		if(!validateRenameConfig()) {
+		if(!isValidTemplateAndPattern()) {
 			return;
 		}
 		TextInputDialog dialog = new TextInputDialog();
@@ -173,8 +229,8 @@ public class OptionPanelController extends UIController {
 		});
 	}
 	
-	private boolean validateRenameConfig() {
-		if(!getPattern().isPresent()) {
+	private boolean isValidTemplateAndPattern() {
+		if(getPattern().isEmpty()) {
     		MainApp.getLogger().warning(Str.get("OptionPanelController.no_pattern_defined"));
     		return false;
     	}
@@ -187,23 +243,12 @@ public class OptionPanelController extends UIController {
     	return true;
 	}
 	
-	public Optional<Pattern> getPattern() {
-		Optional<Pattern> opt = Optional.empty();
-		if (!txtPattern.getText().isEmpty()) {
-			try {
-
-				Pattern pattern = Pattern.compile(txtPattern.getText());
-				opt = Optional.of(pattern);
-			} catch (PatternSyntaxException e) {
-				MainApp.getLogger().error(Str.get("OptionPanelController.pattern_compile_err"));
-				MainApp.getLogger().error(e.getMessage());
-			}
-		}
-		return opt;
+	public String getPattern() {
+		return txtPattern.getText() == null ? "" : txtPattern.getText();
 	}
 
 	public String getTemplate() {
-		return txtTemplate.getText().trim();
+		return txtTemplate.getText() == null ? "" : txtTemplate.getText().trim();
 	}
 	
 	public void addFileExtension(String extension) {
@@ -214,5 +259,13 @@ public class OptionPanelController extends UIController {
 	public void removeFileExtension(String extension) {
 		fileExtensionList.getItems().remove(extension);
 		fileExtensionList.refresh();
+	}
+
+	public FileOverviewController getFileOverview() {
+		return fileOverview;
+	}
+
+	public void setFileOverview(FileOverviewController fileOverview) {
+		this.fileOverview = fileOverview;
 	}
 }

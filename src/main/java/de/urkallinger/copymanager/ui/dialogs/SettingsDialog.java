@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.dialogs;
+package de.urkallinger.copymanager.ui.dialogs;
 
 import java.io.IOException;
 

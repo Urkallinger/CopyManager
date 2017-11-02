@@ -1,14 +1,14 @@
-package de.urkallinger.copymanager;
+package de.urkallinger.copymanager.files;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import de.urkallinger.copymanager.callables.FileCopier;
-import de.urkallinger.copymanager.callables.FileReader;
+import de.urkallinger.copymanager.ParamCallback;
+import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.exceptions.FileCopierInProgressException;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
-import de.urkallinger.copymanager.model.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
 
 public class FileManager {
@@ -59,13 +59,9 @@ public class FileManager {
 	}
 	
 	public List<FileListItem> getFiteredFileCache() {
-		List<FileListItem> items = new ArrayList<>();
-		fileCache.forEach(f -> {
-			if(this.extensions.contains(f.getExtension())) {
-				items.add(f);
-			}
-		});
-		return items;
+		return fileCache.stream()
+				 		.filter(item -> extensions.contains(item.getExtension()))
+				 		.collect(Collectors.toList());
 	}
 	
 	public void setFileCache(List<FileListItem> files) {
