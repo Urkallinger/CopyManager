@@ -93,27 +93,13 @@ public class OptionPanelController extends UIController {
 		colOldValue.setCellValueFactory(cellData -> cellData.getValue().oldValueProperty());
 		colNewValue.setCellValueFactory(cellData -> cellData.getValue().newValueProperty());
 		
+		// Zellen editierbar machen
 		colOldValue.setCellFactory(TextFieldTableCell.forTableColumn());
-		colOldValue.setOnEditCommit(
-		    new EventHandler<CellEditEvent<ReplacementItem, String>>() {
-		        @Override
-		        public void handle(CellEditEvent<ReplacementItem, String> t) {
-		        	ReplacementItem item = t.getRowValue();
-		            item.setOldValue(t.getNewValue());
-		        }
-		    }
-		);
+		colOldValue.setOnEditCommit(event -> event.getRowValue().setOldValue(event.getNewValue()));
 		
+		// Zellen editierbar machen
 		colNewValue.setCellFactory(TextFieldTableCell.forTableColumn());
-		colNewValue.setOnEditCommit(
-		    new EventHandler<CellEditEvent<ReplacementItem, String>>() {
-		        @Override
-		        public void handle(CellEditEvent<ReplacementItem, String> t) {
-		        	ReplacementItem item = t.getRowValue();
-		            item.setNewValue(t.getNewValue());
-		        }
-		    }
-		);
+		colNewValue.setOnEditCommit(event -> event.getRowValue().setNewValue(event.getNewValue()));
 	}
 	
 	private void handleExtensionListKeyEvent(KeyEvent event) {
