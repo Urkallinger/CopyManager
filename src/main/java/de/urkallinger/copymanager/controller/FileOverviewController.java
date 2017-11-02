@@ -111,7 +111,7 @@ public class FileOverviewController extends UIController {
 	
 	private void filterItemName(FileListItem item, FileNameFilter filter) {
 		try {
-			item.setNewName(filter.filter(item));
+			item.setNewName(filter.filter(item).trim());
 		} catch (CMException e) {
 			MainApp.getLogger().error(e.getMessage());
 		}
