@@ -39,6 +39,20 @@ public class OptionPanelControllerTest extends ApplicationTest {
 	private OptionPanelController optController;
 
 	@Test
+	public void addEmptyExtensionTest() throws Exception {
+		// ARRANGE
+		initMainApp();
+
+		// ACT
+		clickOn("#btnAddFileEx");
+		sleep(200);
+		push(KeyCode.ENTER);
+
+		// ASSERT
+		verifyThat("#fileExtensionList", ListViewMatchers.hasItems(0));
+	}
+
+	@Test
 	public void addExtensionTest() throws Exception {
 		// ARRANGE
 		List<String> extensions = Arrays.asList(MKV, AVI);
@@ -47,7 +61,7 @@ public class OptionPanelControllerTest extends ApplicationTest {
 		// ACT
 		for (String ext : extensions) {
 			clickOn("#btnAddFileEx");
-			sleep(500);
+			sleep(200);
 			typeString(ext.equals(MKV) ? "." + MKV : ext); // Einmal mit Punkt vorangestellt
 			push(KeyCode.ENTER);
 		}
@@ -65,7 +79,7 @@ public class OptionPanelControllerTest extends ApplicationTest {
 		// ACT
 		for (String ext : extensions) {
 			clickOn("#btnAddFileEx");
-			sleep(500);
+			sleep(200);
 			typeString(ext);
 			push(KeyCode.ENTER);
 		}
@@ -103,7 +117,7 @@ public class OptionPanelControllerTest extends ApplicationTest {
 			push(KeyCode.DELETE);
 		});
 
-		// ASSERT
+		// ASSERTS
 		verifyThat("#tblReplacement", TableViewMatchers.hasItems(0));
 	}
 
