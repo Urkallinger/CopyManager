@@ -1,14 +1,14 @@
 package de.urkallinger.copymanager.controller;
 
+import static de.urkallinger.copymanager.TestUtils.AVI;
+import static de.urkallinger.copymanager.TestUtils.EXTENSIONS;
+import static de.urkallinger.copymanager.TestUtils.MKV;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.testfx.api.FxAssert.verifyThat;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -34,14 +34,6 @@ public class ExtensionListDialogControllerTest extends ApplicationTest {
 
 	@Mock
 	MainApp mainApp;
-
-	private static final String MKV = "mkv";
-	private static final String DOC = "doc";
-	private static final String CSV = "csv";
-	private static final String TXT = "txt";
-	private static final String AVI = "avi";
-
-	private static final Set<String> EXTENSIONS = new HashSet<>(Arrays.asList(MKV, DOC, CSV, TXT, AVI));
 
 	@Test
 	public void tableContainsElementsTest() throws Exception {
