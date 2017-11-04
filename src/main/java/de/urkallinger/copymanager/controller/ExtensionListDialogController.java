@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -19,8 +18,6 @@ import javafx.util.Callback;
 
 public class ExtensionListDialogController extends UIController {
 
-	@FXML
-	private Label lblDirPath = new Label();
 	@FXML
 	private TableView<ExtensionListItem> table = new TableView<>();
 	@FXML
@@ -106,10 +103,6 @@ public class ExtensionListDialogController extends UIController {
 			table.getItems().add(eli);
 		});
 		requestFocus();
-	}
-	
-	public void setDir(String dir) {
-		this.lblDirPath.setText(dir);
 	}
 	
 	private void requestFocus() {

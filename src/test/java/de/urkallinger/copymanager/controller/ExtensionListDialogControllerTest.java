@@ -1,4 +1,4 @@
-package de.urkallinger.copymanager.ui.dialogs;
+package de.urkallinger.copymanager.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -9,6 +9,8 @@ import static org.testfx.api.FxAssert.verifyThat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,54 +19,74 @@ import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.TableViewMatchers;
 
 import de.urkallinger.copymanager.MainApp;
-import de.urkallinger.copymanager.controller.ExtensionListDialogController;
 import de.urkallinger.copymanager.utils.Str;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class ExtensionListDialogTest extends ApplicationTest {
+public class ExtensionListDialogControllerTest extends ApplicationTest {
 
 	@Mock
 	MainApp mainApp;
-	
+
 	private static final String MKV = "mkv";
 	private static final String DOC = "doc";
 	private static final String CSV = "csv";
 	private static final String TXT = "txt";
 	private static final String AVI = "avi";
-	
+
 	private static final Set<String> EXTENSIONS = new HashSet<>(Arrays.asList(MKV, DOC, CSV, TXT, AVI));
-	
+
 	@Test
 	public void tableContainsElementsTest() throws Exception {
 		String table = "#table";
-		
+
 		verifyThat(table, NodeMatchers.isNotNull());
 		verifyThat(table, TableViewMatchers.hasItems(EXTENSIONS.size()));
-		for(String extension : EXTENSIONS) {
+		for (String extension : EXTENSIONS) {
 			verifyThat(table, TableViewMatchers.hasTableCell(extension));
 		}
 	}
-	
+
 	@Test
 	public void singleSelectionTest() {
-		clickOn(MKV);
+		Node mkvEntry = from(lookup("#table")).lookup(MKV).queryFirst();
+
+		clickOn(mkvEntry, MouseButton.PRIMARY);
 		clickOn("#btnOk");
-		
+
 		verify(mainApp, times(1)).addFileExtension(MKV);
 		verify(mainApp, times(1)).clearFileList();
 		verify(mainApp, times(1)).updateFileList();
 	}
 	
 	@Test
-	public void multiSelectionTest() {
-		clickOn(MKV);
-		clickOn(AVI);
+	public void singleUnSelectionTest() {
+		Node mkvEntry = from(lookup("#table")).lookup(MKV).queryFirst();
+
+		clickOn(mkvEntry, MouseButton.PRIMARY);
+		clickOn(mkvEntry, MouseButton.PRIMARY);
 		clickOn("#btnOk");
-		
+
+		verify(mainApp, times(0)).addFileExtension(any());
+		verify(mainApp, times(1)).clearFileList();
+		verify(mainApp, times(1)).updateFileList();
+	}
+
+	@Test
+	public void multiSelectionTest() {
+		Node mkvEntry = from(lookup("#table")).lookup(MKV).queryFirst();
+		Node aviEntry = from(lookup("#table")).lookup(AVI).queryFirst();
+		clickOn(mkvEntry, MouseButton.PRIMARY);
+		clickOn(aviEntry, MouseButton.PRIMARY);
+		clickOn("#btnOk");
+
 		verify(mainApp, times(1)).addFileExtension(MKV);
 		verify(mainApp, times(1)).addFileExtension(AVI);
 		verify(mainApp, times(1)).clearFileList();
@@ -72,22 +94,61 @@ public class ExtensionListDialogTest extends ApplicationTest {
 	}
 	
 	@Test
+	public void multiUnSelectionTest() {
+		Node mkvEntry = from(lookup("#table")).lookup(MKV).queryFirst();
+		Node aviEntry = from(lookup("#table")).lookup(AVI).queryFirst();
+		clickOn(mkvEntry, MouseButton.PRIMARY);
+		clickOn(aviEntry, MouseButton.PRIMARY);
+		clickOn(mkvEntry, MouseButton.PRIMARY);
+		clickOn(aviEntry, MouseButton.PRIMARY);
+		clickOn("#btnOk");
+
+		verify(mainApp, times(0)).addFileExtension(any());
+		verify(mainApp, times(1)).clearFileList();
+		verify(mainApp, times(1)).updateFileList();
+	}
+
+	@Test
 	public void cancelTest() {
 		clickOn("#btnCancel");
-		
+
 		verify(mainApp, times(0)).addFileExtension(any());
 		verify(mainApp, times(1)).clearFileList();
 		verify(mainApp, times(1)).updateFileList();
 	}
 	
 	@Test
-	public void spaceKeyTest() {
+	public void escapeTest() {
+		push(KeyCode.ESCAPE);
+
+		verify(mainApp, times(0)).addFileExtension(any());
+		verify(mainApp, times(1)).clearFileList();
+		verify(mainApp, times(1)).updateFileList();
+	}
+
+	@Test
+	public void spaceKeySelectionTest() throws Exception {
+		setFocusOnTable();
+
 		push(KeyCode.DOWN);
-		push(KeyCode.DOWN);
- 		push(KeyCode.SPACE);
+		push(KeyCode.SPACE);
 		push(KeyCode.ENTER);
-		
+
 		verify(mainApp, times(1)).addFileExtension(any());
+		verify(mainApp, times(1)).clearFileList();
+		verify(mainApp, times(1)).updateFileList();
+	}
+	
+	@Test
+	public void spaceKeyUnSelectionTest() throws Exception {
+		setFocusOnTable();
+
+		push(KeyCode.DOWN);
+		push(KeyCode.SPACE);
+		push(KeyCode.SPACE);
+		push(KeyCode.ENTER);
+
+		verify(mainApp, times(0)).addFileExtension(any());
 		verify(mainApp, times(1)).clearFileList();
 		verify(mainApp, times(1)).updateFileList();
 	}
@@ -95,7 +156,7 @@ public class ExtensionListDialogTest extends ApplicationTest {
 	@Override
 	public void start(Stage stage) throws Exception {
 		mainApp = mock(MainApp.class);
-		
+
 		FXMLLoader loader = new FXMLLoader();
 		loader.setResources(Str.getBundle());
 		loader.setLocation(getClass().getResource("/view/dialogs/ExtensionListDialog.fxml"));
@@ -110,5 +171,21 @@ public class ExtensionListDialogTest extends ApplicationTest {
 		stage.setMinHeight(layout.getMinHeight() + 50);
 		stage.setScene(scene);
 		stage.show();
+	}
+	
+	private void setFocusOnTable() throws Exception {
+		TableView<?> table = (TableView<?>) lookup("#table").queryFirst();
+
+		// Focus auf den ersten Eintrag der Tabelle setzen
+		final FutureTask<Integer> query = new FutureTask<>(() -> {
+			table.requestFocus();
+			table.getSelectionModel().select(0);
+			table.getFocusModel().focus(0);
+			return 0;
+		});
+		Platform.runLater(query);
+		
+		// Warten bis der Focus gesetzt wurde
+		query.get(1, TimeUnit.SECONDS);
 	}
 }
