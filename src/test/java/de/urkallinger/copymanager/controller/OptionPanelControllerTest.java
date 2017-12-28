@@ -48,6 +48,12 @@ public class OptionPanelControllerTest extends ApplicationTest {
 		sleep(200);
 		push(KeyCode.ENTER);
 
+		clickOn("#btnAddFileEx");
+		sleep(200);
+		type(KeyCode.SPACE);
+		type(KeyCode.SPACE);
+		push(KeyCode.ENTER);
+
 		// ASSERT
 		verifyThat("#fileExtensionList", ListViewMatchers.hasItems(0));
 	}
@@ -148,7 +154,8 @@ public class OptionPanelControllerTest extends ApplicationTest {
 	@Test
 	public void filterCountTest() throws Exception {
 		// ARRANGE
-		for(int i = 0; i < 2; i++) {
+		int count = 2;
+		for(int i = 0; i < count; i++) {
 			clickOn("#btnAddFileReplacement");
 			String replace = "asdf";
 			String with = "qwertz";
@@ -173,7 +180,7 @@ public class OptionPanelControllerTest extends ApplicationTest {
 		@SuppressWarnings("rawtypes")
 		ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
 		Mockito.verify(fileOverviewController).updateNewFileName(argument.capture());
-		assertEquals(3, argument.getValue().size());
+		assertEquals(count + 1, argument.getValue().size());
 	}
 
 	@Override

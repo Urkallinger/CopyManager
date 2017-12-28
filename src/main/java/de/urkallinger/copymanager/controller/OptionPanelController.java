@@ -123,7 +123,7 @@ public class OptionPanelController extends UIController {
         dialog.setHeaderText(Str.get("OptionPanelController.new_file_ext"));
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(ext -> {
-            if (ext.isEmpty())
+            if (ext.trim().isEmpty())
                 return;
 
             if (ext.startsWith(".")) {
@@ -145,10 +145,9 @@ public class OptionPanelController extends UIController {
 
     @FXML
     public void handleUseTemplate() {
-        if(!isValidTemplateAndPattern()) {
-            return;
-        }
         try {
+            validateTemplateAndPattern();
+
             RegExFilter regExFilter = new RegExFilter(getPattern(), getTemplate());
 
             // Erst RegExFilter hinzufügen
@@ -156,10 +155,8 @@ public class OptionPanelController extends UIController {
             filters.add(regExFilter);
 
             // Alle weiteren Filter werden auf das Ergebnis des RegEx angewendet
-            filters.addAll(tblReplacement.getItems()
-                   .stream()
-                   .map(rep -> new ReplaceFilter(rep.getOldValue(), rep.getNewValue()))
-                   .collect(Collectors.toList()));
+            filters.addAll(tblReplacement.getItems().stream()
+                    .map(rep -> new ReplaceFilter(rep.getOldValue(), rep.getNewValue())).collect(Collectors.toList()));
 
             fileOverview.updateNewFileName(filters);
         } catch (CMException e) {
@@ -177,7 +174,7 @@ public class OptionPanelController extends UIController {
         Configuration cfg = ConfigurationManager.loadConfiguration();
         List<RenameConfigItem> renameConfigs = cfg.getRenameConfigurations();
 
-        if(renameConfigs.size() > 0) {
+        if (renameConfigs.size() > 0) {
             RenameConfigsDialog dialog = new RenameConfigsDialog(mainApp);
             dialog.setParentStage(mainApp.getPrimaryStage());
             dialog.setRenameConfigs(renameConfigs);
@@ -193,9 +190,13 @@ public class OptionPanelController extends UIController {
 
     @FXML
     public void handleSavePattern() {
-        if(!isValidTemplateAndPattern()) {
+        try {
+            validateTemplateAndPattern();
+        } catch (CMException e) {
+            MainApp.getLogger().error(e.getMessage());
             return;
         }
+
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(Str.get("OptionPanelController.save_rename_config"));
         dialog.setHeaderText(Str.get("OptionPanelController.save_rename_config_text"));
@@ -213,18 +214,14 @@ public class OptionPanelController extends UIController {
         });
     }
 
-    private boolean isValidTemplateAndPattern() {
-        if(getPattern().isEmpty()) {
-            MainApp.getLogger().warning(Str.get("OptionPanelController.no_pattern_defined"));
-            return false;
+    private void validateTemplateAndPattern() throws CMException {
+        if (getPattern().isEmpty()) {
+            throw new CMException(Str.get("OptionPanelController.no_pattern_defined"));
         }
 
-        if(getTemplate().isEmpty()) {
-            MainApp.getLogger().warning(Str.get("OptionPanelController.no_template_defined"));
-            return false;
+        if (getTemplate().isEmpty()) {
+            throw new CMException(Str.get("OptionPanelController.no_template_defined"));
         }
-
-        return true;
     }
 
     public String getPattern() {
