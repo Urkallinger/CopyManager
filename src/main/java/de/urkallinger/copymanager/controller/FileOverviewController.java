@@ -3,7 +3,9 @@ package de.urkallinger.copymanager.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.urkallinger.copymanager.MainApp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.data.FileListItem.SizeObj;
 import de.urkallinger.copymanager.exceptions.CMException;
@@ -22,6 +24,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 
 public class FileOverviewController extends UIController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileOverviewController.class);
+
 	@FXML
 	private TableView<FileListItem> table = new TableView<>();
 	@FXML
@@ -78,7 +83,7 @@ public class FileOverviewController extends UIController {
 			     .forEach(item -> item.setChecked(!item.isChecked()));
 		}
 	}
-	
+
 	private void requestFocus() {
 		Platform.runLater(() -> {
 			table.requestFocus();
@@ -94,26 +99,26 @@ public class FileOverviewController extends UIController {
 
 	public void updateNewFileName(List<FileNameFilter> filters) {
 		if(!isAnyElementSelected()) {
-			MainApp.getLogger().warning(Str.get("FileOverviewController.no_file_selected"));
+			LOGGER.warn(Str.get("FileOverviewController.no_file_selected"));
 			return;
 		}
-		
+
 		table.getItems()
 			 .stream()
 			 .filter(FileListItem::isChecked)
 			 .peek(item -> item.setNewName(item.getName()))
 			 .forEach(item -> filters.forEach(filter -> filterItemName(item, filter)));
 	}
-	
+
 	private boolean isAnyElementSelected() {
 		return table.getItems().stream().filter(FileListItem::isChecked).findAny().isPresent();
 	}
-	
+
 	private void filterItemName(FileListItem item, FileNameFilter filter) {
 		try {
 			item.setNewName(filter.filter(item).trim());
 		} catch (CMException e) {
-			MainApp.getLogger().error(e.getMessage());
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -123,7 +128,7 @@ public class FileOverviewController extends UIController {
 
 	public List<FileListItem> getCheckedFiles() {
 		return table.getItems().stream()
-				.filter(FileListItem::isChecked) // nur selektierte Elemente 
+				.filter(FileListItem::isChecked) // nur selektierte Elemente
 				.collect(Collectors.toList());   // gefilterte Elemente in Liste speichern
 	}
 

@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.controller.ConsoleController;
@@ -28,8 +31,9 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-	private static CMLogger logger = new DefaultLogger(); 
-	
+	private static CMLogger logger = new DefaultLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(MainApp.class);
+
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 
@@ -41,28 +45,28 @@ public class MainApp extends Application {
 	private FileManager fm;
 	private Scene scene;
 	private Optional<File> currentDir = Optional.empty();
-	
+
 	@Override
 	public void start(Stage primaryStage) {
-		this.primaryStage = primaryStage;
+	    this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("CopyManager");
 
 		updateConfig();
-		
+
 		initRootLayout();
 		showConsole();
 		showFileOverview();
 		showOptionPanel();
 
 		optController.setFileOverview(fileOverviewController);
-		
+
 		logger = consoleController;
 
 		addGlobalShortCuts();
-		
+
 		fm = new FileManager();
 	}
-	
+
 	private void updateConfig() {
 		if(!ConfigurationManager.configurationExists()) {
 			ConfigurationManager.createNewConfiguration();
@@ -71,7 +75,7 @@ public class MainApp extends Application {
 			ConfigurationManager.saveConfiguration(cfg);
 		}
 	}
-	
+
 	private void addGlobalShortCuts() {
 		// EventFilter verwenden, da manche Events von Controls (bsp. Textfeld)
 		// gefressen werden und nie beim EventHandler ankommen
@@ -130,7 +134,7 @@ public class MainApp extends Application {
 		try {
 			// Load root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
-			
+
 			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/RootLayout.fxml"));
 			rootLayout = (BorderPane) loader.load();
@@ -146,8 +150,8 @@ public class MainApp extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("MainApp.load_root_layout_err"));
-			MainApp.getLogger().error(e.getMessage());
+			LOGGER.error(Str.get("MainApp.load_root_layout_err"));
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -162,8 +166,8 @@ public class MainApp extends Application {
 
 			fileOverviewController = loader.getController();
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("MainApp.load_file_overview_err"));
-			MainApp.getLogger().error(e.getMessage());
+			LOGGER.error(Str.get("MainApp.load_file_overview_err"));
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -179,8 +183,8 @@ public class MainApp extends Application {
 			optController.setMainApp(this);
 
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("MainApp.load_option_panel_err"));
-			MainApp.getLogger().error(e.getMessage());
+			LOGGER.error(Str.get("MainApp.load_option_panel_err"));
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -195,8 +199,8 @@ public class MainApp extends Application {
 			consoleController = loader.getController();
 
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("MainApp.load_console_err"));
-			MainApp.getLogger().error(e.getMessage());
+			LOGGER.error(Str.get("MainApp.load_console_err"));
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -205,7 +209,7 @@ public class MainApp extends Application {
 			fm.getFileExtensions().add(extension);
 			optController.addFileExtension(extension);
 			String info = String.format(Str.get("MainApp.new_file_ext"), extension);
-			MainApp.getLogger().info(info);
+			LOGGER.info(info);
 		}
 	}
 
@@ -213,7 +217,7 @@ public class MainApp extends Application {
 		fm.getFileExtensions().remove(extension);
 		optController.removeFileExtension(extension);
 		String info = String.format(Str.get("MainApp.file_ext_removed"), extension);
-		MainApp.getLogger().info(info);
+		LOGGER.info(info);
 	}
 
 	public void clearNewFileName() {
@@ -223,21 +227,21 @@ public class MainApp extends Application {
 	public void updateFileCache() {
 		readFiles((List<FileListItem> fileList) -> fm.setFileCache(fileList));
 	}
-	
+
 	public void readFiles(ParamCallback<List<FileListItem>> callback) {
 		currentDir.ifPresent(rootDir -> {
 			try {
 				fm.readFiles(rootDir, callback);
 			} catch (FileReaderInProgressException e) {
-				MainApp.getLogger().error(e.getMessage());
+				LOGGER.error(e.getMessage());
 			}
 		});
 	}
-	
+
 	public void updateFileList() {
 		fileOverviewController.addListItems(fm.getFiteredFileCache());
 	}
-	
+
 	public void cacheFileListItems(List<FileListItem> items) {
 		fm.setFileCache(items);
 	}
@@ -255,7 +259,7 @@ public class MainApp extends Application {
 		if (files.size() > 0) {
 			Configuration cfg = ConfigurationManager.loadConfiguration();
 			File target = new File(cfg.getLastDestDir());
-			
+
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			if(target.exists()) directoryChooser.setInitialDirectory(target);
 			Optional<File> dest = Optional.ofNullable(directoryChooser.showDialog(this.primaryStage));
@@ -265,11 +269,11 @@ public class MainApp extends Application {
 					ConfigurationManager.saveConfiguration(cfg);
 					fm.copyFiles(files, dir);
 				} catch (FileCopierInProgressException e) {
-					MainApp.getLogger().error(e.getMessage());
+					LOGGER.error(e.getMessage());
 				}
 			});
 		} else {
-			MainApp.getLogger().info(Str.get("MainApp.no_files_to_copy"));
+			LOGGER.info(Str.get("MainApp.no_files_to_copy"));
 		}
 
 	}
@@ -286,11 +290,11 @@ public class MainApp extends Application {
 		if(fm.isReadingFiles()) {
 			throw new FileReaderInProgressException(Str.get("FileManager.thread_already_reading_err"));
 		}
-		
+
 		currentDir = Optional.ofNullable(f);
 		currentDir.ifPresent(dir -> {
 			String info = String.format(Str.get("MainApp.curr_dir_set"), dir);
-			MainApp.getLogger().info(info);
+			LOGGER.info(info);
 		});
 	}
 

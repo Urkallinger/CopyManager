@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN"
+	packages="de.urkallinger.copymanager">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout>
+				<pattern>
+					%d{dd.MM.yyyy HH:mm:ss,SSS} - %-5level - %logger{36} - %msg%n
+				</pattern>
+			</PatternLayout>
+		</Console>
+		<ListViewAppender name="ListView" maxLines="1000">
+			<PatternLayout>
+				<pattern>
+					%d{HH:mm:ss,SSS} - %-5level - %msg%n
+				</pattern>
+			</PatternLayout>
+		</ListViewAppender>
+	</Appenders>
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="ListView" />
+		</Root>
+	</Loggers>
+</Configuration>

@@ -3,6 +3,9 @@ package de.urkallinger.copymanager.ui.dialogs;
 import java.io.IOException;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.controller.ExtensionListDialogController;
 import de.urkallinger.copymanager.utils.Str;
@@ -14,6 +17,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class ExtensionListDialog {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionListDialog.class);
 
 	private final MainApp mainApp;
 
@@ -28,11 +33,11 @@ public class ExtensionListDialog {
 	public void setParentStage(Stage parentStage) {
 		this.parentStage = parentStage;
 	}
-	
+
 	public void setExtensions(Set<String> extensions) {
 		this.extensions = extensions;
 	}
-	
+
 	public void show() {
 		try {
 			Stage stage = new Stage();
@@ -59,8 +64,8 @@ public class ExtensionListDialog {
 			stage.showAndWait();
 
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("ExtensionListDialog.init_err"));
-			MainApp.getLogger().error(e.getMessage());
+			LOGGER.error(Str.get("ExtensionListDialog.init_err"));
+			LOGGER.error(e.getMessage());
 		}
 	}
 }

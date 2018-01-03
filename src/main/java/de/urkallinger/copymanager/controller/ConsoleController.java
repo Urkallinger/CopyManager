@@ -2,9 +2,13 @@ package de.urkallinger.copymanager.controller;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.logging.log4j.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.urkallinger.copymanager.CMLogger;
-import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.data.ConsoleItem;
+import de.urkallinger.copymanager.logging.ListViewAppender;
 import de.urkallinger.copymanager.utils.Str;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -17,206 +21,169 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class ConsoleController extends UIController implements CMLogger {
-	@FXML
-	private ListView<ConsoleItem> console = new ListView<>();
-	@FXML
-	private Button btnClear = new Button();
-	@FXML
-	private ToggleButton btnScrollLock = new ToggleButton();
-	@FXML
-	private ProgressBar progressBar = new ProgressBar();
 
-	private ImageView locked;
-	private ImageView unlocked;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleController.class);
 
-	@FXML
-	public void initialize() {
-		Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
-		btnClear.setGraphic(new ImageView(imgRes));
+    @FXML
+    private ListView<ConsoleItem> console = new ListView<>();
+    @FXML
+    private Button btnClear = new Button();
+    @FXML
+    private ToggleButton btnScrollLock = new ToggleButton();
+    @FXML
+    private ProgressBar progressBar = new ProgressBar();
 
-		locked = new ImageView(new Image(getClass().getResourceAsStream("/images/locked.png")));
-		unlocked = new ImageView(new Image(getClass().getResourceAsStream("/images/unlocked.png")));
+    private ImageView locked;
+    private ImageView unlocked;
 
-		btnScrollLock.setGraphic(locked);
-		btnScrollLock.setSelected(true);
+    @FXML
+    public void initialize() {
+        Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
+        btnClear.setGraphic(new ImageView(imgRes));
 
-		console.setFocusTraversable(false);
+        locked = new ImageView(new Image(getClass().getResourceAsStream("/images/locked.png")));
+        unlocked = new ImageView(new Image(getClass().getResourceAsStream("/images/unlocked.png")));
 
-		console.setCellFactory(value -> new ListCell<ConsoleItem>() {
-			@Override
-			protected void updateItem(ConsoleItem item, boolean empty) {
-				super.updateItem(item, empty);
-				if (!isEmpty()) {
-					setText(item.getText());
-					setTextFill(item.getColor());
-					setFont(new Font("Consolas", 15));
-					setGraphic(item.getGraphic());
-				} else {
-					setText(null);
-					setGraphic(null);
-					setTextFill(null);
-				}
-			}
-		});
-	}
+        btnScrollLock.setGraphic(locked);
+        btnScrollLock.setSelected(true);
 
-	@FXML
-	private void onClear() {
-		console.getItems().clear();
-		console.refresh();
-	}
+        console.setFocusTraversable(false);
 
-	@FXML
-	private void onScrollLock() {
-		if (btnScrollLock.isSelected()) {
-			btnScrollLock.setGraphic(locked);
-		} else {
-			btnScrollLock.setGraphic(unlocked);
-		}
-	}
+        console.setCellFactory(value -> new ListCell<ConsoleItem>() {
+            @Override
+            protected void updateItem(ConsoleItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!isEmpty()) {
+                    setText(item.getText());
+                    setTextFill(item.getColor());
+                    setFont(new Font("Consolas", 15));
+                    setGraphic(item.getGraphic());
+                } else {
+                    setText(null);
+                    setGraphic(null);
+                    setTextFill(null);
+                }
+            }
+        });
 
-	private ProgressIndicator getLoadingIndicator() {
-		final ProgressIndicator pi = new ProgressIndicator();
-		pi.setVisible(true);
-		pi.setStyle(" -fx-progress-color: #729917;");
-		pi.setMaxWidth(25);
-		pi.setMaxHeight(25);
-		pi.setPrefWidth(25);
-		pi.setPrefHeight(25);
-		return pi;
-	}
+        ListViewAppender.addListView(console);
+    }
 
-	private void addListItem(ConsoleItem item) {
-		console.getItems().add(item);
-		if (btnScrollLock.isSelected()) {
-			Runnable run = () -> console.scrollTo(console.getItems().size() - 1);
-			execute(run);
-		}
-	}
+    @FXML
+    private void onClear() {
+        console.getItems().clear();
+        console.refresh();
+    }
 
-	@Override
-	public void error(String text) {
-		Runnable run = () -> {
-			ConsoleItem item = new ConsoleItem(text, Color.RED);
-			addListItem(item);
-		};
-		
-		execute(run);
-	}
+    @FXML
+    private void onScrollLock() {
+        if (btnScrollLock.isSelected()) {
+            btnScrollLock.setGraphic(locked);
+        } else {
+            btnScrollLock.setGraphic(unlocked);
+        }
+    }
 
-	@Override
-	public void warning(String text) {
-		Runnable run = () -> {
-			ConsoleItem item = new ConsoleItem(text, Color.rgb(255, 100, 0));
-			addListItem(item);
-		};
+    private ProgressIndicator getLoadingIndicator() {
+        final ProgressIndicator pi = new ProgressIndicator();
+        pi.setVisible(true);
+        pi.setStyle(" -fx-progress-color: #729917;");
+        pi.setMaxWidth(25);
+        pi.setMaxHeight(25);
+        pi.setPrefWidth(25);
+        pi.setPrefHeight(25);
+        return pi;
+    }
 
-		execute(run);
-	}
+    private void addListItem(ConsoleItem item) {
+        console.getItems().add(item);
+        if (btnScrollLock.isSelected()) {
+            execute(() -> console.scrollTo(console.getItems().size() - 1));
+        }
+    }
 
-	@Override
-	public void info(String text) {
-		Runnable run = () -> {
-			ConsoleItem item = new ConsoleItem(text, Color.BLACK);
-			addListItem(item);
-		};
-		
-		execute(run);
-	}
+    @Override
+    public int action(String text, boolean indicator) {
+        CountDownLatch latch = new CountDownLatch(1);
+        execute(() -> {
+            ConsoleItem item = new ConsoleItem(text, Level.INFO);
+            if (indicator) {
+                item.setGraphic(getLoadingIndicator());
+            }
+            addListItem(item);
+            latch.countDown();
+        });
 
-	@Override
-	public int action(String text, boolean indicator) {
-		CountDownLatch latch = new CountDownLatch(1);
-		Runnable run = () -> {
-			ConsoleItem item = new ConsoleItem(text, Color.BLUE);
-			if (indicator) {
-				item.setGraphic(getLoadingIndicator());
-			}
-			addListItem(item);
-			latch.countDown();
-		};
-		
-		if(Platform.isFxApplicationThread()) {
-			run.run();
-			return console.getItems().size() - 1;
-		} else {
-			Platform.runLater(run);
-			try {
-				latch.await();
-				return console.getItems().size() - 1;
-			} catch (InterruptedException e) {
-				return -1;
-			}
-		}
-	}
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            return -1;
+        }
+        return console.getItems().size() - 1;
+    }
 
-	@Override
-	public void setDone(final int idx) {
-		Runnable run = () -> {
-			try {
-				Image imgRes = new Image(getClass().getResourceAsStream("/images/done.png"));
-				console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-				console.refresh();
-			} catch (IndexOutOfBoundsException e) {
-				String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
-				MainApp.getLogger().error(msg);
-			}
-		};
+    @Override
+    public void setDone(final int idx) {
+        execute(() -> {
+            try {
+                Image imgRes = new Image(getClass().getResourceAsStream("/images/done.png"));
+                console.getItems().get(idx).setGraphic(new ImageView(imgRes));
+                console.refresh();
+            } catch (IndexOutOfBoundsException e) {
+                String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
+                LOGGER.error(msg);
+            }
+        });
+    }
 
-		execute(run);
-	}
+    @Override
+    public void setFailed(final int idx) {
+        execute(() -> {
+            try {
+                Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
+                console.getItems().get(idx).setGraphic(new ImageView(imgRes));
+                console.refresh();
+            } catch (IndexOutOfBoundsException e) {
+                String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
+                LOGGER.error(msg);
+            }
+        });
+    }
 
-	@Override
-	public void setFailed(final int idx) {
-		Runnable run = () -> {
-			try {
-				Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
-				console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-				console.refresh();
-			} catch (IndexOutOfBoundsException e) {
-				String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
-				MainApp.getLogger().error(msg);
-			}
-		};
-		execute(run);
-	}
+    @Override
+    public void setProgress(final double x) {
+        execute(() -> progressBar.setProgress(x));
+    }
 
-	@Override
-	public void setProgress(final double x) {
-		Runnable run = () -> progressBar.setProgress(x);
-		execute(run);
-	}
+    @Override
+    public void enableProgressBar(boolean enable, final long millis) {
+        Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(millis);
+            } catch (Exception e) {
+            }
+            Platform.runLater(() -> {
+                progressBar.setVisible(enable);
+                progressBar.setProgress(0.0);
+                if (enable) {
+                    AnchorPane.setBottomAnchor(console, 25.0);
+                } else {
+                    AnchorPane.setBottomAnchor(console, 0.0);
+                }
+            });
+        });
+        t.setDaemon(true);
+        t.start();
+    }
 
-	@Override
-	public void enableProgressBar(boolean enable, final long millis) {
-		Thread t = new Thread(() -> {
-			try {
-				Thread.sleep(millis);
-			} catch (Exception e) {
-			}
-			Platform.runLater(() -> {
-				progressBar.setVisible(enable);
-				progressBar.setProgress(0.0);
-				if (enable) {
-					AnchorPane.setBottomAnchor(console, 25.0);
-				} else {
-					AnchorPane.setBottomAnchor(console, 0.0);
-				}
-			});
-		});
-		t.setDaemon(true);
-		t.start();
-	}
-	
-	private void execute (Runnable run) {
-		if(Platform.isFxApplicationThread()) {
-			run.run();
-		} else {
-			Platform.runLater(run);
-		}
-	}
+    private void execute(Runnable run) {
+        if (Platform.isFxApplicationThread()) {
+            run.run();
+        } else {
+            Platform.runLater(run);
+        }
+    }
 }

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.urkallinger.copymanager.MainApp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.data.RenameConfigItem;
@@ -33,6 +35,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 public class OptionPanelController extends UIController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OptionPanelController.class);
 
     @FXML
     private VBox vBox = new VBox();
@@ -160,7 +164,7 @@ public class OptionPanelController extends UIController {
 
             fileOverview.updateNewFileName(filters);
         } catch (CMException e) {
-            MainApp.getLogger().error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -184,7 +188,7 @@ public class OptionPanelController extends UIController {
                 txtTemplate.setText(renameConfig.getTemplate());
             });
         } else {
-            MainApp.getLogger().warning(Str.get("OptionPanelController.no_saved_rename_configs_found"));
+            LOGGER.warn(Str.get("OptionPanelController.no_saved_rename_configs_found"));
         }
     }
 
@@ -193,7 +197,7 @@ public class OptionPanelController extends UIController {
         try {
             validateTemplateAndPattern();
         } catch (CMException e) {
-            MainApp.getLogger().error(e.getMessage());
+            LOGGER.error(e.getMessage());
             return;
         }
 
@@ -204,7 +208,7 @@ public class OptionPanelController extends UIController {
 
         result.ifPresent(name -> {
             if (name.isEmpty()) {
-                MainApp.getLogger().error(Str.get("OptionPanelController.rename_config_invalid_name"));
+                LOGGER.error(Str.get("OptionPanelController.rename_config_invalid_name"));
                 return;
             }
 

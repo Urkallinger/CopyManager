@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.controller.RenameConfigsDialogController;
 import de.urkallinger.copymanager.data.RenameConfigItem;
@@ -16,24 +19,27 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class RenameConfigsDialog {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RenameConfigsDialog.class);
+
 	private final MainApp mainApp;
-	
+
 	private Stage parentStage;
 	private List<RenameConfigItem> renameConfigs;
 	private RenameConfigsDialogController dialogController;
-	
+
 	public RenameConfigsDialog(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}
-	
+
 	public void setParentStage(Stage parentStage) {
 		this.parentStage = parentStage;
 	}
-	
+
 	public void setRenameConfigs(List<RenameConfigItem> renameConfigs) {
 		this.renameConfigs = renameConfigs;
 	}
-	
+
 	public void show() {
 		try {
 			Stage stage = new Stage();
@@ -60,11 +66,11 @@ public class RenameConfigsDialog {
 			stage.showAndWait();
 
 		} catch (IOException e) {
-			MainApp.getLogger().error(Str.get("RenameConfigsDialog.init_err"));
-			MainApp.getLogger().error(e.getMessage());
+			LOGGER.error(Str.get("RenameConfigsDialog.init_err"));
+			LOGGER.error(e.getMessage());
 		}
 	}
-	
+
 	public Optional<RenameConfigItem> getSelectedRenameConfig() {
 		if(dialogController != null) {
 			return dialogController.getSelectedRenameConfig();

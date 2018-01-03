@@ -1,5 +1,7 @@
 package de.urkallinger.copymanager.files;
 
+import static de.urkallinger.copymanager.config.Settings.OVERRIDE_FILES;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,15 +12,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
-import de.urkallinger.copymanager.config.Settings;
 import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.utils.Str;
 
 public class FileCopier implements Runnable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileCopier.class);
 
 	private final List<FileListItem> files;
 	private final File targetDir;
@@ -44,7 +49,7 @@ public class FileCopier implements Runnable {
 
 			// Wenn Ziel nicht existiert -> kopieren
 			// Wenn Ziel exisitiert und überschreiben aktiviert ist -> kopieren
-			if (!to.exists() || (to.exists() && cfg.getSetting(Settings.OVERRIDE_FILES))) {
+			if (!to.exists() || (to.exists() && cfg.getSetting(OVERRIDE_FILES))) {
 				Thread copyFilesThread = new Thread(getCpyFileRunnable(from, to));
 				copyFilesThread.setDaemon(true);
 				copyFilesThread.start();
@@ -52,12 +57,12 @@ public class FileCopier implements Runnable {
 				try {
 					copyFilesThread.join();
 				} catch (InterruptedException e) {
-					MainApp.getLogger().error(e.getMessage());
+					LOGGER.error(e.getMessage());
 				}
 
 			} else {
 				String msg = String.format(Str.get("FileCopier.override_file_exists"), to.getAbsolutePath());
-				MainApp.getLogger().warning(msg);
+				LOGGER.warn(msg);
 			}
 			step += stepSize;
 			MainApp.getLogger().setProgress(step);
@@ -72,16 +77,16 @@ public class FileCopier implements Runnable {
 			int idx = MainApp.getLogger().action(action, true);
 			try {
 				FileUtils.copyFile(from, to);
-				
+
 				if(md5(from).equals(md5(to))) {
 					MainApp.getLogger().setDone(idx);
 				} else {
 					MainApp.getLogger().setFailed(idx);
-					MainApp.getLogger().error(Str.get("FileCopier.checksum_error"));
+					LOGGER.error(Str.get("FileCopier.checksum_error"));
 				}
 			} catch (IOException | NoSuchAlgorithmException e) {
 				MainApp.getLogger().setFailed(idx);
-				MainApp.getLogger().error(e.getMessage());
+				LOGGER.error(e.getMessage());
 			}
 		};
 	}
@@ -96,10 +101,10 @@ public class FileCopier implements Runnable {
 			while ((read = is.read(buffer)) > 0) {
 				digest.update(buffer, 0, read);
 			}
-			
+
 			byte[] md5sum = digest.digest();
 			BigInteger bigInt = new BigInteger(1, md5sum);
-			
+
 			return bigInt.toString(16);
 		} finally {
 			try { is.close(); } catch (Exception e) {}

@@ -2,6 +2,9 @@ package de.urkallinger.copymanager.ui.dialogs;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.controller.SettingsDialogController;
 import de.urkallinger.copymanager.utils.Str;
@@ -14,6 +17,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class SettingsDialog {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsDialog.class);
+
 	private final MainApp mainApp;
 
 	private Stage parentStage;
@@ -53,7 +59,7 @@ public class SettingsDialog {
 
 		} catch (IOException e) {
 			// TODO: Übersetzung
-			MainApp.getLogger().error(Str.get("Fehler beim Dialog laden."));
+			LOGGER.error(Str.get("Fehler beim Dialog laden."));
 		}
 	}
 
