@@ -57,7 +57,7 @@ public class ExtensionListDialogControllerTest extends ApplicationTest {
 		verify(mainApp, times(1)).clearFileList();
 		verify(mainApp, times(1)).updateFileList();
 	}
-	
+
 	@Test
 	public void singleUnSelectionTest() {
 		Node mkvEntry = from(lookup("#table")).lookup(MKV).queryFirst();
@@ -84,7 +84,7 @@ public class ExtensionListDialogControllerTest extends ApplicationTest {
 		verify(mainApp, times(1)).clearFileList();
 		verify(mainApp, times(1)).updateFileList();
 	}
-	
+
 	@Test
 	public void multiUnSelectionTest() {
 		Node mkvEntry = from(lookup("#table")).lookup(MKV).queryFirst();
@@ -108,7 +108,7 @@ public class ExtensionListDialogControllerTest extends ApplicationTest {
 		verify(mainApp, times(1)).clearFileList();
 		verify(mainApp, times(1)).updateFileList();
 	}
-	
+
 	@Test
 	public void escapeTest() {
 		push(KeyCode.ESCAPE);
@@ -130,7 +130,7 @@ public class ExtensionListDialogControllerTest extends ApplicationTest {
 		verify(mainApp, times(1)).clearFileList();
 		verify(mainApp, times(1)).updateFileList();
 	}
-	
+
 	@Test
 	public void spaceKeyUnSelectionTest() throws Exception {
 		setFocusOnTable();
@@ -164,7 +164,7 @@ public class ExtensionListDialogControllerTest extends ApplicationTest {
 		stage.setScene(scene);
 		stage.show();
 	}
-	
+
 	private void setFocusOnTable() throws Exception {
 		TableView<?> table = (TableView<?>) lookup("#table").queryFirst();
 
@@ -176,7 +176,7 @@ public class ExtensionListDialogControllerTest extends ApplicationTest {
 			return 0;
 		});
 		Platform.runLater(query);
-		
+
 		// Warten bis der Focus gesetzt wurde
 		query.get(1, TimeUnit.SECONDS);
 	}

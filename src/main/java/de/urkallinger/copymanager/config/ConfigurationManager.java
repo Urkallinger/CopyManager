@@ -1,42 +1,50 @@
 package de.urkallinger.copymanager.config;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
 
 import de.urkallinger.copymanager.MainApp;
+import de.urkallinger.copymanager.config.typeadapter.SimpleStringPropertyTypeAdapter;
+import de.urkallinger.copymanager.config.typeadapter.StringPropertyTypeAdapter;
 import de.urkallinger.copymanager.utils.Str;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class ConfigurationManager {
 
-    private static final String CONFIG_XML = "config.xml";
+    private static final String CONFIG_FILE_NAME = "config.dat";
+    static Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(StringProperty.class, new StringPropertyTypeAdapter())
+            .registerTypeAdapter(SimpleStringProperty.class, new SimpleStringPropertyTypeAdapter())
+            .create();
 
     private ConfigurationManager() {
     }
 
     public static boolean configurationExists() {
-        return new File(CONFIG_XML).exists();
+        return new File(CONFIG_FILE_NAME).exists();
     }
 
     public static Configuration loadConfiguration() {
-        File cfgFile = new File(CONFIG_XML);
-        Configuration config = null;
-        if (cfgFile.exists()) {
-            try {
-                JAXBContext context = JAXBContext.newInstance(Configuration.class);
-                Unmarshaller m = context.createUnmarshaller();
-                config = (Configuration) m.unmarshal(cfgFile);
-            } catch (JAXBException e) {
-                MainApp.getLogger().error(Str.get("ConfigurationManager.load_config_err"));
-                MainApp.getLogger().error(e.getMessage());
-            }
-        }
-        if (config == null)
+        Configuration config;
+        try (JsonReader reader = new JsonReader(new FileReader(CONFIG_FILE_NAME))) {
+            config = gson.fromJson(reader, Configuration.class);
+        } catch (IOException | JsonIOException | JsonSyntaxException e) {
+            MainApp.getLogger().error(Str.get("ConfigurationManager.load_config_err"));
+            MainApp.getLogger().error(e.getMessage());
             config = new Configuration();
+        }
+
         return config;
     }
 
@@ -45,16 +53,11 @@ public class ConfigurationManager {
     }
 
     public static void saveConfiguration(Configuration cfg) {
-        File cfgFile = new File(CONFIG_XML);
-        try {
-            if (!cfgFile.exists())
-                cfgFile.createNewFile();
+        String json = gson.toJson(cfg, Configuration.class);
 
-            JAXBContext context = JAXBContext.newInstance(Configuration.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            m.marshal(cfg, cfgFile);
-        } catch (JAXBException | IOException e) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(CONFIG_FILE_NAME))) {
+            bw.write(json);
+        } catch (IOException e) {
             MainApp.getLogger().error(Str.get("ConfigurationManager.save_config_err"));
             MainApp.getLogger().error(e.getMessage());
         }

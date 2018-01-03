@@ -6,22 +6,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import de.urkallinger.copymanager.data.RenameConfigItem;
 
-@XmlRootElement(name = "configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Configuration {
-	
+
 	private String lastSrcDir;
 	private String lastDestDir;
 	private List<RenameConfigItem> renameConfigurations;
 	private String locale;
 	private Map<Settings, Boolean> settings;
-	
+
 	public Configuration() {
 		this.lastSrcDir = "";
 		this.lastDestDir = "";
@@ -30,7 +24,7 @@ public class Configuration {
 		this.settings = new HashMap<>();
 		setDefaultSettings();
 	}
-	
+
 	private void setDefaultSettings() {
 		settings.put(Settings.OVERRIDE_FILES, true);
 	}
@@ -62,7 +56,7 @@ public class Configuration {
 	public Locale getLocale() {
 		return Locale.forLanguageTag(locale);
 	}
-	
+
 	public void SetLocale(String locale) {
 		this.locale = locale;
 	}
@@ -74,7 +68,7 @@ public class Configuration {
 	public Map<Settings, Boolean> getSettings() {
 		return settings;
 	}
-	
+
 	public boolean getSetting(Settings setting) {
 		return settings.get(setting);
 	}
