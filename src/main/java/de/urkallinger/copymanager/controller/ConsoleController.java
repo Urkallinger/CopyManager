@@ -1,31 +1,19 @@
 package de.urkallinger.copymanager.controller;
 
-import java.util.concurrent.CountDownLatch;
-
-import org.apache.logging.log4j.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.urkallinger.copymanager.CMLogger;
 import de.urkallinger.copymanager.data.ConsoleItem;
 import de.urkallinger.copymanager.logging.ListViewAppender;
-import de.urkallinger.copymanager.utils.Str;
-import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
 
-public class ConsoleController extends UIController implements CMLogger {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleController.class);
+public class ConsoleController extends UIController {
 
     @FXML
     private ListView<ConsoleItem> console = new ListView<>();
@@ -59,12 +47,20 @@ public class ConsoleController extends UIController implements CMLogger {
                 if (!isEmpty()) {
                     setText(item.getText());
                     setTextFill(item.getColor());
-                    setFont(new Font("Consolas", 15));
                     setGraphic(item.getGraphic());
                 } else {
                     setText(null);
                     setGraphic(null);
                     setTextFill(null);
+                }
+            }
+        });
+
+        console.getItems().addListener(new ListChangeListener<ConsoleItem>() {
+            @Override
+            public void onChanged(Change<? extends ConsoleItem> c) {
+                if (btnScrollLock.isSelected()) {
+                    execOnFxAppThread(() -> console.scrollTo(console.getItems().size() - 1));
                 }
             }
         });
@@ -87,85 +83,19 @@ public class ConsoleController extends UIController implements CMLogger {
         }
     }
 
-    private ProgressIndicator getLoadingIndicator() {
-        final ProgressIndicator pi = new ProgressIndicator();
-        pi.setVisible(true);
-        pi.setStyle(" -fx-progress-color: #729917;");
-        pi.setMaxWidth(25);
-        pi.setMaxHeight(25);
-        pi.setPrefWidth(25);
-        pi.setPrefHeight(25);
-        return pi;
-    }
-
-    private void addListItem(ConsoleItem item) {
-        console.getItems().add(item);
-        if (btnScrollLock.isSelected()) {
-            execute(() -> console.scrollTo(console.getItems().size() - 1));
-        }
-    }
-
-    @Override
-    public int action(String text, boolean indicator) {
-        CountDownLatch latch = new CountDownLatch(1);
-        execute(() -> {
-            ConsoleItem item = new ConsoleItem(text, Level.INFO);
-            if (indicator) {
-                item.setGraphic(getLoadingIndicator());
-            }
-            addListItem(item);
-            latch.countDown();
-        });
-
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            return -1;
-        }
-        return console.getItems().size() - 1;
-    }
-
-    @Override
-    public void setDone(final int idx) {
-        execute(() -> {
-            try {
-                Image imgRes = new Image(getClass().getResourceAsStream("/images/done.png"));
-                console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-                console.refresh();
-            } catch (IndexOutOfBoundsException e) {
-                String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
-                LOGGER.error(msg);
-            }
-        });
-    }
-
-    @Override
-    public void setFailed(final int idx) {
-        execute(() -> {
-            try {
-                Image imgRes = new Image(getClass().getResourceAsStream("/images/clear.png"));
-                console.getItems().get(idx).setGraphic(new ImageView(imgRes));
-                console.refresh();
-            } catch (IndexOutOfBoundsException e) {
-                String msg = String.format(Str.get("ConsoleController.update_item_ioob"), idx);
-                LOGGER.error(msg);
-            }
-        });
-    }
-
-    @Override
     public void setProgress(final double x) {
-        execute(() -> progressBar.setProgress(x));
+        // TODO: Progressbar mit Taskcontroller oder so verknüpfen
+        execOnFxAppThread(() -> progressBar.setProgress(x));
     }
 
-    @Override
     public void enableProgressBar(boolean enable, final long millis) {
+        // TODO: Progressbar mit Taskcontroller oder so verknüpfen
         Thread t = new Thread(() -> {
             try {
                 Thread.sleep(millis);
             } catch (Exception e) {
             }
-            Platform.runLater(() -> {
+            execOnFxAppThread(() -> {
                 progressBar.setVisible(enable);
                 progressBar.setProgress(0.0);
                 if (enable) {
@@ -177,13 +107,5 @@ public class ConsoleController extends UIController implements CMLogger {
         });
         t.setDaemon(true);
         t.start();
-    }
-
-    private void execute(Runnable run) {
-        if (Platform.isFxApplicationThread()) {
-            run.run();
-        } else {
-            Platform.runLater(run);
-        }
     }
 }

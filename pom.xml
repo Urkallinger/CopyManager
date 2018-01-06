@@ -5,15 +5,15 @@
 	<artifactId>de.urkallinger.copymanager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>CopyManager</name>
-	
+
 	<properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dependency.log4j.version>2.7</dependency.log4j.version>
-        <mainClass>de.urkallinger.copymanager.MainApp</mainClass>
-    </properties>
-	
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<dependency.log4j.version>2.7</dependency.log4j.version>
+		<mainClass>de.urkallinger.copymanager.MainApp</mainClass>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -34,6 +34,11 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>${dependency.log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>23.6-jre</version>
 		</dependency>
 		<!-- TEST FRAMEWORKS -->
 		<dependency>
@@ -60,7 +65,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>${project.name}</finalName>
 		<plugins>

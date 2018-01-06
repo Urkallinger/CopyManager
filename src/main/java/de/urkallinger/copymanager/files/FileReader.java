@@ -7,9 +7,11 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import de.urkallinger.copymanager.MainApp;
 import de.urkallinger.copymanager.ParamCallback;
+import de.urkallinger.copymanager.TaskManager;
 import de.urkallinger.copymanager.data.FileListItem;
+import de.urkallinger.copymanager.data.Task;
+import de.urkallinger.copymanager.data.TaskStatus;
 import de.urkallinger.copymanager.utils.Str;
 
 public class FileReader implements Runnable {
@@ -24,14 +26,16 @@ public class FileReader implements Runnable {
 
 	@Override
 	public void run() {
-		String action = String.format(Str.get("FileReader.read_action"), rootDir);
-		int idx = MainApp.getLogger().action(action, true);
-		
+		String taskText = String.format(Str.get("FileReader.read_action"), rootDir);
+		Task task = new Task(taskText, TaskStatus.IN_PROGRESS);
+        TaskManager.addTask(task);
+
 		Collection<File> files = FileUtils.listFiles(rootDir, null, true);
 		List<FileListItem> items = new ArrayList<>(files.size());
 		files.forEach(f -> items.add(new FileListItem(f)));
-		
-		MainApp.getLogger().setDone(idx);
+
+		task.setStatus(TaskStatus.SUCCESS);
+		TaskManager.updateTask(task);
 		callback.call(items);
 	}
 }

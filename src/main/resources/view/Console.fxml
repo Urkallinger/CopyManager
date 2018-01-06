@@ -2,25 +2,24 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="200.0" xmlns="http://javafx.com/javafx/8.0.111"
+<AnchorPane prefHeight="200.0" xmlns="http://javafx.com/javafx/8.0.141"
 	xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.urkallinger.copymanager.controller.ConsoleController">
-	<padding>
-		<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-	</padding>
 	<children>
+		<ProgressBar fx:id="progressBar" prefWidth="200.0"
+			progress="0.0" style="-fx-accent: #729917;" visible="false"
+			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0" />
 		<ListView fx:id="console" AnchorPane.bottomAnchor="0.0"
-			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="45.0"
+			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="50.0"
 			AnchorPane.topAnchor="0.0" />
-		<VBox prefWidth="40.0" AnchorPane.rightAnchor="0.0"
+		<VBox maxWidth="35.0" AnchorPane.rightAnchor="0.0"
 			AnchorPane.topAnchor="0.0">
 			<children>
 				<Button fx:id="btnClear" mnemonicParsing="false" onAction="#onClear"
@@ -29,28 +28,19 @@
 						<Insets bottom="10.0" />
 					</VBox.margin>
 					<tooltip>
-						<Tooltip text="%view.Console.clear_console">
-							<font>
-								<Font size="15.0" />
-							</font>
-						</Tooltip>
+						<Tooltip text="%view.Console.clear_console" />
 					</tooltip>
 				</Button>
 				<ToggleButton fx:id="btnScrollLock" mnemonicParsing="false"
 					onAction="#onScrollLock" prefHeight="30.0" prefWidth="30.0">
 					<tooltip>
-						<Tooltip text="%view.Console.toggle_scroll_lock">
-							<font>
-								<Font size="15.0" />
-							</font>
-						</Tooltip>
+						<Tooltip text="%view.Console.toggle_scroll_lock" />
 					</tooltip>
 				</ToggleButton>
 			</children>
 		</VBox>
-		<ProgressBar fx:id="progressBar" prefWidth="200.0"
-			progress="0.0" style="-fx-accent: #729917;" visible="false"
-			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-			AnchorPane.rightAnchor="45.0" />
 	</children>
+	<padding>
+		<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+	</padding>
 </AnchorPane>

@@ -15,10 +15,12 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.urkallinger.copymanager.MainApp;
+import de.urkallinger.copymanager.TaskManager;
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.data.FileListItem;
+import de.urkallinger.copymanager.data.Task;
+import de.urkallinger.copymanager.data.TaskStatus;
 import de.urkallinger.copymanager.utils.Str;
 
 public class FileCopier implements Runnable {
@@ -39,10 +41,11 @@ public class FileCopier implements Runnable {
 	public void run() {
 		double stepSize = 1.0 / files.size();
 		double step = 0;
-		MainApp.getLogger().enableProgressBar(true, 0);
+		// TODO: Progressbar wieder einbauen
+//		MainApp.getLogger().enableProgressBar(true, 0);
 		for (FileListItem file : files) {
 			final String name = file.getNewName().isEmpty() ? file.getName() : file.getNewName();
-			final String newName = name + "." + file.getExtension();
+			final String newName = String.format("%s.%s", name, file.getExtension());
 
 			File from = new File(file.getAbsolutPath());
 			File to = new File(targetDir, newName);
@@ -65,27 +68,33 @@ public class FileCopier implements Runnable {
 				LOGGER.warn(msg);
 			}
 			step += stepSize;
-			MainApp.getLogger().setProgress(step);
+			// TODO: Progressbar wieder einbauen
+//			MainApp.getLogger().setProgress(step);
 		}
-		MainApp.getLogger().enableProgressBar(false, 2000);
+		// TODO: Progressbar wieder einbauen
+//		MainApp.getLogger().enableProgressBar(false, 2000);
 	}
 
 	private Runnable getCpyFileRunnable(File from, File to) {
 		return () -> {
-			String action = String.format(Str.get("FileCopier.copy_action"), from.getAbsolutePath(),
+			String taskText = String.format(Str.get("FileCopier.copy_action"), from.getAbsolutePath(),
 					to.getAbsolutePath());
-			int idx = MainApp.getLogger().action(action, true);
+			Task task = new Task(taskText, TaskStatus.IN_PROGRESS);
+			TaskManager.addTask(task);
 			try {
 				FileUtils.copyFile(from, to);
 
 				if(md5(from).equals(md5(to))) {
-					MainApp.getLogger().setDone(idx);
+				    task.setStatus(TaskStatus.SUCCESS);
+				    TaskManager.updateTask(task);
 				} else {
-					MainApp.getLogger().setFailed(idx);
+				    task.setStatus(TaskStatus.FAILURE);
+				    TaskManager.updateTask(task);
 					LOGGER.error(Str.get("FileCopier.checksum_error"));
 				}
 			} catch (IOException | NoSuchAlgorithmException e) {
-				MainApp.getLogger().setFailed(idx);
+			    task.setStatus(TaskStatus.FAILURE);
+			    TaskManager.updateTask(task);
 				LOGGER.error(e.getMessage());
 			}
 		};

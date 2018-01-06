@@ -17,7 +17,6 @@ import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
 import de.urkallinger.copymanager.ui.dialogs.ExtensionListDialog;
 import de.urkallinger.copymanager.ui.dialogs.SettingsDialog;
 import de.urkallinger.copymanager.utils.Str;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -118,7 +117,7 @@ public class RootLayoutController extends UIController {
 							dialog.show();
 						}
 					};
-					Platform.runLater(runner);
+					execOnFxAppThread(runner);
 				}
 			};
 
@@ -211,7 +210,10 @@ public class RootLayoutController extends UIController {
 
 	public void setBottomArea(Node node) {
 		bottomArea.getChildren().add(node);
-		setDefaultAnchors(node);
+		AnchorPane.setBottomAnchor(node, 0.0);
+        AnchorPane.setLeftAnchor(node, 0.0);
+        AnchorPane.setRightAnchor(node, 0.0);
+        AnchorPane.setTopAnchor(node, 0.0);
 	}
 
 	public void setStage(Stage stage) {

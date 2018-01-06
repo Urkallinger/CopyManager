@@ -5,14 +5,14 @@
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout>
 				<pattern>
-					%d{dd.MM.yyyy HH:mm:ss,SSS} - %-5level - %logger{36} - %msg%n
+					%d{dd.MM.yyyy HH:mm:ss,SSS} - %-5level- %logger{36} - %msg%n
 				</pattern>
 			</PatternLayout>
 		</Console>
 		<ListViewAppender name="ListView" maxLines="1000">
 			<PatternLayout>
 				<pattern>
-					%d{HH:mm:ss,SSS} - %-5level - %msg%n
+					%d{HH:mm:ss} - %msg%n
 				</pattern>
 			</PatternLayout>
 		</ListViewAppender>

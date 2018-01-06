@@ -2,18 +2,24 @@ package de.urkallinger.copymanager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.EventBus;
+
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.controller.ConsoleController;
 import de.urkallinger.copymanager.controller.FileOverviewController;
 import de.urkallinger.copymanager.controller.OptionPanelController;
+import de.urkallinger.copymanager.controller.OutputTabPanelController;
 import de.urkallinger.copymanager.controller.RootLayoutController;
+import de.urkallinger.copymanager.controller.TasksController;
+import de.urkallinger.copymanager.controller.UIController;
 import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.exceptions.FileCopierInProgressException;
 import de.urkallinger.copymanager.exceptions.FileReaderInProgressException;
@@ -31,20 +37,26 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-	private static CMLogger logger = new DefaultLogger();
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainApp.class);
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 
+	private List<UIController> controller = new ArrayList<>();
+
 	private FileOverviewController fileOverviewController;
 	private OptionPanelController optController;
-	private ConsoleController consoleController;
 	private RootLayoutController rootController;
+	private TasksController tasksController;
 
 	private FileManager fm;
 	private Scene scene;
 	private Optional<File> currentDir = Optional.empty();
+	private EventBus globalEventBus;
+
+	public MainApp() {
+	    globalEventBus = new EventBus();
+    }
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -54,17 +66,19 @@ public class MainApp extends Application {
 		updateConfig();
 
 		initRootLayout();
-		showConsole();
+		showOutputTabPanel();
 		showFileOverview();
 		showOptionPanel();
 
 		optController.setFileOverview(fileOverviewController);
 
-		logger = consoleController;
+		TaskManager.registerTaskView(tasksController);
 
 		addGlobalShortCuts();
 
 		fm = new FileManager();
+		
+		controller.forEach(ctrl -> ctrl.setGlobalEventBus(globalEventBus));
 	}
 
 	private void updateConfig() {
@@ -143,10 +157,14 @@ public class MainApp extends Application {
 			rootController.setMainApp(this);
 			rootController.setStage(primaryStage);
 
+			controller.add(rootController);
+
 			Image icon = new Image(getClass().getResourceAsStream("/images/app_icon.png"));
 			primaryStage.getIcons().add(icon);
 
 			scene = new Scene(rootLayout);
+			scene.getStylesheets().add(getClass().getResource("/css/GlobalFontSize.css").toExternalForm());
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (IOException e) {
@@ -165,6 +183,7 @@ public class MainApp extends Application {
 			rootController.setRightArea(fileOverview);
 
 			fileOverviewController = loader.getController();
+			controller.add(fileOverviewController);
 		} catch (IOException e) {
 			LOGGER.error(Str.get("MainApp.load_file_overview_err"));
 			LOGGER.error(e.getMessage());
@@ -181,6 +200,7 @@ public class MainApp extends Application {
 			rootController.setLeftArea(optionPanel);
 			optController = loader.getController();
 			optController.setMainApp(this);
+			controller.add(optController);
 
 		} catch (IOException e) {
 			LOGGER.error(Str.get("MainApp.load_option_panel_err"));
@@ -188,21 +208,64 @@ public class MainApp extends Application {
 		}
 	}
 
-	public void showConsole() {
+	public void showOutputTabPanel() {
+	    try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setResources(Str.getBundle());
+            loader.setLocation(getClass().getResource("/view/OutputTabPanel.fxml"));
+            AnchorPane outputTabPanel = (AnchorPane) loader.load();
+
+            rootController.setBottomArea(outputTabPanel);
+
+            OutputTabPanelController tabController = loader.getController();
+            tabController.setConsoleTab(getConsole());
+            tabController.setTasksTab(getTasksPanel());
+            controller.add(tabController);
+
+        } catch (IOException e) {
+            LOGGER.error(Str.get("MainApp.load_console_err"));
+            LOGGER.error(e.getMessage());
+        }
+	}
+
+	private AnchorPane getConsole() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setResources(Str.getBundle());
 			loader.setLocation(getClass().getResource("/view/Console.fxml"));
 			AnchorPane console = (AnchorPane) loader.load();
 
-			rootController.setBottomArea(console);
-			consoleController = loader.getController();
+			ConsoleController consoleController = loader.getController();
+			controller.add(consoleController);
+
+			return console;
 
 		} catch (IOException e) {
 			LOGGER.error(Str.get("MainApp.load_console_err"));
 			LOGGER.error(e.getMessage());
+			return null;
 		}
 	}
+
+	   private AnchorPane getTasksPanel() {
+	        try {
+	            FXMLLoader loader = new FXMLLoader();
+	            loader.setResources(Str.getBundle());
+	            loader.setLocation(getClass().getResource("/view/TasksPanel.fxml"));
+	            AnchorPane tasks = (AnchorPane) loader.load();
+
+	            tasksController = loader.getController();
+	            controller.add(tasksController);
+
+	            return tasks;
+
+	        } catch (IOException e) {
+	            // TODO: Fehlermeldung anpassen
+	            LOGGER.error(Str.get("MainApp.load_console_err"));
+	            LOGGER.error(e.getMessage());
+	            return null;
+	        }
+	    }
 
 	public void addFileExtension(String extension) {
 		if(!fm.getFileExtensions().contains(extension)) {
@@ -296,10 +359,6 @@ public class MainApp extends Application {
 			String info = String.format(Str.get("MainApp.curr_dir_set"), dir);
 			LOGGER.info(info);
 		});
-	}
-
-	public static CMLogger getLogger() {
-		return MainApp.logger;
 	}
 
 	public static void main(String[] args) {

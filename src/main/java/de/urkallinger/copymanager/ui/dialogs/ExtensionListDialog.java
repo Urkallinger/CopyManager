@@ -58,6 +58,8 @@ public class ExtensionListDialog {
 			dialogController.addListItems(extensions);
 
 			Scene scene = new Scene(layout);
+			scene.getStylesheets().add(getClass().getResource("/css/GlobalFontSize.css").toExternalForm());
+
 			stage.setMinWidth(layout.getMinWidth() + 50);
 			stage.setMinHeight(layout.getMinHeight() + 50);
 			stage.setScene(scene);

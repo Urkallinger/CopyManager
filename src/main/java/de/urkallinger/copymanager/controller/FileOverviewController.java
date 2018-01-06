@@ -11,7 +11,6 @@ import de.urkallinger.copymanager.data.FileListItem.SizeObj;
 import de.urkallinger.copymanager.exceptions.CMException;
 import de.urkallinger.copymanager.files.filter.FileNameFilter;
 import de.urkallinger.copymanager.utils.Str;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
@@ -85,7 +84,7 @@ public class FileOverviewController extends UIController {
 	}
 
 	private void requestFocus() {
-		Platform.runLater(() -> {
+	    execOnFxAppThread(() -> {
 			table.requestFocus();
 			table.getSelectionModel().select(0);
 			table.getFocusModel().focus(0);

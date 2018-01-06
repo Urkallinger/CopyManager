@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <AnchorPane prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.urkallinger.copymanager.controller.OptionPanelController">
 	<padding>
@@ -22,19 +21,11 @@
 			<children>
 				<HBox>
 					<children>
-						<Label prefHeight="40.0" text="%keywords.extensions">
-							<font>
-								<Font size="15.0" />
-							</font>
-						</Label>
+						<Label prefHeight="40.0" text="%keywords.extensions" />
 						<HBox HBox.hgrow="ALWAYS" />
 						<Button fx:id="btnAddFileEx" mnemonicParsing="false" onAction="#handleAddExtension" prefHeight="36.0" prefWidth="36.0">
 							<tooltip>
-								<Tooltip text="%view.OptionPanel.add_new_file_ex">
-									<font>
-										<Font size="15.0" />
-									</font>
-								</Tooltip>
+								<Tooltip text="%view.OptionPanel.add_new_file_ex" />
 							</tooltip>
 						</Button>
 					</children>
@@ -42,11 +33,7 @@
 				<ListView fx:id="fileExtensionList" />
 				<HBox>
 					<children>
-						<Label prefHeight="36.0" text="%keywords.pattern">
-							<font>
-								<Font size="15.0" />
-							</font>
-						</Label>
+						<Label prefHeight="36.0" text="%keywords.pattern" />
 						<HBox HBox.hgrow="ALWAYS" />
 						<Button fx:id="btnLoad" onAction="#handleLoadRenameConfigs" prefHeight="36.0" prefWidth="36.0">
 							<HBox.margin>
@@ -56,36 +43,16 @@
 						<Button fx:id="btnSave" onAction="#handleSavePattern" prefHeight="36.0" prefWidth="36.0" />
 					</children>
 				</HBox>
-				<TextField fx:id="txtPattern" text="(.*)">
-					<font>
-						<Font name="Consolas" size="15.0" />
-					</font>
-				</TextField>
-				<Label prefHeight="30.0" text="%keywords.template">
-					<font>
-						<Font size="15.0" />
-					</font>
-				</Label>
-				<TextField fx:id="txtTemplate" text="#1">
-					<font>
-						<Font name="Consolas" size="15.0" />
-					</font>
-				</TextField>
+				<TextField fx:id="txtPattern" text="(.*)" style="-fx-font-family: Consolas;" />
+				<Label prefHeight="30.0" text="%keywords.template" />
+				<TextField fx:id="txtTemplate" text="#1"  style="-fx-font-family: Consolas;" />
 				<HBox>
 					<children>
-						<Label prefHeight="40.0" text="%keywords.replacements">
-							<font>
-								<Font size="15.0" />
-							</font>
-						</Label>
+						<Label prefHeight="40.0" text="%keywords.replacements" />
 						<HBox HBox.hgrow="ALWAYS" />
 						<Button fx:id="btnAddFileReplacement" mnemonicParsing="false" onAction="#handleAddReplacement" prefHeight="36.0" prefWidth="36.0">
 							<tooltip>
-								<Tooltip text="%view.OptionPanel.add_new_filename_replacement">
-									<font>
-										<Font size="15.0" />
-									</font>
-								</Tooltip>
+								<Tooltip text="%view.OptionPanel.add_new_filename_replacement" />
 							</tooltip>
 						</Button>
 					</children>
@@ -103,21 +70,13 @@
 					<children>
 						<Button fx:id="btnClear" mnemonicParsing="false" onAction="#handleClear" prefWidth="90.0">
 							<tooltip>
-								<Tooltip text="%view.OptionPanel.clear_new_filename">
-									<font>
-										<Font size="15.0" />
-									</font>
-								</Tooltip>
+								<Tooltip text="%view.OptionPanel.clear_new_filename" />
 							</tooltip>
 						</Button>
 						<HBox HBox.hgrow="ALWAYS" />
 						<Button fx:id="btnUseTemplate" mnemonicParsing="false" onAction="#handleUseTemplate" prefWidth="90.0">
 							<tooltip>
-								<Tooltip text="%view.OptionPanel.use_pattern_and_template">
-									<font>
-										<Font size="15.0" />
-									</font>
-								</Tooltip>
+								<Tooltip text="%view.OptionPanel.use_pattern_and_template" />
 							</tooltip>
 						</Button>
 					</children>

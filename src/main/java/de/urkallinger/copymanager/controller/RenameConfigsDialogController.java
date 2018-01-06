@@ -6,7 +6,6 @@ import java.util.Optional;
 import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.data.RenameConfigItem;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
@@ -14,7 +13,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class RenameConfigsDialogController extends UIController {
@@ -38,7 +36,7 @@ public class RenameConfigsDialogController extends UIController {
 	public void initialize() {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		table.setOnKeyPressed(event -> handleTableKeyEvent(event));
-		
+
 		nameCol.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
 		patternCol.prefWidthProperty().bind(table.widthProperty().multiply(0.37));
 		templateCol.prefWidthProperty().bind(table.widthProperty().multiply(0.37));
@@ -53,27 +51,27 @@ public class RenameConfigsDialogController extends UIController {
 				super.updateItem(item, empty);
 				if (!isEmpty()) {
 					setText(item);
-					setFont(new Font("Consolas", 15));
-				} else {
+					setStyle("-fx-font-family: Consolas");
+			} else {
 					setText(null);
 				}
 			}
 		});
-		
+
 		templateCol.setCellFactory(call -> new TableCell<RenameConfigItem, String>() {
 			@Override
 			protected void updateItem(String item, boolean empty) {
 				super.updateItem(item, empty);
 				if (!isEmpty()) {
 					setText(item);
-					setFont(new Font("Consolas", 15));
+					setStyle("-fx-font-family: Consolas");
 				} else {
 					setText(null);
 				}
 			}
 		});
 	}
-	
+
 	private void handleTableKeyEvent(KeyEvent event) {
 		switch (event.getCode()) {
 		case ENTER:
@@ -98,9 +96,9 @@ public class RenameConfigsDialogController extends UIController {
 		cfg.getRenameConfigurations().remove(renameConfig);
 		ConfigurationManager.saveConfiguration(cfg);
 	}
-	
+
 	private void requestFocus() {
-		Platform.runLater(() -> {
+	    execOnFxAppThread(() -> {
 			table.requestFocus();
 			table.getSelectionModel().select(0);
 			table.getFocusModel().focus(0);

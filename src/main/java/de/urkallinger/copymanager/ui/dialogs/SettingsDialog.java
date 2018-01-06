@@ -52,6 +52,8 @@ public class SettingsDialog {
 			dialogController.setMainApp(mainApp);
 
 			Scene scene = new Scene(layout);
+			scene.getStylesheets().add(getClass().getResource("/css/GlobalFontSize.css").toExternalForm());
+
 			addShortCuts(scene, stage);
 			stage.setResizable(false);
 			stage.setScene(scene);

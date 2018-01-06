@@ -3,7 +3,6 @@ package de.urkallinger.copymanager.controller;
 import java.util.Set;
 
 import de.urkallinger.copymanager.data.ExtensionListItem;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -65,22 +64,22 @@ public class ExtensionListDialogController extends UIController {
 		case ENTER:
 			handleOk();
 			break;
-			
+
 		case ESCAPE:
 			handleCancel();
 			break;
-			
+
 		default:
 			break;
 		}
 	}
-	
+
 	@FXML
 	private void handleOk() {
 		table.getItems().stream()
-			.filter(i -> i.isChecked())
-			.forEach(i -> mainApp.addFileExtension(i.getExtension()));
-		
+			.filter(item -> item.isChecked())
+			.forEach(item -> mainApp.addFileExtension(item.getExtension()));
+
 		mainApp.clearFileList();
 		mainApp.updateFileList();
 
@@ -92,7 +91,7 @@ public class ExtensionListDialogController extends UIController {
 	private void handleCancel() {
 		mainApp.clearFileList();
 		mainApp.updateFileList();
-		
+
 		Stage stage = (Stage) btnCancel.getScene().getWindow();
 		stage.close();
 	}
@@ -104,9 +103,9 @@ public class ExtensionListDialogController extends UIController {
 		});
 		requestFocus();
 	}
-	
+
 	private void requestFocus() {
-		Platform.runLater(() -> {
+	    execOnFxAppThread(() -> {
 			table.requestFocus();
 			table.getSelectionModel().select(0);
 			table.getFocusModel().focus(0);
