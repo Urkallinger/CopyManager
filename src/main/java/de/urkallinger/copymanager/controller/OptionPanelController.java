@@ -12,6 +12,8 @@ import de.urkallinger.copymanager.config.Configuration;
 import de.urkallinger.copymanager.config.ConfigurationManager;
 import de.urkallinger.copymanager.data.RenameConfigItem;
 import de.urkallinger.copymanager.data.ReplacementItem;
+import de.urkallinger.copymanager.events.ClearOptionEvent;
+import de.urkallinger.copymanager.events.NewFileNameFilterEvent;
 import de.urkallinger.copymanager.exceptions.CMException;
 import de.urkallinger.copymanager.files.filter.FileNameFilter;
 import de.urkallinger.copymanager.files.filter.RegExFilter;
@@ -64,8 +66,6 @@ public class OptionPanelController extends UIController {
     private TableColumn<ReplacementItem, String> colOldValue = new TableColumn<>();
     @FXML
     private TableColumn<ReplacementItem, String> colNewValue = new TableColumn<>();
-
-    private FileOverviewController fileOverview;
 
     @FXML
     public void initialize() {
@@ -147,6 +147,9 @@ public class OptionPanelController extends UIController {
         tblReplacement.getItems().add(new ReplacementItem(replace, with));
     }
 
+    /**
+     * Fires Event: {@link NewFileNameFilterEvent}
+     */
     @FXML
     public void handleUseTemplate() {
         try {
@@ -162,7 +165,7 @@ public class OptionPanelController extends UIController {
             filters.addAll(tblReplacement.getItems().stream()
                     .map(rep -> new ReplaceFilter(rep.getOldValue(), rep.getNewValue())).collect(Collectors.toList()));
 
-            fileOverview.updateNewFileName(filters);
+            globalEventBus.post(new NewFileNameFilterEvent(filters));
         } catch (CMException e) {
             LOGGER.error(e.getMessage());
         }
@@ -170,7 +173,7 @@ public class OptionPanelController extends UIController {
 
     @FXML
     private void handleClear() {
-        mainApp.clearNewFileName();
+        globalEventBus.post(new ClearOptionEvent());
     }
 
     @FXML
@@ -244,13 +247,5 @@ public class OptionPanelController extends UIController {
     public void removeFileExtension(String extension) {
         fileExtensionList.getItems().remove(extension);
         fileExtensionList.refresh();
-    }
-
-    public FileOverviewController getFileOverview() {
-        return fileOverview;
-    }
-
-    public void setFileOverview(FileOverviewController fileOverview) {
-        this.fileOverview = fileOverview;
     }
 }

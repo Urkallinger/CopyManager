@@ -32,7 +32,6 @@ public class OutputTabPanelController extends UIController {
 
     @Subscribe
     public void handleTaskAddedEvent(TaskAddedEvent event) {
-        System.out.println("TaskAddedEvent");
         outputTabPane.getSelectionModel().select(tabTasks);
     }
 }

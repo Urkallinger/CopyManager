@@ -6,8 +6,12 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.Subscribe;
+
 import de.urkallinger.copymanager.data.FileListItem;
 import de.urkallinger.copymanager.data.FileListItem.SizeObj;
+import de.urkallinger.copymanager.events.ClearOptionEvent;
+import de.urkallinger.copymanager.events.NewFileNameFilterEvent;
 import de.urkallinger.copymanager.exceptions.CMException;
 import de.urkallinger.copymanager.files.filter.FileNameFilter;
 import de.urkallinger.copymanager.utils.Str;
@@ -138,5 +142,15 @@ public class FileOverviewController extends UIController {
 
 	public void setAllChecked(boolean checked) {
 		table.getItems().forEach(item -> item.setChecked(checked));
+	}
+
+	@Subscribe
+	public void handleClearOption(ClearOptionEvent event) {
+	    clearNewFileName();
+	}
+
+	@Subscribe
+	public void handleNewFileNameFilter(NewFileNameFilterEvent event) {
+	    updateNewFileName(event.getFilters());
 	}
 }
